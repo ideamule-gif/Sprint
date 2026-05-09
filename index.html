@@ -6,26 +6,25 @@
     <title>Заказ печати</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --white: #fff; --black: #0a0a0a; --gray: #999; --border: #e0e0e0; --radius: 14px; --shadow: 0 2px 10px rgba(0,0,0,0.05); --red: #d32f2f; --green: #2e7d32; }
+        :root { --white: #fff; --black: #0a0a0a; --gray: #999; --border: #e0e0e0; --radius: 14px; --shadow: 0 2px 10px rgba(0,0,0,0.05); --red: #d32f2f; --green: #2e7d32; --accent: #0a0a0a; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f5f5; color: var(--black); font-weight: 400; max-width: 480px; margin: 0 auto; min-height: 100vh; -webkit-tap-highlight-color: transparent; padding: 0; overflow-x: hidden; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f5f5; color: var(--black); font-weight: 400; max-width: 480px; margin: 0 auto; min-height: 100vh; -webkit-tap-highlight-color: transparent; padding-bottom: 80px; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes glow { 0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.3); } 50% { text-shadow: 0 0 30px rgba(255,255,255,0.5); } }
         @keyframes wave { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
         .anim-fade { animation: fadeInUp 0.6s ease forwards; }
         .anim-delay1 { animation-delay: 0.1s; opacity: 0; } .anim-delay2 { animation-delay: 0.25s; opacity: 0; } .anim-delay3 { animation-delay: 0.4s; opacity: 0; } .anim-delay4 { animation-delay: 0.55s; opacity: 0; }
-        .wave { display: inline-block; animation: wave 0.6s ease-in-out 3; }
-        .welcome-block { background: var(--black); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; gap: 24px; }
-        .welcome-block .welcome-title { font-size: 40px; font-weight: 800; color: #fff; animation: glow 3s ease-in-out infinite; }
-        .welcome-block .welcome-sub { font-size: 15px; color: rgba(255,255,255,0.6); font-weight: 300; max-width: 300px; }
-        .welcome-block .btn-hero { background: #fff; color: var(--black); padding: 16px 36px; border-radius: 50px; font-weight: 700; font-size: 17px; border: none; cursor: pointer; font-family: inherit; }
-        .main-content { padding: 16px; }
-        .steps { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 6px; }
-        .step { width: 22px; height: 22px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; color: #fff; cursor: pointer; transition: 0.3s; }
-        .step.done { background: var(--black); } .step.active { background: var(--black); }
-        .step-line { width: 20px; height: 2px; background: #ddd; } .step-line.done { background: var(--black); }
-        .step-labels { display: flex; justify-content: center; gap: 28px; font-size: 9px; color: var(--gray); margin-bottom: 16px; }
-        .page { display: none; } .page.active { display: block; }
+        .wave { display: inline-block; animation: wave 0.6s ease-in-out 3; transform-origin: 70% 70%; }
+
+        /* НИЖНЕЕ МЕНЮ */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 14px; z-index: 100; }
+        .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--gray); transition: 0.2s; }
+        .bottom-nav .nav-item.active { color: var(--accent); }
+        .bottom-nav .nav-item .nav-icon { font-size: 22px; }
+
+        /* КОНТЕНТ */
+        .tab { display: none; padding: 16px; }
+        .tab.active { display: block; }
         .card { background: var(--white); padding: 16px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 12px; }
         .tile-row { display: flex; flex-direction: column; gap: 12px; }
         .tile { background: var(--white); padding: 22px 18px; border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; text-align: center; border: 2px solid var(--border); }
@@ -43,14 +42,9 @@
         .upload-zone.has-file { border-color: var(--green); border-style: solid; color: var(--green); font-weight: 600; }
         .summary-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; }
         .summary-row.total { font-weight: 800; font-size: 18px; border-top: 1px solid #eee; margin-top: 4px; padding-top: 8px; }
-        .footer-links { display: flex; justify-content: center; gap: 12px; margin-top: 20px; padding: 12px 0; flex-wrap: wrap; }
+        .footer-links { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
         .footer-links a { font-size: 11px; color: var(--gray); text-decoration: underline; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
-        .modal.show { display: flex; } .modal-box { background: #fff; padding: 24px; border-radius: 14px; max-width: 380px; margin: 20px; max-height: 80vh; overflow-y: auto; font-size: 13px; }
         .back-btn { background: none; border: none; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--gray); padding: 4px 0; margin-bottom: 12px; }
-        .tab-row { display: flex; gap: 8px; margin-bottom: 12px; }
-        .tab-btn { flex: 1; padding: 10px; border-radius: 10px; font-weight: 600; font-size: 13px; border: 1px solid var(--border); background: var(--white); cursor: pointer; font-family: inherit; text-align: center; }
-        .tab-btn.active { background: var(--black); color: #fff; }
         .chat-box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); height: 300px; display: flex; flex-direction: column; overflow: hidden; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
         .chat-msg { max-width: 80%; padding: 8px 12px; border-radius: 14px; font-size: 13px; }
@@ -59,299 +53,256 @@
         .chat-input-row { display: flex; gap: 8px; padding: 8px; border-top: 1px solid var(--border); }
         .chat-input-row input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 20px; font-family: inherit; }
         .chat-input-row button { padding: 10px 16px; border-radius: 20px; background: var(--black); color: #fff; border: none; font-weight: 600; cursor: pointer; }
+        .status-badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+        .status-new { background: #e3f2fd; color: #1565c0; } .status-processing { background: #fff3e0; color: #e65100; }
+        .status-ready { background: #e8f5e9; color: #2e7d32; } .status-done { background: #f3e5f5; color: #6a1b9a; }
     </style>
 </head>
 <body>
 
-<div id="welcomeBlock" class="welcome-block">
-    <div class="welcome-title anim-fade">Привет <span class="wave">👋</span></div>
-    <div class="welcome-sub anim-fade anim-delay1">Сервис для заказа баннеров. Закажи в пару кликов — а мы напечатаем и доставим.</div>
-    <button class="btn-hero anim-fade anim-delay2" onclick="startOrder()">Заказать</button>
-    <br>
-    <button class="btn-hero anim-fade anim-delay3" style="background:transparent;color:#fff;border:2px solid #fff;" onclick="showLK()">👤 Личный кабинет</button>
+<!-- НИЖНЕЕ МЕНЮ -->
+<nav class="bottom-nav">
+    <div class="nav-item active" data-tab="tab-home"><span class="nav-icon">🏠</span>Главная</div>
+    <div class="nav-item" data-tab="tab-order"><span class="nav-icon">📐</span>Заказ</div>
+    <div class="nav-item" data-tab="tab-history"><span class="nav-icon">📋</span>История</div>
+    <div class="nav-item" data-tab="tab-profile"><span class="nav-icon">👤</span>Профиль</div>
+</nav>
+
+<!-- ВКЛАДКА: ГЛАВНАЯ -->
+<div class="tab active" id="tab-home">
+    <div style="min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:24px;">
+        <div style="font-size:40px;font-weight:800;animation:glow 3s ease-in-out infinite;">Привет <span class="wave">👋</span></div>
+        <div style="font-size:15px;color:var(--gray);font-weight:300;max-width:300px;">Сервис для заказа баннеров. Закажи в пару кликов — а мы напечатаем и доставим.</div>
+        <button class="btn btn-primary" style="width:auto;padding:16px 36px;border-radius:50px;" onclick="switchTab('tab-order')">Заказать</button>
+    </div>
+    <div class="footer-links">
+        <a href="#" onclick="alert('Политика конфиденциальности')">Политика</a>
+        <a href="#" onclick="alert('Пользовательское соглашение')">Соглашение</a>
+        <a href="https://t.me/someprintbot" target="_blank">Поддержка</a>
+    </div>
 </div>
 
-<div id="appContent" style="display:none;" class="main-content">
-    <button class="back-btn" id="backBtn" style="display:none;">← Назад</button>
-    <div id="dynamicPages"></div>
+<!-- ВКЛАДКА: ЗАКАЗ -->
+<div class="tab" id="tab-order">
+    <div id="orderStep"></div>
 </div>
 
-<div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
+<!-- ВКЛАДКА: ИСТОРИЯ -->
+<div class="tab" id="tab-history">
+    <h2 style="font-weight:800;margin-bottom:14px;">📋 История заказов</h2>
+    <div id="historyContent"><p style="color:var(--gray);">Войдите в профиль, чтобы видеть историю.</p></div>
+</div>
+
+<!-- ВКЛАДКА: ПРОФИЛЬ -->
+<div class="tab" id="tab-profile">
+    <h2 style="font-weight:800;margin-bottom:14px;">👤 Профиль</h2>
+    <div id="profileContent"></div>
+</div>
 
 <script>
     const API = '/api';
     let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-    let pageHistory = [];
+    let matData = {};
+    let uploadedFile = null;
+    let orderStep = 1;
 
     // ========== НАВИГАЦИЯ ==========
-    function showPage(html, push = true) {
-        document.getElementById('dynamicPages').innerHTML = html;
-        if (push) pageHistory.push(html);
-        document.getElementById('backBtn').style.display = pageHistory.length > 1 ? 'block' : 'none';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+        if (tabId === 'tab-order') renderOrderStep();
+        if (tabId === 'tab-history') loadHistory();
+        if (tabId === 'tab-profile') loadProfile();
     }
 
-    function goBack() {
-        if (pageHistory.length > 1) { pageHistory.pop(); document.getElementById('dynamicPages').innerHTML = pageHistory[pageHistory.length - 1]; }
-        if (pageHistory.length <= 1) document.getElementById('backBtn').style.display = 'none';
-    }
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+        item.addEventListener('click', () => switchTab(item.dataset.tab));
+    });
 
-    document.getElementById('backBtn').addEventListener('click', goBack);
-
-    function startOrder() {
-        document.getElementById('welcomeBlock').style.display = 'none';
-        document.getElementById('appContent').style.display = 'block';
-        showStep1();
-    }
-
-    // ========== ШАГ 1: МАТЕРИАЛ ==========
-    function showStep1() {
-        showPage(`
-            <h2 style="font-weight:800;margin-bottom:14px;">Выберите материал</h2>
-            <div class="tile-row">
-                <div class="tile" onclick="goToCalc('banner')"><div class="tile-icon">🪧</div><div class="tile-title">Баннер</div><div class="tile-sub">300г / 440г / 510г</div></div>
-                <div class="tile" onclick="goToCalc('selfad')"><div class="tile-icon">🏷️</div><div class="tile-title">Самоклейка</div><div class="tile-sub">Матовая / глянцевая</div></div>
-                <div class="tile" onclick="goToCalc('poster')"><div class="tile-icon">🖼️</div><div class="tile-title">Плакат</div><div class="tile-sub">Blueback / белая бумага</div></div>
-            </div>
-            <div class="footer-links">
-                <a href="#" onclick="openModal('policy')">Политика</a>
-                <a href="#" onclick="openModal('terms')">Соглашение</a>
-                <a href="#" onclick="openModal('design')">Требования</a>
-                <a href="https://t.me/someprintbot" target="_blank">Поддержка</a>
-            </div>
-        `);
-    }
-
-    // ========== ШАГ 2: КАЛЬКУЛЯТОР ==========
+    // ========== ЗАКАЗ (3 ЭТАПА) ==========
     let currentMaterial = 'banner';
     const basePrices = { 'banner-500': 500, 'banner-700': 700, 'banner-820': 820, 'selfad-840': 840, 'poster-500': 500, 'poster-800': 800 };
-    let matData = {};
 
-    function goToCalc(type) {
-        currentMaterial = type;
-        showPage(`
-            <h2 id="matTitle" style="font-weight:800;margin-bottom:14px;">${{banner:'🪧 Баннер',selfad:'🏷️ Самоклейка',poster:'🖼️ Плакат'}[type]}</h2>
-            <div class="card">
-                <div class="row">
-                    <div class="form-group"><label>Ширина, мм</label><input type="number" id="mWidth" value="1000" oninput="calcMaterial()"></div>
-                    <div class="form-group"><label>Высота, мм</label><input type="number" id="mHeight" value="1000" oninput="calcMaterial()"></div>
+    function renderOrderStep() {
+        const container = document.getElementById('orderStep');
+        if (orderStep === 1) {
+            container.innerHTML = `
+                <h2 style="font-weight:800;margin-bottom:14px;">Выберите материал</h2>
+                <div class="tile-row">
+                    <div class="tile" onclick="selectMaterial('banner')"><div class="tile-icon">🪧</div><div class="tile-title">Баннер</div><div class="tile-sub">300г / 440г / 510г</div></div>
+                    <div class="tile" onclick="selectMaterial('selfad')"><div class="tile-icon">🏷️</div><div class="tile-title">Самоклейка</div><div class="tile-sub">Матовая / глянцевая</div></div>
+                    <div class="tile" onclick="selectMaterial('poster')"><div class="tile-icon">🖼️</div><div class="tile-title">Плакат</div><div class="tile-sub">Blueback / белая бумага</div></div>
+                </div>`;
+        } else if (orderStep === 2) {
+            container.innerHTML = `
+                <button class="back-btn" onclick="orderStep=1;renderOrderStep();">← Назад</button>
+                <h2 style="font-weight:800;margin-bottom:14px;">${{banner:'🪧 Баннер',selfad:'🏷️ Самоклейка',poster:'🖼️ Плакат'}[currentMaterial]}</h2>
+                <div class="card">
+                    <div class="row">
+                        <div class="form-group"><label>Ширина, мм</label><input type="number" id="mWidth" value="1000" oninput="calc()"></div>
+                        <div class="form-group"><label>Высота, мм</label><input type="number" id="mHeight" value="1000" oninput="calc()"></div>
+                    </div>
+                    <div class="hint-red" id="widthHint"></div>
+                    <div class="form-group"><label>Количество, шт</label><input type="number" id="mQty" value="1" min="1" oninput="calc()"></div>
+                    <div id="matOpts"></div>
                 </div>
-                <div class="hint-red" id="widthHint"></div>
-                <div class="form-group"><label>Количество, шт</label><input type="number" id="mQty" value="1" min="1" oninput="calcMaterial()"></div>
-                <div id="opts"></div>
-            </div>
-            <div style="text-align:center;margin:14px 0;"><div class="price-big" id="mTotal">1000 р.</div></div>
-            <button class="btn btn-primary" onclick="goToOrder()">📋 Далее</button>
-            <button class="btn btn-outline" onclick="showStep1()">← Назад</button>
-        `);
-        document.getElementById('opts').innerHTML = type === 'banner' ?
-            `<div class="form-group"><label>Плотность</label><select id="bDens" onchange="calcMaterial()"><option value="500">300 г/м² — тонкий</option><option value="700" selected>440 г/м² — стандарт</option><option value="820">510 г/м² — премиум</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="bProkl" onchange="calcMaterial()"> Проклейка (+60 р/м.п.)</label><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="bLyuv" onchange="calcMaterial()"> Люверсы (+20 р/шт)</label>` :
-            type === 'selfad' ? `<div class="form-group"><label>Тип</label><select id="sType" onchange="calcMaterial()"><option value="840">Матовая</option><option value="840">Глянцевая</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="sRezka" onchange="calcMaterial()"> Обрезка (+25 р/м.п.)</label><div class="hint">Без обрезки — с белыми полями.</div>` :
-            `<div class="form-group"><label>Бумага</label><select id="pType" onchange="calcMaterial()"><option value="500">Blueback (эконом)</option><option value="800">Белая (стандарт)</option></select></div><div class="hint">Blueback — синяя оборотка.</div>`;
-        calcMaterial();
+                <div style="text-align:center;margin:14px 0;"><div class="price-big" id="mTotal">1000 р.</div></div>
+                <button class="btn btn-primary" onclick="orderStep=3;renderOrderStep();">📋 Далее</button>`;
+            document.getElementById('matOpts').innerHTML = currentMaterial === 'banner' ?
+                `<div class="form-group"><label>Плотность</label><select id="bDens" onchange="calc()"><option value="500">300 г/м² — тонкий</option><option value="700" selected>440 г/м² — стандарт</option><option value="820">510 г/м² — премиум</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="bProkl" onchange="calc()"> Проклейка (+60 р/м.п.)</label><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="bLyuv" onchange="calc()"> Люверсы (+20 р/шт)</label>` :
+                currentMaterial === 'selfad' ? `<div class="form-group"><label>Тип</label><select id="sType" onchange="calc()"><option value="840">Матовая</option><option value="840">Глянцевая</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="sRezka" onchange="calc()"> Обрезка (+25 р/м.п.)</label><div class="hint">Без обрезки — с белыми полями.</div>` :
+                `<div class="form-group"><label>Бумага</label><select id="pType" onchange="calc()"><option value="500">Blueback (эконом)</option><option value="800">Белая (стандарт)</option></select></div><div class="hint">Blueback — синяя оборотка.</div>`;
+            calc();
+        } else if (orderStep === 3) {
+            container.innerHTML = `
+                <button class="back-btn" onclick="orderStep=2;renderOrderStep();">← Назад</button>
+                <h2 style="font-weight:800;margin-bottom:14px;">📋 Оформление</h2>
+                <div class="card" id="orderSummary">${buildSummary()}</div>
+                <div class="card"><h3>📎 Макет</h3><div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"><span id="uploadText">Нажмите, чтобы загрузить файл</span></div><input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.cdr,.ai,.eps" style="display:none;" onchange="handleFile(event)"></div>
+                <div class="card">
+                    <h3>👤 Данные</h3>
+                    <div class="form-group"><label>Имя</label><input type="text" id="custName" value="${currentUser?.name||''}"></div>
+                    <div class="form-group"><label>Телефон</label><input type="tel" id="custPhone" value="${currentUser?.phone||''}"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="custEmail" value="${currentUser?.email||''}"></div>
+                    <div class="form-group"><label>Адрес</label><textarea id="custAddr" rows="2">${currentUser?.addr||''}</textarea></div>
+                    <div class="hint">Сроки: 1-2 рабочих дня.</div>
+                </div>
+                <button class="btn btn-primary" onclick="submitOrder()">✅ Заказать</button>`;
+        }
     }
 
-    function getBasePrice() { if (currentMaterial === 'banner') return basePrices['banner-' + (document.getElementById('bDens').value)]; if (currentMaterial === 'selfad') return 840; return basePrices['poster-' + (document.getElementById('pType').value)]; }
+    function selectMaterial(type) { currentMaterial = type;
+        orderStep = 2;
+        renderOrderStep(); }
 
-    function calcMaterial() {
+    function getBasePrice() { if (currentMaterial === 'banner') return basePrices['banner-' + (document.getElementById('bDens')?.value || '700')]; if (currentMaterial === 'selfad') return 840; return basePrices['poster-' + (document.getElementById('pType')?.value || '500')]; }
+
+    function calc() {
         const w = parseFloat(document.getElementById('mWidth').value) || 1000;
         const h = parseFloat(document.getElementById('mHeight').value) || 1000;
         const qty = parseInt(document.getElementById('mQty').value) || 1;
         const area = (w / 1000) * (h / 1000);
         const totalArea = area * qty;
         let maxW = currentMaterial === 'banner' ? 3200 : 1500;
-        const hint = document.getElementById('widthHint');
-        if (w > maxW) { document.getElementById('mWidth').classList.add('error'); hint.style.display = 'block'; hint.innerText = `⚠️ Макс. ширина — ${maxW} мм`; } else { document.getElementById('mWidth').classList.remove('error'); hint.style.display = 'none'; }
+        const hint = document.getElementById('widthHint'); if (w > maxW) { document.getElementById('mWidth').classList.add('error');
+            hint.style.display = 'block';
+            hint.innerText = `⚠️ Макс. ширина — ${maxW} мм`; } else { document.getElementById('mWidth').classList.remove('error');
+            hint.style.display = 'none'; }
         let base = getBasePrice();
         let ppm = totalArea >= 5 ? base : Math.round(base * 1.3);
         const perim = ((w + h) * 2) / 1000;
         const extras = [];
-        if (currentMaterial === 'banner') {
-            if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty });
-            if (document.getElementById('bLyuv')?.checked) {
-                const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2;
-                const totalLuvers = lc < 4 ? 4 * qty : lc * qty;
-                extras.push({ name: `Люверсы (${totalLuvers} шт)`, cost: totalLuvers * 20 });
-            }
-        } else if (currentMaterial === 'selfad') {
-            if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty });
-        }
+        if (currentMaterial === 'banner') { if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty }); if (document.getElementById('bLyuv')?.checked) { const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2;
+                extras.push({ name: `Люверсы (${lc < 4 ? 4 * qty : lc * qty} шт)`, cost: (lc < 4 ? 4 * qty : lc * qty) * 20 }); } } else if (currentMaterial === 'selfad') { if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty }); }
         let total = area * ppm * qty;
         extras.forEach(e => total += e.cost);
-        total += 300;
-        if (total < 1000) total = 1000;
+        total += 300; if (total < 1000) total = 1000;
         document.getElementById('mTotal').innerText = Math.round(total).toLocaleString() + ' р.';
-        matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: document.getElementById('matTitle').innerText };
+        matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' } [currentMaterial] };
     }
 
-    // ========== ШАГ 3: ЗАКАЗ ==========
-    function goToOrder() {
-        showPage(`
-            <h2 style="font-weight:800;margin-bottom:14px;">📋 Оформление</h2>
-            <div class="card" id="orderSummary">${buildSummary()}</div>
-            <div class="card"><h3>📎 Макет</h3><div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"><span id="uploadText">Нажмите, чтобы загрузить файл</span></div><input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.cdr,.ai,.eps" style="display:none;" onchange="handleFile(event)"></div>
-            <div class="card">
-                <h3>👤 Данные</h3>
-                <div class="form-group"><label>Имя</label><input type="text" id="custName" placeholder="Иван Иванов" value="${currentUser?.name||''}"></div>
-                <div class="form-group"><label>Телефон</label><input type="tel" id="custPhone" placeholder="+7 ___" value="${currentUser?.phone||''}"></div>
-                <div class="form-group"><label>Email</label><input type="email" id="custEmail" value="${currentUser?.email||''}"></div>
-                <div class="form-group"><label>Адрес</label><textarea id="custAddr" rows="2">${currentUser?.addr||''}</textarea></div>
-                <div class="hint">Сроки: 1-2 рабочих дня.</div>
-            </div>
-            <button class="btn btn-primary" onclick="submitOrder()">✅ Заказать</button>
-            <button class="btn btn-outline" onclick="goToCalc('${currentMaterial}')">← Назад</button>
-        `);
-    }
+    function buildSummary() { const d = matData; return `<div class="summary-row"><span>Материал:</span><span>${d.material}</span></div><div class="summary-row"><span>Размер:</span><span>${d.width}×${d.height} мм</span></div><div class="summary-row"><span>Кол-во:</span><span>${d.qty} шт</span></div>${d.extras.map(e => `<div class="summary-row"><span>${e.name}:</span><span>${Math.round(e.cost)} р.</span></div>`).join('')}<div class="summary-row"><span>Доставка:</span><span>300 р.</span></div><div class="summary-row total"><span>Итого:</span><span>${d.total.toLocaleString()} р.</span></div>`; }
 
-    function buildSummary() {
-        const d = matData;
-        return `<div class="summary-row"><span>Материал:</span><span>${d.material}</span></div><div class="summary-row"><span>Размер:</span><span>${d.width}×${d.height} мм</span></div><div class="summary-row"><span>Кол-во:</span><span>${d.qty} шт</span></div>${d.extras.map(e => `<div class="summary-row"><span>${e.name}:</span><span>${Math.round(e.cost)} р.</span></div>`).join('')}<div class="summary-row"><span>Доставка:</span><span>300 р.</span></div><div class="summary-row total"><span>Итого:</span><span>${d.total.toLocaleString()} р.</span></div>`;
-    }
-
-    let uploadedFile = null;
-
-    function handleFile(e) {
-        const f = e.target.files[0];
-        if (f) { document.getElementById('uploadZone').classList.add('has-file'); document.getElementById('uploadText').innerText = '✅ ' + f.name;
-            uploadedFile = f; }
-    }
+    function handleFile(e) { const f = e.target.files[0]; if (f) { document.getElementById('uploadZone').classList.add('has-file');
+            document.getElementById('uploadText').innerText = '✅ ' + f.name;
+            uploadedFile = f; } }
 
     async function submitOrder() {
         const name = document.getElementById('custName').value.trim();
-        const phone = document.getElementById('custPhone').value.trim();
-        if (!name || !phone) { alert('Заполните имя и телефон'); return; }
-        const order = { ...matData, name, phone, email: document.getElementById('custEmail').value.trim(), addr: document.getElementById('custAddr').value.trim(), userId: currentUser?.id || '' };
-        if (uploadedFile) {
-            const reader = new FileReader();
+        const phone = document.getElementById('custPhone').value.trim(); if (!name || !phone) { alert('Заполните имя и телефон'); return; }
+        const email = document.getElementById('custEmail').value.trim();
+        const order = { ...matData, name, phone, email, addr: document.getElementById('custAddr').value.trim(), userId: currentUser?.id || '' };
+        if (uploadedFile) { const reader = new FileReader();
             const base64 = await new Promise(r => { reader.onload = () => r(reader.result.split(',')[1]);
                 reader.readAsDataURL(uploadedFile); });
             order.fileBase64 = base64;
-            order.fileName = uploadedFile.name;
-        }
-        try {
-            const res = await fetch(API + '/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) });
-            const data = await res.json();
-            if (data.success) { alert('✅ Заказ #' + data.id + ' оформлен!');
-                showStep1(); } else alert('Ошибка');
-        } catch (e) { alert('Ошибка сервера'); }
+            order.fileName = uploadedFile.name; }
+        try { const res = await fetch(API + '/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) }); const data = await res.json(); if (data.success) { if (!currentUser && email) { currentUser = { email, name, phone, addr: order.addr };
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser)); }
+                    alert('✅ Заказ #' + data.id + ' оформлен!');
+                    orderStep = 1;
+                    renderOrderStep();
+                    switchTab('tab-home'); } } catch (e) { alert('Ошибка сервера'); }
     }
 
-    // ========== ЛИЧНЫЙ КАБИНЕТ ==========
-    function showLK() {
-        document.getElementById('welcomeBlock').style.display = 'none';
-        document.getElementById('appContent').style.display = 'block';
-        if (currentUser) showProfile(); else showAuth();
+    // ========== ИСТОРИЯ ==========
+    async function loadHistory() {
+        const container = document.getElementById('historyContent');
+        if (!currentUser) { container.innerHTML = '<p style="color:var(--gray);">Войдите в профиль, чтобы видеть историю.</p>'; return; }
+        try { const res = await fetch(API + '/orders/' + (currentUser.id || ''));
+            const orders = await res.json();
+            const statusNames = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' };
+            container.innerHTML = orders.length === 0 ? '<p style="color:var(--gray);">Нет заказов</p>' : orders.map(o => `
+                <div class="card"><strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br><span class="status-badge status-${o.status||'new'}">${statusNames[o.status]||'Новый'}</span></div>
+            `).join(''); } catch (e) { container.innerHTML = '<p style="color:var(--gray);">Ошибка загрузки</p>'; }
     }
 
-    function showAuth() {
-        showPage(`
-            <h2 style="font-weight:800;margin-bottom:14px;">👤 Вход / Регистрация</h2>
-            <div class="card">
-                <div class="form-group"><label>Email</label><input type="email" id="authEmail"></div>
-                <div class="form-group"><label>Пароль</label><input type="password" id="authPass"></div>
-                <div id="regFields" style="display:none;">
-                    <div class="form-group"><label>Имя</label><input type="text" id="regName"></div>
-                    <div class="form-group"><label>Телефон</label><input type="tel" id="regPhone"></div>
+    // ========== ПРОФИЛЬ ==========
+    function loadProfile() {
+        const container = document.getElementById('profileContent');
+        if (!currentUser) {
+            container.innerHTML = `
+                <div class="card">
+                    <div class="form-group"><label>Email</label><input type="email" id="authEmail"></div>
+                    <div class="form-group"><label>Пароль</label><input type="password" id="authPass"></div>
+                    <div id="regFields" style="display:none;">
+                        <div class="form-group"><label>Имя</label><input type="text" id="regName"></div>
+                        <div class="form-group"><label>Телефон</label><input type="tel" id="regPhone"></div>
+                    </div>
+                    <button class="btn btn-primary" id="authBtn" onclick="doLogin()">Войти</button>
+                    <button class="btn btn-outline" onclick="toggleReg()" id="regToggle">Создать аккаунт</button>
+                </div>`;
+        } else {
+            container.innerHTML = `
+                <div class="card">
+                    <p><strong>${currentUser.name||''}</strong></p>
+                    <p style="color:var(--gray);">${currentUser.email}</p>
+                    <p style="color:var(--gray);">${currentUser.phone||''}</p>
+                    <button class="btn btn-outline" onclick="loadChat()">💬 Чат с поддержкой</button>
+                    <button class="btn btn-outline" onclick="logout()">🚪 Выйти</button>
                 </div>
-                <button class="btn btn-primary" onclick="doLogin()">Войти</button>
-                <button class="btn btn-outline" onclick="toggleReg()" id="regToggle">Создать аккаунт</button>
-            </div>
-            <button class="btn btn-outline" onclick="startOrder()">← На главную</button>
-        `);
+                <div id="chatContainer"></div>`;
+        }
     }
 
     let isReg = false;
 
-    function toggleReg() {
-        isReg = !isReg;
+    function toggleReg() { isReg = !isReg;
         document.getElementById('regFields').style.display = isReg ? 'block' : 'none';
         document.getElementById('regToggle').innerText = isReg ? 'Уже есть аккаунт' : 'Создать аккаунт';
-        document.querySelector('#dynamicPages .btn-primary').innerText = isReg ? 'Зарегистрироваться' : 'Войти';
-        document.querySelector('#dynamicPages .btn-primary').onclick = isReg ? doRegister : doLogin;
-    }
+        document.getElementById('authBtn').innerText = isReg ? 'Зарегистрироваться' : 'Войти';
+        document.getElementById('authBtn').onclick = isReg ? doRegister : doLogin; }
 
-    async function doLogin() {
-        const email = document.getElementById('authEmail').value.trim();
-        const pass = document.getElementById('authPass').value.trim();
-        if (!email || !pass) { alert('Заполните поля'); return; }
-        const res = await fetch(API + '/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) });
-        const data = await res.json();
-        if (data.success) { currentUser = data.user;
+    async function doLogin() { const email = document.getElementById('authEmail').value.trim(); const pass = document.getElementById('authPass').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) }); const data = await res.json(); if (data.success) { currentUser = data.user;
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            showProfile(); } else alert(data.error);
-    }
+            loadProfile(); } else alert(data.error); }
 
-    async function doRegister() {
-        const email = document.getElementById('authEmail').value.trim();
-        const pass = document.getElementById('authPass').value.trim();
-        const name = document.getElementById('regName').value.trim();
-        const phone = document.getElementById('regPhone').value.trim();
-        if (!email || !pass) { alert('Заполните email и пароль'); return; }
-        const res = await fetch(API + '/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, name, phone }) });
-        const data = await res.json();
-        if (data.success) { currentUser = data.user;
+    async function doRegister() { const email = document.getElementById('authEmail').value.trim(); const pass = document.getElementById('authPass').value.trim(); const name = document.getElementById('regName').value.trim(); const phone = document.getElementById('regPhone').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, name, phone }) }); const data = await res.json(); if (data.success) { currentUser = data.user;
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            showProfile(); } else alert(data.error);
-    }
-
-    function showProfile() {
-        showPage(`
-            <h2 style="font-weight:800;margin-bottom:14px;">👤 ${currentUser.name||currentUser.email}</h2>
-            <div class="tab-row">
-                <button class="tab-btn active" onclick="loadOrders()">📋 Мои заказы</button>
-                <button class="tab-btn" onclick="loadChat()">💬 Чат</button>
-                <button class="tab-btn" onclick="logout()">🚪 Выйти</button>
-            </div>
-            <div id="profileContent"></div>
-        `);
-        loadOrders();
-    }
-
-    async function loadOrders() {
-        const res = await fetch(API + '/orders/' + (currentUser.id || ''));
-        const orders = await res.json();
-        document.getElementById('profileContent').innerHTML = orders.length === 0 ? '<p style="color:var(--gray);">Нет заказов</p>' : orders.map(o => `
-            <div class="card">
-                <strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br>
-                <span style="font-size:11px;color:var(--gray);">Статус: ${o.status||'новый'}</span>
-            </div>
-        `).join('');
-    }
+            loadProfile(); } else alert(data.error); }
 
     async function loadChat() {
         const res = await fetch(API + '/chat');
         const msgs = await res.json();
-        document.getElementById('profileContent').innerHTML = `
-            <div class="chat-box">
-                <div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from}">${m.text}</div>`).join('')}</div>
+        document.getElementById('chatContainer').innerHTML = `
+            <div class="chat-box" style="margin-top:12px;">
+                <div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from===(currentUser?.email||'client')?'client':'admin'}">${m.text}</div>`).join('')}</div>
                 <div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..."><button onclick="sendChat()">➤</button></div>
-            </div>
-        `;
+            </div>`;
     }
 
-    async function sendChat() {
-        const text = document.getElementById('chatInput').value.trim();
-        if (!text) return;
+    async function sendChat() { const text = document.getElementById('chatInput').value.trim(); if (!text) return;
         await fetch(API + '/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ from: currentUser?.email || 'client', text }) });
-        loadChat();
-    }
+        loadChat(); }
 
     function logout() { currentUser = null;
         localStorage.removeItem('currentUser');
-        showAuth(); }
+        loadProfile(); }
 
-    // ========== МОДАЛКИ ==========
-    function openModal(t) {
-        const texts = {
-            policy: `<h2>Политика конфиденциальности</h2><p>Мы собираем только необходимые данные: имя, телефон, email и адрес доставки. Эти данные используются исключительно для оформления и выполнения заказа.</p><p>Мы не передаём ваши данные третьим лицам.</p>`,
-            terms: `<h2>Пользовательское соглашение</h2><p>Используя сайт, вы соглашаетесь с условиями. Минимальный заказ — 1000 р. Сроки: 1-2 рабочих дня.</p>`,
-            design: `<h2>Требования к макетам</h2><p>📐 Формат: PDF, PNG, JPG, AI, CDR, EPS</p><p>📏 Масштаб 1:1</p><p>🎨 Цвет: CMYK</p><p>📸 Разрешение: от 150 dpi</p>`
-        };
-        document.getElementById('modalContent').innerHTML = texts[t] + '<button class="btn btn-primary" onclick="closeModal()" style="margin-top:12px;">Закрыть</button>';
-        document.getElementById('modal').classList.add('show');
-    }
-
-    function closeModal() { document.getElementById('modal').classList.remove('show'); }
+    // Инициализация
+    renderOrderStep();
 </script>
 </body>
 </html>
