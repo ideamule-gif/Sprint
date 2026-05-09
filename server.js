@@ -142,4 +142,12 @@ app.post('/api/chat', (req, res) => {
 // Статические файлы (uploads)
 app.use('/uploads', express.static(uploadsDir));
 
+// ========== ВСЕ ПОЛЬЗОВАТЕЛИ (АДМИН) ==========
+app.get('/api/users', (req, res) => {
+    const users = readJSON(usersFile);
+    // Не отдаём пароли
+    const safeUsers = users.map(u => ({ id: u.id, email: u.email, name: u.name, phone: u.phone, createdAt: u.createdAt }));
+    res.json(safeUsers);
+});
+
 app.listen(PORT, () => console.log('Server running on port', PORT));
