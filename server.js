@@ -70,7 +70,9 @@ app.post('/api/login', (req, res) => {
 // ========== ЗАКАЗ ==========
 app.post('/api/order', (req, res) => {
     const order = req.body;
-    order.id = 'Z-' + Date.now();
+    const orders = readJSON(ordersFile);
+const lastId = orders.length > 0 ? parseInt(orders[0].id) || 0 : 0;
+order.id = String(lastId + 1).padStart(6, '0');
     order.status = 'new';
     order.createdAt = new Date().toISOString();
 
