@@ -183,7 +183,7 @@
         localStorage.setItem('mOrders', JSON.stringify(orders.slice(0, 100)));
         const extrasText = d.extras && d.extras.length > 0 ? d.extras.map(e => `${e.name}: ${Math.round(e.cost)} р.`).join(', ') : 'Нет';
         const msg = `🔵 <b>НОВЫЙ ЗАКАЗ</b> #${order.id}\n\n📦 Материал: ${d.material}\n📐 Размер: ${d.width}×${d.height} мм\n🔢 Кол-во: ${d.qty} шт (${(d.totalArea||0).toFixed(2)} м²)\n🔧 Обработка: ${extrasText}\n💰 Итого: ${(d.total||0).toLocaleString()} р.\n\n👤 Клиент: ${name}\n📞 Тел: ${phone}\n📧 Email: ${email||'—'}\n📍 Адрес: ${addr||'—'}\n\n${fileUrl?'📎 Файл: '+fileUrl:'📎 Без файла'}`;
-        try { await fetch(`https://api.telegram.org/bot8615457463:AAGYX4FwsLWkl0ytwfeDjhwd1PMEMJ3UGOg/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: 7656839845, text: msg, parse_mode: 'HTML' }) }); } catch (err) { console.error(err); }
+        try { await fetch(`https://api.telegram.org/bot8727458645:AAEp0YLowPJYs9FirMYDFM9votOm9vOZieU/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: 7656839845, text: msg, parse_mode: 'HTML' }) }); } catch (err) { console.error(err); }
         alert('✅ Заказ отправлен! Мы свяжемся с вами.');
         goToStep1();
     }
