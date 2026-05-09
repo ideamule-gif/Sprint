@@ -173,10 +173,9 @@
         } else if (currentMaterial === 'selfad') {
             if (document.getElementById('sRezka').checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty });
         }
-        let total = area * ppm;
-        extras.forEach(e => total += e.cost);
-        total *= qty;
-        total += 300;
+       let total = area * ppm * qty;
+       extras.forEach(e => total += e.cost);
+       total += 300;
         if (total < 1000) total = 1000;
         document.getElementById('mTotal').innerText = Math.round(total).toLocaleString() + ' р.';
         window._matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: document.getElementById('matTitle').innerText };
