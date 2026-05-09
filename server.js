@@ -33,6 +33,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Админка
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
 // ========== РЕГИСТРАЦИЯ ==========
 app.post('/api/register', (req, res) => {
     const { email, password, name, phone } = req.body;
@@ -71,8 +76,8 @@ app.post('/api/login', (req, res) => {
 app.post('/api/order', (req, res) => {
     const order = req.body;
     const orders = readJSON(ordersFile);
-const lastId = orders.length > 0 ? parseInt(orders[0].id) || 0 : 0;
-order.id = String(lastId + 1).padStart(6, '0');
+    const lastId = orders.length > 0 ? parseInt(orders[0].id) || 0 : 0;
+    order.id = String(lastId + 1).padStart(6, '0');
     order.status = 'new';
     order.createdAt = new Date().toISOString();
 
@@ -86,7 +91,6 @@ order.id = String(lastId + 1).padStart(6, '0');
     }
     delete order.fileBase64;
 
-    const orders = readJSON(ordersFile);
     orders.unshift(order);
     writeJSON(ordersFile, orders);
 
@@ -94,7 +98,7 @@ order.id = String(lastId + 1).padStart(6, '0');
     const botToken = '8727458645:AAEp0YLowPJYs9FirMYDFM9votOm9vOZieU';
     const chatId = '7656839845';
     const extrasText = order.extras && order.extras.length > 0 ? order.extras.map(e => `${e.name}: ${Math.round(e.cost)} р.`).join(', ') : 'Нет';
-    const msg = `🔵 НОВЫЙ ЗАКАЗ\n\n📦 ${order.material}\n📐 ${order.width}×${order.height} мм\n🔢 ${order.qty} шт (${(order.totalArea||0).toFixed(2)} м²)\n🔧 ${extrasText}\n🚕 Доставка: 300 р.\n💰 Сумма: ${order.total} р.\n\n👤 ${order.name}\n📞 ${order.phone}\n📱 TG: ${order.tg||'—'}\n📧 ${order.email||'—'}\n📍 ${order.addr||'—'}${order.fileUrl?'\n\n📎 '+order.fileUrl:''}\n\n⚠️ Выставьте счёт в «Мой налог»`;
+    const msg = `🔵 НОВЫЙ ЗАКАЗ #${order.id}\n\n📦 ${order.material}\n📐 ${order.width}×${order.height} мм\n🔢 ${order.qty} шт (${(order.totalArea||0).toFixed(2)} м²)\n🔧 ${extrasText}\n🚕 Доставка: 300 р.\n💰 Сумма: ${order.total} р.\n\n👤 ${order.name}\n📞 ${order.phone}\n📱 TG: ${order.tg||'—'}\n📧 ${order.email||'—'}\n📍 ${order.addr||'—'}${order.fileUrl?'\n\n📎 '+order.fileUrl:''}\n\n⚠️ Выставьте счёт в «Мой налог»`;
     fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -113,8 +117,7 @@ app.get('/api/orders/:userId', (req, res) => {
 
 // ========== ВСЕ ЗАКАЗЫ (АДМИН) ==========
 app.get('/api/admin/orders', (req, res) => {
-    const orders = readJSON(ordersFile);
-    res.json(orders);
+    res.json(readJSON(ordersFile));
 });
 
 // ========== СМЕНА СТАТУСА ==========
@@ -126,6 +129,13 @@ app.post('/api/admin/status', (req, res) => {
     order.status = status;
     writeJSON(ordersFile, orders);
     res.json({ success: true });
+});
+
+// ========== ВСЕ ПОЛЬЗОВАТЕЛИ (АДМИН) ==========
+app.get('/api/users', (req, res) => {
+    const users = readJSON(usersFile);
+    const safeUsers = users.map(u => ({ id: u.id, email: u.email, name: u.name, phone: u.phone, createdAt: u.createdAt }));
+    res.json(safeUsers);
 });
 
 // ========== ЧАТ ==========
@@ -143,13 +153,5 @@ app.post('/api/chat', (req, res) => {
 
 // Статические файлы (uploads)
 app.use('/uploads', express.static(uploadsDir));
-
-// ========== ВСЕ ПОЛЬЗОВАТЕЛИ (АДМИН) ==========
-app.get('/api/users', (req, res) => {
-    const users = readJSON(usersFile);
-    // Не отдаём пароли
-    const safeUsers = users.map(u => ({ id: u.id, email: u.email, name: u.name, phone: u.phone, createdAt: u.createdAt }));
-    res.json(safeUsers);
-});
 
 app.listen(PORT, () => console.log('Server running on port', PORT));
