@@ -12,14 +12,16 @@
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes glow { 0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.3), 0 0 40px rgba(255,255,255,0.1); } 50% { text-shadow: 0 0 30px rgba(255,255,255,0.5), 0 0 60px rgba(255,255,255,0.2); } }
+        @keyframes wave { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
         .anim-fade { animation: fadeInUp 0.6s ease forwards; }
         .anim-delay1 { animation-delay: 0.1s; opacity: 0; }
         .anim-delay2 { animation-delay: 0.25s; opacity: 0; }
         .anim-delay3 { animation-delay: 0.4s; opacity: 0; }
         .anim-delay4 { animation-delay: 0.55s; opacity: 0; }
+        .wave { display: inline-block; animation: wave 0.6s ease-in-out 3; transform-origin: 70% 70%; }
 
         .welcome-block { background: var(--black); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; gap: 24px; }
-        .welcome-block .welcome-title { font-size: 34px; font-weight: 800; color: #fff; animation: glow 3s ease-in-out infinite; letter-spacing: -1px; line-height: 1.2; }
+        .welcome-block .welcome-title { font-size: 40px; font-weight: 800; color: #fff; animation: glow 3s ease-in-out infinite; letter-spacing: -1px; line-height: 1.2; }
         .welcome-block .welcome-sub { font-size: 15px; color: rgba(255,255,255,0.6); font-weight: 300; max-width: 300px; }
         .welcome-block .btn-hero { background: #fff; color: var(--black); padding: 16px 36px; border-radius: 50px; font-weight: 700; font-size: 17px; border: none; cursor: pointer; font-family: inherit; transition: transform 0.3s, box-shadow 0.3s; }
         .welcome-block .btn-hero:hover { transform: scale(1.04); box-shadow: 0 0 30px rgba(255,255,255,0.3); }
@@ -31,8 +33,7 @@
         .step-line { width: 20px; height: 2px; background: #ddd; border-radius: 2px; transition: 0.3s; } .step-line.done { background: var(--black); }
         .step-labels { display: flex; justify-content: center; gap: 28px; font-size: 9px; color: var(--gray); margin-bottom: 16px; } .step-labels span { cursor: pointer; }
         .page { display: none; } .page.active { display: block; }
-        .card { background: var(--white); padding: 16px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 12px; transition: transform 0.2s, box-shadow 0.2s; }
-        .card:active { transform: scale(0.98); }
+        .card { background: var(--white); padding: 16px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 12px; }
         .tile-row { display: flex; flex-direction: column; gap: 12px; }
         .tile { background: var(--white); padding: 22px 18px; border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; text-align: center; border: 2px solid var(--border); transition: transform 0.2s, border-color 0.2s; }
         .tile:active { transform: scale(0.97); border-color: var(--black); } .tile .tile-icon { font-size: 40px; } .tile .tile-title { font-weight: 800; font-size: 18px; } .tile .tile-sub { font-size: 12px; color: var(--gray); }
@@ -44,7 +45,7 @@
         .hint { font-size: 11px; color: var(--gray); margin-top: 3px; } .hint-red { font-size: 11px; color: var(--red); margin-top: 3px; display: none; }
         .price-big { font-size: 32px; font-weight: 800; color: var(--black); text-align: center; }
         .price-label { font-size: 11px; color: var(--gray); text-align: center; text-transform: uppercase; }
-        .btn { display: block; width: 100%; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 16px; border: none; cursor: pointer; font-family: inherit; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn { display: block; width: 100%; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 16px; border: none; cursor: pointer; font-family: inherit; text-align: center; transition: transform 0.2s; }
         .btn:active { transform: scale(0.97); }
         .btn-primary { background: var(--black); color: #fff; } .btn-outline { background: transparent; border: 2px solid var(--black); color: var(--black); margin-top: 8px; }
         .upload-zone { border: 2px dashed #ccc; border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; font-size: 14px; color: var(--gray); transition: border-color 0.2s; }
@@ -54,15 +55,15 @@
         .footer-links { display: flex; justify-content: center; gap: 12px; margin-top: 20px; padding: 12px 0; flex-wrap: wrap; }
         .footer-links a { font-size: 11px; color: var(--gray); text-decoration: underline; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
-        .modal.show { display: flex; } .modal-box { background: #fff; padding: 24px; border-radius: 14px; max-width: 380px; margin: 20px; font-size: 13px; }
+        .modal.show { display: flex; } .modal-box { background: #fff; padding: 24px; border-radius: 14px; max-width: 380px; margin: 20px; max-height: 80vh; overflow-y: auto; font-size: 13px; line-height: 1.6; }
         .back-btn { background: none; border: none; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--gray); padding: 4px 0; margin-bottom: 12px; }
     </style>
 </head>
 <body>
 
 <div id="welcomeBlock" class="welcome-block">
-    <div class="welcome-title anim-fade">Добро пожаловать</div>
-    <div class="welcome-sub anim-fade anim-delay1">Это сервис для заказа баннеров. Оформите заказ в пару кликов — мы напечатаем и доставим его вам.</div>
+    <div class="welcome-title anim-fade">Привет <span class="wave">👋</span></div>
+<div class="welcome-sub anim-fade anim-delay1">Это сервис для заказа баннеров. Оформите заказ в пару кликов — мы напечатаем и доставим его вам!</div>
     <button class="btn-hero anim-fade anim-delay2" onclick="startOrder()">Заказать</button>
 </div>
 
@@ -77,9 +78,9 @@
             <div class="tile anim-fade anim-delay3" onclick="goToCalc('poster')"><div class="tile-icon">🖼️</div><div class="tile-title">Плакат</div><div class="tile-sub">Blueback / белая бумага</div></div>
         </div>
         <div class="footer-links anim-fade anim-delay4">
-            <a href="#" onclick="openModal('policy')">Политика</a>
-            <a href="#" onclick="openModal('terms')">Соглашение</a>
-            <a href="https://t.me/SprintBot" target="_blank">Связаться</a>
+            <a href="#" onclick="openModal('policy')">Политика конфиденциальности</a>
+            <a href="#" onclick="openModal('terms')">Пользовательское соглашение</a>
+            <a href="https://t.me/someprintbot" target="_blank">Связаться</a>
         </div>
     </div>
 
@@ -94,7 +95,7 @@
             <div class="form-group"><label>Количество, шт</label><input type="number" id="mQty" value="1" min="1" oninput="calcMaterial()"></div>
             <div id="bannerOpts"></div><div id="selfadOpts"></div><div id="posterOpts"></div>
         </div>
-        <div style="text-align:center;margin:14px 0;"><div class="price-label">Итого (с доставкой)</div><div class="price-big" id="mTotal">1000 р.</div><div class="hint" style="text-align:center;">🚕 Доставка 300 р. — единственный способ</div></div>
+        <div style="text-align:center;margin:14px 0;"><div class="price-label">Итого</div><div class="price-big" id="mTotal">1000 р.</div></div>
         <button class="btn btn-primary" onclick="goToOrder()">📋 Далее</button>
         <button class="btn btn-outline" onclick="goToStep1()">← Назад</button>
     </div>
@@ -107,6 +108,8 @@
             <h3>👤 Данные</h3>
             <div class="form-group"><label>Имя</label><input type="text" id="custName" placeholder="Иван Иванов"></div>
             <div class="form-group"><label>Телефон</label><input type="tel" id="custPhone" placeholder="+7 ___ ___-__-__"></div>
+            <div class="form-group"><label>Telegram (необязательно)</label><input type="text" id="custTg" placeholder="@username или номер"></div>
+            <div class="hint">Удобнее всего связаться через Telegram. Оставьте @username если есть.</div>
             <div class="form-group"><label>Email</label><input type="email" id="custEmail" placeholder="email@example.com"></div>
             <div class="form-group"><label>Адрес</label><textarea id="custAddr" rows="2" placeholder="Краснодар, ул. ..."></textarea></div>
         </div>
@@ -171,7 +174,7 @@
         let base = getBasePrice();
         let ppm = totalArea >= 5 ? base : Math.round(base * 1.3);
         const perim = ((w + h) * 2) / 1000;
-        const extras = []; if (currentMaterial === 'banner') { if (document.getElementById('bProkl').checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty }); const ls = parseInt(document.getElementById('bLuv').value); let lc = 0; if (ls === 4) lc = 4; else if (ls > 0) { lc = (Math.floor(w / (ls * 10)) + Math.floor(h / (ls * 10))) * 2; if (lc < 4) lc = 4; } if (lc > 0) extras.push({ name: `Люверсы (${lc * qty} шт)`, cost: lc * qty * 20 }); } else if (currentMaterial === 'selfad') { if (document.getElementById('sRezka').checked) { const rezkaCost = perim * 25 * qty; extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: rezkaCost }); } }
+        const extras = []; if (currentMaterial === 'banner') { if (document.getElementById('bProkl').checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty }); const ls = parseInt(document.getElementById('bLuv').value); let lc = 0; if (ls === 4) lc = 4; else if (ls > 0) { lc = (Math.floor(w / (ls * 10)) + Math.floor(h / (ls * 10))) * 2; if (lc < 4) lc = 4; } if (lc > 0) extras.push({ name: `Люверсы (${lc * qty} шт)`, cost: lc * qty * 20 }); } else if (currentMaterial === 'selfad') { if (document.getElementById('sRezka').checked) { extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty }); } }
         let total = area * ppm;
         extras.forEach(e => total += e.cost);
         total *= qty; total += 300; if (total < 1000) total = 1000;
@@ -193,6 +196,7 @@
         const name = document.getElementById('custName').value.trim();
         const phone = document.getElementById('custPhone').value.trim(); if (!name || !phone) { alert('Заполните имя и телефон'); return; }
         const d = window._matData || {};
+        const tg = document.getElementById('custTg').value.trim();
         const email = document.getElementById('custEmail').value.trim();
         const addr = document.getElementById('custAddr').value.trim();
         let fileUrl = '';
@@ -203,14 +207,20 @@
                     'https://script.google.com/macros/s/AKfycbzTGflWSTpjFmDg3SCDrsT4mhCpz8vP5s5h83BuUQ7KntU3rVi1HR27TVvTitVRjTev/exec',
                     { method: 'POST', body: JSON.stringify({ file: base64, fileName: file.name, mimeType: file.type }) }); const result = await response.json(); if (result.success) fileUrl = result.fileUrl; } catch (err) {} }
         const extrasText = d.extras.length > 0 ? d.extras.map(e => `${e.name}: ${Math.round(e.cost)} р.`).join(', ') : 'Нет';
-        const msg = `🔵 НОВЫЙ ЗАКАЗ\n\n📦 ${d.material}\n📐 ${d.width}×${d.height} мм\n🔢 ${d.qty} шт (${(d.totalArea||0).toFixed(2)} м²)\n🔧 ${extrasText}\n🚕 Доставка: 300 р.\n💰 Сумма к оплате: ${d.total} р.\n\n👤 ${name}\n📞 ${phone}\n📧 ${email||'—'}\n📍 ${addr||'—'}${fileUrl?'\n\n📎 '+fileUrl:''}\n\n⚠️ Выставьте счёт в «Мой налог» и отправьте клиенту`;
+        const msg = `🔵 НОВЫЙ ЗАКАЗ\n\n📦 ${d.material}\n📐 ${d.width}×${d.height} мм\n🔢 ${d.qty} шт (${(d.totalArea||0).toFixed(2)} м²)\n🔧 ${extrasText}\n🚕 Доставка: 300 р.\n💰 Сумма: ${d.total} р.\n\n👤 ${name}\n📞 ${phone}\n📧 ${email||'—'}\n📱 Telegram: ${tg||'не указан'}\n📍 ${addr||'—'}${fileUrl?'\n\n📎 '+fileUrl:''}\n\n⚠️ Выставьте счёт в «Мой налог» и отправьте клиенту`;
         try { await fetch(`https://api.telegram.org/bot8727458645:AAEp0YLowPJYs9FirMYDFM9votOm9vOZieU/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: 7656839845, text: msg }) }); } catch (err) {}
-        alert('✅ Заказ оформлен! Мы свяжемся с вами для подтверждения.');
+        alert('✅ Заказ оформлен! Мы свяжемся с вами.');
         goToStep1();
     }
 
-    function openModal(t) { document.getElementById('modalContent').innerHTML = (t === 'policy' ? '<h2>Политика</h2><p>Собираем только нужные данные.</p>' : '<h2>Соглашение</h2><p>Мин. заказ 1000 р.</p>') + '<button class="btn btn-primary" onclick="closeModal()" style="margin-top:12px;">Закрыть</button>';
-        document.getElementById('modal').classList.add('show'); }
+    function openModal(t) {
+        const texts = {
+            policy: `<h2>Политика конфиденциальности</h2><p>Мы собираем только необходимые данные: имя, телефон, email и адрес доставки. Эти данные используются исключительно для оформления и выполнения заказа.</p><p>Мы не передаём ваши данные третьим лицам. Вся информация хранится в защищённом виде.</p><p>Вы можете запросить удаление ваших данных в любое время, написав нам на почту.</p>`,
+            terms: `<h2>Пользовательское соглашение</h2><p>Используя данный сайт, вы соглашаетесь с условиями обработки заказов.</p><p>Все цены указаны в рублях. Минимальная сумма заказа — 1000 рублей. Сроки изготовления: 1-2 рабочих дня, в отдельных случаях до 3 дней.</p><p>Оплата производится по выставленному счёту. После оплаты заказ поступает в производство. Возврат возможен только при наличии производственного брака.</p><p>Доставка осуществляется курьером. Стоимость доставки включена в итоговую сумму заказа.</p>`
+        };
+        document.getElementById('modalContent').innerHTML = texts[t] + '<button class="btn btn-primary" onclick="closeModal()" style="margin-top:12px;">Закрыть</button>';
+        document.getElementById('modal').classList.add('show');
+    }
 
     function closeModal() { document.getElementById('modal').classList.remove('show'); }
 
