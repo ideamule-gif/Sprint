@@ -10,47 +10,55 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f5f5; color: var(--black); font-weight: 400; max-width: 480px; margin: 0 auto; min-height: 100vh; -webkit-tap-highlight-color: transparent; padding: 0; overflow-x: hidden; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes glow { 0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.3), 0 0 40px rgba(255,255,255,0.1); } 50% { text-shadow: 0 0 30px rgba(255,255,255,0.5), 0 0 60px rgba(255,255,255,0.2); } }
+        @keyframes glow { 0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.3); } 50% { text-shadow: 0 0 30px rgba(255,255,255,0.5); } }
         @keyframes wave { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
         .anim-fade { animation: fadeInUp 0.6s ease forwards; }
         .anim-delay1 { animation-delay: 0.1s; opacity: 0; } .anim-delay2 { animation-delay: 0.25s; opacity: 0; } .anim-delay3 { animation-delay: 0.4s; opacity: 0; } .anim-delay4 { animation-delay: 0.55s; opacity: 0; }
-        .wave { display: inline-block; animation: wave 0.6s ease-in-out 3; transform-origin: 70% 70%; }
+        .wave { display: inline-block; animation: wave 0.6s ease-in-out 3; }
         .welcome-block { background: var(--black); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; gap: 24px; }
-        .welcome-block .welcome-title { font-size: 40px; font-weight: 800; color: #fff; animation: glow 3s ease-in-out infinite; letter-spacing: -1px; line-height: 1.2; }
+        .welcome-block .welcome-title { font-size: 40px; font-weight: 800; color: #fff; animation: glow 3s ease-in-out infinite; }
         .welcome-block .welcome-sub { font-size: 15px; color: rgba(255,255,255,0.6); font-weight: 300; max-width: 300px; }
-        .welcome-block .btn-hero { background: #fff; color: var(--black); padding: 16px 36px; border-radius: 50px; font-weight: 700; font-size: 17px; border: none; cursor: pointer; font-family: inherit; transition: transform 0.3s, box-shadow 0.3s; }
-        .welcome-block .btn-hero:hover { transform: scale(1.04); box-shadow: 0 0 30px rgba(255,255,255,0.3); }
+        .welcome-block .btn-hero { background: #fff; color: var(--black); padding: 16px 36px; border-radius: 50px; font-weight: 700; font-size: 17px; border: none; cursor: pointer; font-family: inherit; }
         .main-content { padding: 16px; }
         .steps { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 6px; }
         .step { width: 22px; height: 22px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; color: #fff; cursor: pointer; transition: 0.3s; }
         .step.done { background: var(--black); } .step.active { background: var(--black); }
-        .step-line { width: 20px; height: 2px; background: #ddd; border-radius: 2px; transition: 0.3s; } .step-line.done { background: var(--black); }
-        .step-labels { display: flex; justify-content: center; gap: 28px; font-size: 9px; color: var(--gray); margin-bottom: 16px; } .step-labels span { cursor: pointer; }
+        .step-line { width: 20px; height: 2px; background: #ddd; } .step-line.done { background: var(--black); }
+        .step-labels { display: flex; justify-content: center; gap: 28px; font-size: 9px; color: var(--gray); margin-bottom: 16px; }
         .page { display: none; } .page.active { display: block; }
         .card { background: var(--white); padding: 16px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 12px; }
         .tile-row { display: flex; flex-direction: column; gap: 12px; }
-        .tile { background: var(--white); padding: 22px 18px; border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; text-align: center; border: 2px solid var(--border); transition: transform 0.2s, border-color 0.2s; }
-        .tile:active { transform: scale(0.97); border-color: var(--black); } .tile .tile-icon { font-size: 40px; } .tile .tile-title { font-weight: 800; font-size: 18px; } .tile .tile-sub { font-size: 12px; color: var(--gray); }
+        .tile { background: var(--white); padding: 22px 18px; border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; text-align: center; border: 2px solid var(--border); }
+        .tile:active { border-color: var(--black); } .tile .tile-icon { font-size: 40px; } .tile .tile-title { font-weight: 800; font-size: 18px; } .tile .tile-sub { font-size: 12px; color: var(--gray); }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: #555; text-transform: uppercase; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-size: 16px; font-family: inherit; background: var(--white); transition: border-color 0.2s; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-size: 16px; font-family: inherit; background: var(--white); }
         .form-group input.error { border-color: var(--red); }
         .row { display: flex; gap: 10px; } .row>div { flex: 1; }
         .hint { font-size: 11px; color: var(--gray); margin-top: 3px; } .hint-red { font-size: 11px; color: var(--red); margin-top: 3px; display: none; }
         .price-big { font-size: 32px; font-weight: 800; color: var(--black); text-align: center; }
-        .price-label { font-size: 11px; color: var(--gray); text-align: center; text-transform: uppercase; }
-        .btn { display: block; width: 100%; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 16px; border: none; cursor: pointer; font-family: inherit; text-align: center; transition: transform 0.2s; }
-        .btn:active { transform: scale(0.97); }
+        .btn { display: block; width: 100%; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 16px; border: none; cursor: pointer; font-family: inherit; text-align: center; }
         .btn-primary { background: var(--black); color: #fff; } .btn-outline { background: transparent; border: 2px solid var(--black); color: var(--black); margin-top: 8px; }
-        .upload-zone { border: 2px dashed #ccc; border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; font-size: 14px; color: var(--gray); transition: border-color 0.2s; }
+        .upload-zone { border: 2px dashed #ccc; border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; font-size: 14px; color: var(--gray); }
         .upload-zone.has-file { border-color: var(--green); border-style: solid; color: var(--green); font-weight: 600; }
         .summary-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; }
         .summary-row.total { font-weight: 800; font-size: 18px; border-top: 1px solid #eee; margin-top: 4px; padding-top: 8px; }
         .footer-links { display: flex; justify-content: center; gap: 12px; margin-top: 20px; padding: 12px 0; flex-wrap: wrap; }
         .footer-links a { font-size: 11px; color: var(--gray); text-decoration: underline; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
-        .modal.show { display: flex; } .modal-box { background: #fff; padding: 24px; border-radius: 14px; max-width: 380px; margin: 20px; max-height: 80vh; overflow-y: auto; font-size: 13px; line-height: 1.6; }
+        .modal.show { display: flex; } .modal-box { background: #fff; padding: 24px; border-radius: 14px; max-width: 380px; margin: 20px; max-height: 80vh; overflow-y: auto; font-size: 13px; }
         .back-btn { background: none; border: none; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--gray); padding: 4px 0; margin-bottom: 12px; }
+        .tab-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .tab-btn { flex: 1; padding: 10px; border-radius: 10px; font-weight: 600; font-size: 13px; border: 1px solid var(--border); background: var(--white); cursor: pointer; font-family: inherit; text-align: center; }
+        .tab-btn.active { background: var(--black); color: #fff; }
+        .chat-box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); height: 300px; display: flex; flex-direction: column; overflow: hidden; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .chat-msg { max-width: 80%; padding: 8px 12px; border-radius: 14px; font-size: 13px; }
+        .chat-msg.client { align-self: flex-end; background: var(--black); color: #fff; }
+        .chat-msg.admin { align-self: flex-start; background: #eee; }
+        .chat-input-row { display: flex; gap: 8px; padding: 8px; border-top: 1px solid var(--border); }
+        .chat-input-row input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 20px; font-family: inherit; }
+        .chat-input-row button { padding: 10px 16px; border-radius: 20px; background: var(--black); color: #fff; border: none; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -59,93 +67,89 @@
     <div class="welcome-title anim-fade">Привет <span class="wave">👋</span></div>
     <div class="welcome-sub anim-fade anim-delay1">Сервис для заказа баннеров. Закажи в пару кликов — а мы напечатаем и доставим.</div>
     <button class="btn-hero anim-fade anim-delay2" onclick="startOrder()">Заказать</button>
+    <br>
+    <button class="btn-hero anim-fade anim-delay3" style="background:transparent;color:#fff;border:2px solid #fff;" onclick="showLK()">👤 Личный кабинет</button>
 </div>
 
 <div id="appContent" style="display:none;" class="main-content">
-    <button class="back-btn" onclick="goBack()" id="backBtn" style="display:none;">← Назад</button>
-
-    <div class="page active" id="page-step1">
-        <h2 style="font-weight:800;margin-bottom:14px;" class="anim-fade">Выберите материал</h2>
-        <div class="tile-row">
-            <div class="tile anim-fade anim-delay1" onclick="goToCalc('banner')"><div class="tile-icon">🪧</div><div class="tile-title">Баннер</div><div class="tile-sub">300г / 440г / 510г</div></div>
-            <div class="tile anim-fade anim-delay2" onclick="goToCalc('selfad')"><div class="tile-icon">🏷️</div><div class="tile-title">Самоклейка</div><div class="tile-sub">Матовая / глянцевая</div></div>
-            <div class="tile anim-fade anim-delay3" onclick="goToCalc('poster')"><div class="tile-icon">🖼️</div><div class="tile-title">Плакат</div><div class="tile-sub">Blueback / белая бумага</div></div>
-        </div>
-        <div class="footer-links anim-fade anim-delay4">
-            <a href="#" onclick="openModal('policy')">Политика</a>
-            <a href="#" onclick="openModal('terms')">Соглашение</a>
-            <a href="#" onclick="openModal('design')">Требования к макетам</a>
-            <a href="https://t.me/someprintbot" target="_blank">Поддержка</a>
-        </div>
-    </div>
-
-    <div class="page" id="page-step2">
-        <h2 id="matTitle" style="font-weight:800;margin-bottom:14px;"></h2>
-        <div class="card">
-            <div class="row">
-                <div class="form-group"><label>Ширина, мм</label><input type="number" id="mWidth" value="1000" oninput="calcMaterial()"></div>
-                <div class="form-group"><label>Высота, мм</label><input type="number" id="mHeight" value="1000" oninput="calcMaterial()"></div>
-            </div>
-            <div class="hint-red" id="widthHint"></div>
-            <div class="form-group"><label>Количество, шт</label><input type="number" id="mQty" value="1" min="1" oninput="calcMaterial()"></div>
-            <div id="bannerOpts"></div><div id="selfadOpts"></div><div id="posterOpts"></div>
-        </div>
-        <div style="text-align:center;margin:14px 0;"><div class="price-label">Итого</div><div class="price-big" id="mTotal">1000 р.</div></div>
-        <button class="btn btn-primary" onclick="goToOrder()">📋 Далее</button>
-        <button class="btn btn-outline" onclick="goToStep1()">← Назад</button>
-    </div>
-
-    <div class="page" id="page-step3">
-        <h2 style="font-weight:800;margin-bottom:14px;">📋 Оформление</h2>
-        <div class="card" id="orderSummary"></div>
-        <div class="card"><h3>📎 Макет</h3><div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"><span id="uploadText">Нажмите, чтобы загрузить файл</span></div><input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.cdr,.ai,.eps" style="display:none;" onchange="handleFile(event)"></div>
-        <div class="card">
-            <h3>👤 Данные</h3>
-            <div class="form-group"><label>Имя</label><input type="text" id="custName" placeholder="Иван Иванов"></div>
-            <div class="form-group"><label>Телефон</label><input type="tel" id="custPhone" placeholder="+7 ___ ___-__-__"></div>
-            <div class="form-group"><label>Telegram (необязательно)</label><input type="text" id="custTg" placeholder="@username"></div>
-            <div class="form-group"><label>Email</label><input type="email" id="custEmail" placeholder="email@example.com"></div>
-            <div class="form-group"><label>Адрес</label><textarea id="custAddr" rows="2" placeholder="Краснодар, ул. ..."></textarea></div>
-            <div class="hint">Сроки печати: 1-2 рабочих дня.</div>
-        </div>
-        <button class="btn btn-primary" onclick="submitOrder()">✅ Заказать</button>
-        <button class="btn btn-outline" onclick="goToStep2()">← Назад</button>
-    </div>
+    <button class="back-btn" id="backBtn" style="display:none;">← Назад</button>
+    <div id="dynamicPages"></div>
 </div>
 
 <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
 <script>
-    let pageHistory = ['page-step1'];
+    const API = '/api';
+    let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    let pageHistory = [];
 
-    function showPage(id, push = true) {
-        document.querySelectorAll('#appContent .page').forEach(p => p.classList.remove('active'));
-        const target = document.getElementById(id); if (target) target.classList.add('active');
-        if (push && pageHistory[pageHistory.length - 1] !== id) pageHistory.push(id);
+    // ========== НАВИГАЦИЯ ==========
+    function showPage(html, push = true) {
+        document.getElementById('dynamicPages').innerHTML = html;
+        if (push) pageHistory.push(html);
         document.getElementById('backBtn').style.display = pageHistory.length > 1 ? 'block' : 'none';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function goBack() { if (pageHistory.length > 1) { pageHistory.pop(); showPage(pageHistory[pageHistory.length - 1], false); } }
+    function goBack() {
+        if (pageHistory.length > 1) { pageHistory.pop(); document.getElementById('dynamicPages').innerHTML = pageHistory[pageHistory.length - 1]; }
+        if (pageHistory.length <= 1) document.getElementById('backBtn').style.display = 'none';
+    }
 
-    function startOrder() { document.getElementById('welcomeBlock').style.display = 'none'; document.getElementById('appContent').style.display = 'block'; showPage('page-step1'); }
-    function goToStep1() { showPage('page-step1'); }
+    document.getElementById('backBtn').addEventListener('click', goBack);
 
+    function startOrder() {
+        document.getElementById('welcomeBlock').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+        showStep1();
+    }
+
+    // ========== ШАГ 1: МАТЕРИАЛ ==========
+    function showStep1() {
+        showPage(`
+            <h2 style="font-weight:800;margin-bottom:14px;">Выберите материал</h2>
+            <div class="tile-row">
+                <div class="tile" onclick="goToCalc('banner')"><div class="tile-icon">🪧</div><div class="tile-title">Баннер</div><div class="tile-sub">300г / 440г / 510г</div></div>
+                <div class="tile" onclick="goToCalc('selfad')"><div class="tile-icon">🏷️</div><div class="tile-title">Самоклейка</div><div class="tile-sub">Матовая / глянцевая</div></div>
+                <div class="tile" onclick="goToCalc('poster')"><div class="tile-icon">🖼️</div><div class="tile-title">Плакат</div><div class="tile-sub">Blueback / белая бумага</div></div>
+            </div>
+            <div class="footer-links">
+                <a href="#" onclick="openModal('policy')">Политика</a>
+                <a href="#" onclick="openModal('terms')">Соглашение</a>
+                <a href="#" onclick="openModal('design')">Требования</a>
+                <a href="https://t.me/someprintbot" target="_blank">Поддержка</a>
+            </div>
+        `);
+    }
+
+    // ========== ШАГ 2: КАЛЬКУЛЯТОР ==========
     let currentMaterial = 'banner';
     const basePrices = { 'banner-500': 500, 'banner-700': 700, 'banner-820': 820, 'selfad-840': 840, 'poster-500': 500, 'poster-800': 800 };
+    let matData = {};
 
     function goToCalc(type) {
         currentMaterial = type;
-        document.getElementById('bannerOpts').innerHTML = type === 'banner' ? `<div class="form-group"><label>Плотность</label><select id="bDens" onchange="calcMaterial()"><option value="500">300 г/м² — тонкий</option><option value="700" selected>440 г/м² — стандарт</option><option value="820">510 г/м² — премиум</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="bProkl" onchange="calcMaterial()"> Проклейка (+60 р/м.п.)</label><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="bLyuv" onchange="calcMaterial()"> Люверсы (+20 р/шт, шаг 30 см)</label>` : '';
-        document.getElementById('selfadOpts').innerHTML = type === 'selfad' ? `<div class="form-group"><label>Тип</label><select id="sType" onchange="calcMaterial()"><option value="840">Матовая</option><option value="840">Глянцевая</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="sRezka" onchange="calcMaterial()"> Обрезка (+25 р/м.п.)</label><div class="hint">Без обрезки — с белыми полями.</div>` : '';
-        document.getElementById('posterOpts').innerHTML = type === 'poster' ? `<div class="form-group"><label>Бумага</label><select id="pType" onchange="calcMaterial()"><option value="500">Blueback (эконом)</option><option value="800">Белая (стандарт)</option></select></div><div class="hint">Blueback — синяя оборотка.</div>` : '';
-        document.getElementById('matTitle').innerText = { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' } [type];
-        document.getElementById('mWidth').value = 1000; document.getElementById('mHeight').value = 1000;
-        document.getElementById('widthHint').style.display = 'none';
-        showPage('page-step2'); calcMaterial();
+        showPage(`
+            <h2 id="matTitle" style="font-weight:800;margin-bottom:14px;">${{banner:'🪧 Баннер',selfad:'🏷️ Самоклейка',poster:'🖼️ Плакат'}[type]}</h2>
+            <div class="card">
+                <div class="row">
+                    <div class="form-group"><label>Ширина, мм</label><input type="number" id="mWidth" value="1000" oninput="calcMaterial()"></div>
+                    <div class="form-group"><label>Высота, мм</label><input type="number" id="mHeight" value="1000" oninput="calcMaterial()"></div>
+                </div>
+                <div class="hint-red" id="widthHint"></div>
+                <div class="form-group"><label>Количество, шт</label><input type="number" id="mQty" value="1" min="1" oninput="calcMaterial()"></div>
+                <div id="opts"></div>
+            </div>
+            <div style="text-align:center;margin:14px 0;"><div class="price-big" id="mTotal">1000 р.</div></div>
+            <button class="btn btn-primary" onclick="goToOrder()">📋 Далее</button>
+            <button class="btn btn-outline" onclick="showStep1()">← Назад</button>
+        `);
+        document.getElementById('opts').innerHTML = type === 'banner' ?
+            `<div class="form-group"><label>Плотность</label><select id="bDens" onchange="calcMaterial()"><option value="500">300 г/м² — тонкий</option><option value="700" selected>440 г/м² — стандарт</option><option value="820">510 г/м² — премиум</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="bProkl" onchange="calcMaterial()"> Проклейка (+60 р/м.п.)</label><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="bLyuv" onchange="calcMaterial()"> Люверсы (+20 р/шт)</label>` :
+            type === 'selfad' ? `<div class="form-group"><label>Тип</label><select id="sType" onchange="calcMaterial()"><option value="840">Матовая</option><option value="840">Глянцевая</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="sRezka" onchange="calcMaterial()"> Обрезка (+25 р/м.п.)</label><div class="hint">Без обрезки — с белыми полями.</div>` :
+            `<div class="form-group"><label>Бумага</label><select id="pType" onchange="calcMaterial()"><option value="500">Blueback (эконом)</option><option value="800">Белая (стандарт)</option></select></div><div class="hint">Blueback — синяя оборотка.</div>`;
+        calcMaterial();
     }
-
-    function goToStep2() { if (document.getElementById('matTitle').innerText) showPage('page-step2'); else goToStep1(); }
 
     function getBasePrice() { if (currentMaterial === 'banner') return basePrices['banner-' + (document.getElementById('bDens').value)]; if (currentMaterial === 'selfad') return 840; return basePrices['poster-' + (document.getElementById('pType').value)]; }
 
@@ -157,70 +161,197 @@
         const totalArea = area * qty;
         let maxW = currentMaterial === 'banner' ? 3200 : 1500;
         const hint = document.getElementById('widthHint');
-        if (w > maxW) { document.getElementById('mWidth').classList.add('error'); hint.style.display = 'block'; hint.innerText = `⚠️ Макс. ширина — ${maxW} мм`; }
-        else { document.getElementById('mWidth').classList.remove('error'); hint.style.display = 'none'; }
+        if (w > maxW) { document.getElementById('mWidth').classList.add('error'); hint.style.display = 'block'; hint.innerText = `⚠️ Макс. ширина — ${maxW} мм`; } else { document.getElementById('mWidth').classList.remove('error'); hint.style.display = 'none'; }
         let base = getBasePrice();
         let ppm = totalArea >= 5 ? base : Math.round(base * 1.3);
         const perim = ((w + h) * 2) / 1000;
         const extras = [];
         if (currentMaterial === 'banner') {
-            if (document.getElementById('bProkl').checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty });
-            if (document.getElementById('bLyuv') && document.getElementById('bLyuv').checked) {
+            if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty });
+            if (document.getElementById('bLyuv')?.checked) {
                 const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2;
                 const totalLuvers = lc < 4 ? 4 * qty : lc * qty;
                 extras.push({ name: `Люверсы (${totalLuvers} шт)`, cost: totalLuvers * 20 });
             }
         } else if (currentMaterial === 'selfad') {
-            if (document.getElementById('sRezka').checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty });
+            if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty });
         }
-       let total = area * ppm * qty;
-       extras.forEach(e => total += e.cost);
-       total += 300;
+        let total = area * ppm * qty;
+        extras.forEach(e => total += e.cost);
+        total += 300;
         if (total < 1000) total = 1000;
         document.getElementById('mTotal').innerText = Math.round(total).toLocaleString() + ' р.';
-        window._matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: document.getElementById('matTitle').innerText };
+        matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: document.getElementById('matTitle').innerText };
     }
 
-    function goToOrder() { fillOrderSummary(); showPage('page-step3'); }
-
-    function fillOrderSummary() {
-        const d = window._matData || {};
-        document.getElementById('orderSummary').innerHTML = `<div class="summary-row"><span>Материал:</span><span>${d.material}</span></div><div class="summary-row"><span>Размер:</span><span>${d.width}×${d.height} мм</span></div><div class="summary-row"><span>Кол-во:</span><span>${d.qty} шт (${(d.totalArea||0).toFixed(2)} м²)</span></div>${d.extras.map(e => `<div class="summary-row"><span>${e.name}:</span><span>${Math.round(e.cost)} р.</span></div>`).join('')}<div class="summary-row"><span>Доставка:</span><span>300 р.</span></div><div class="summary-row total"><span>Итого:</span><span>${d.total.toLocaleString()} р.</span></div>`;
+    // ========== ШАГ 3: ЗАКАЗ ==========
+    function goToOrder() {
+        showPage(`
+            <h2 style="font-weight:800;margin-bottom:14px;">📋 Оформление</h2>
+            <div class="card" id="orderSummary">${buildSummary()}</div>
+            <div class="card"><h3>📎 Макет</h3><div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"><span id="uploadText">Нажмите, чтобы загрузить файл</span></div><input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.cdr,.ai,.eps" style="display:none;" onchange="handleFile(event)"></div>
+            <div class="card">
+                <h3>👤 Данные</h3>
+                <div class="form-group"><label>Имя</label><input type="text" id="custName" placeholder="Иван Иванов" value="${currentUser?.name||''}"></div>
+                <div class="form-group"><label>Телефон</label><input type="tel" id="custPhone" placeholder="+7 ___" value="${currentUser?.phone||''}"></div>
+                <div class="form-group"><label>Email</label><input type="email" id="custEmail" value="${currentUser?.email||''}"></div>
+                <div class="form-group"><label>Адрес</label><textarea id="custAddr" rows="2">${currentUser?.addr||''}</textarea></div>
+                <div class="hint">Сроки: 1-2 рабочих дня.</div>
+            </div>
+            <button class="btn btn-primary" onclick="submitOrder()">✅ Заказать</button>
+            <button class="btn btn-outline" onclick="goToCalc('${currentMaterial}')">← Назад</button>
+        `);
     }
 
-    function handleFile(e) { const f = e.target.files[0]; if (f) { document.getElementById('uploadZone').classList.add('has-file'); document.getElementById('uploadText').innerText = '✅ ' + f.name; window._uploadedFile = f; } }
+    function buildSummary() {
+        const d = matData;
+        return `<div class="summary-row"><span>Материал:</span><span>${d.material}</span></div><div class="summary-row"><span>Размер:</span><span>${d.width}×${d.height} мм</span></div><div class="summary-row"><span>Кол-во:</span><span>${d.qty} шт</span></div>${d.extras.map(e => `<div class="summary-row"><span>${e.name}:</span><span>${Math.round(e.cost)} р.</span></div>`).join('')}<div class="summary-row"><span>Доставка:</span><span>300 р.</span></div><div class="summary-row total"><span>Итого:</span><span>${d.total.toLocaleString()} р.</span></div>`;
+    }
+
+    let uploadedFile = null;
+
+    function handleFile(e) {
+        const f = e.target.files[0];
+        if (f) { document.getElementById('uploadZone').classList.add('has-file'); document.getElementById('uploadText').innerText = '✅ ' + f.name;
+            uploadedFile = f; }
+    }
 
     async function submitOrder() {
         const name = document.getElementById('custName').value.trim();
         const phone = document.getElementById('custPhone').value.trim();
         if (!name || !phone) { alert('Заполните имя и телефон'); return; }
-        const d = window._matData || {};
-        const tg = document.getElementById('custTg').value.trim();
-        const email = document.getElementById('custEmail').value.trim();
-        const addr = document.getElementById('custAddr').value.trim();
-        let fileUrl = '';
-        const file = window._uploadedFile;
-        if (file) { try { const reader = new FileReader(); const base64 = await new Promise((resolve, reject) => { reader.onload = () => resolve(reader.result.split(',')[1]); reader.onerror = reject; reader.readAsDataURL(file); }); const response = await fetch('https://script.google.com/macros/s/AKfycbzTGflWSTpjFmDg3SCDrsT4mhCpz8vP5s5h83BuUQ7KntU3rVi1HR27TVvTitVRjTev/exec', { method: 'POST', body: JSON.stringify({ file: base64, fileName: file.name, mimeType: file.type }) }); const result = await response.json(); if (result.success) fileUrl = result.fileUrl; } catch (err) {} }
-        const extrasText = d.extras.length > 0 ? d.extras.map(e => `${e.name}: ${Math.round(e.cost)} р.`).join(', ') : 'Нет';
-        const msg = `🔵 НОВЫЙ ЗАКАЗ\n\n📦 ${d.material}\n📐 ${d.width}×${d.height} мм\n🔢 ${d.qty} шт (${(d.totalArea||0).toFixed(2)} м²)\n🔧 ${extrasText}\n🚕 Доставка: 300 р.\n💰 Сумма: ${d.total} р.\n\n👤 ${name}\n📞 ${phone}\n📱 Telegram: ${tg||'не указан'}\n📧 ${email||'—'}\n📍 ${addr||'—'}${fileUrl?'\n\n📎 '+fileUrl:''}\n\n⚠️ Выставьте счёт в «Мой налог» и отправьте клиенту`;
-        try { await fetch(`https://api.telegram.org/bot8727458645:AAEp0YLowPJYs9FirMYDFM9votOm9vOZieU/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: 7656839845, text: msg }) }); } catch (err) {}
-        alert('✅ Заказ оформлен! Мы свяжемся с вами.');
-        goToStep1();
+        const order = { ...matData, name, phone, email: document.getElementById('custEmail').value.trim(), addr: document.getElementById('custAddr').value.trim(), userId: currentUser?.id || '' };
+        if (uploadedFile) {
+            const reader = new FileReader();
+            const base64 = await new Promise(r => { reader.onload = () => r(reader.result.split(',')[1]);
+                reader.readAsDataURL(uploadedFile); });
+            order.fileBase64 = base64;
+            order.fileName = uploadedFile.name;
+        }
+        try {
+            const res = await fetch(API + '/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) });
+            const data = await res.json();
+            if (data.success) { alert('✅ Заказ #' + data.id + ' оформлен!');
+                showStep1(); } else alert('Ошибка');
+        } catch (e) { alert('Ошибка сервера'); }
     }
 
+    // ========== ЛИЧНЫЙ КАБИНЕТ ==========
+    function showLK() {
+        document.getElementById('welcomeBlock').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+        if (currentUser) showProfile(); else showAuth();
+    }
+
+    function showAuth() {
+        showPage(`
+            <h2 style="font-weight:800;margin-bottom:14px;">👤 Вход / Регистрация</h2>
+            <div class="card">
+                <div class="form-group"><label>Email</label><input type="email" id="authEmail"></div>
+                <div class="form-group"><label>Пароль</label><input type="password" id="authPass"></div>
+                <div id="regFields" style="display:none;">
+                    <div class="form-group"><label>Имя</label><input type="text" id="regName"></div>
+                    <div class="form-group"><label>Телефон</label><input type="tel" id="regPhone"></div>
+                </div>
+                <button class="btn btn-primary" onclick="doLogin()">Войти</button>
+                <button class="btn btn-outline" onclick="toggleReg()" id="regToggle">Создать аккаунт</button>
+            </div>
+            <button class="btn btn-outline" onclick="startOrder()">← На главную</button>
+        `);
+    }
+
+    let isReg = false;
+
+    function toggleReg() {
+        isReg = !isReg;
+        document.getElementById('regFields').style.display = isReg ? 'block' : 'none';
+        document.getElementById('regToggle').innerText = isReg ? 'Уже есть аккаунт' : 'Создать аккаунт';
+        document.querySelector('#dynamicPages .btn-primary').innerText = isReg ? 'Зарегистрироваться' : 'Войти';
+        document.querySelector('#dynamicPages .btn-primary').onclick = isReg ? doRegister : doLogin;
+    }
+
+    async function doLogin() {
+        const email = document.getElementById('authEmail').value.trim();
+        const pass = document.getElementById('authPass').value.trim();
+        if (!email || !pass) { alert('Заполните поля'); return; }
+        const res = await fetch(API + '/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) });
+        const data = await res.json();
+        if (data.success) { currentUser = data.user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showProfile(); } else alert(data.error);
+    }
+
+    async function doRegister() {
+        const email = document.getElementById('authEmail').value.trim();
+        const pass = document.getElementById('authPass').value.trim();
+        const name = document.getElementById('regName').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        if (!email || !pass) { alert('Заполните email и пароль'); return; }
+        const res = await fetch(API + '/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, name, phone }) });
+        const data = await res.json();
+        if (data.success) { currentUser = data.user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showProfile(); } else alert(data.error);
+    }
+
+    function showProfile() {
+        showPage(`
+            <h2 style="font-weight:800;margin-bottom:14px;">👤 ${currentUser.name||currentUser.email}</h2>
+            <div class="tab-row">
+                <button class="tab-btn active" onclick="loadOrders()">📋 Мои заказы</button>
+                <button class="tab-btn" onclick="loadChat()">💬 Чат</button>
+                <button class="tab-btn" onclick="logout()">🚪 Выйти</button>
+            </div>
+            <div id="profileContent"></div>
+        `);
+        loadOrders();
+    }
+
+    async function loadOrders() {
+        const res = await fetch(API + '/orders/' + (currentUser.id || ''));
+        const orders = await res.json();
+        document.getElementById('profileContent').innerHTML = orders.length === 0 ? '<p style="color:var(--gray);">Нет заказов</p>' : orders.map(o => `
+            <div class="card">
+                <strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br>
+                <span style="font-size:11px;color:var(--gray);">Статус: ${o.status||'новый'}</span>
+            </div>
+        `).join('');
+    }
+
+    async function loadChat() {
+        const res = await fetch(API + '/chat');
+        const msgs = await res.json();
+        document.getElementById('profileContent').innerHTML = `
+            <div class="chat-box">
+                <div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from}">${m.text}</div>`).join('')}</div>
+                <div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..."><button onclick="sendChat()">➤</button></div>
+            </div>
+        `;
+    }
+
+    async function sendChat() {
+        const text = document.getElementById('chatInput').value.trim();
+        if (!text) return;
+        await fetch(API + '/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ from: currentUser?.email || 'client', text }) });
+        loadChat();
+    }
+
+    function logout() { currentUser = null;
+        localStorage.removeItem('currentUser');
+        showAuth(); }
+
+    // ========== МОДАЛКИ ==========
     function openModal(t) {
         const texts = {
-            policy: `<h2>Политика конфиденциальности</h2><p>Мы собираем только необходимые данные: имя, телефон, email и адрес доставки. Эти данные используются исключительно для оформления и выполнения заказа.</p><p>Мы не передаём ваши данные третьим лицам. Вся информация хранится в защищённом виде.</p><p>Вы можете запросить удаление ваших данных в любое время, написав нам.</p>`,
-            terms: `<h2>Пользовательское соглашение</h2><p>Используя данный сайт, вы соглашаетесь с условиями обработки заказов.</p><p>Все цены указаны в рублях. Минимальная сумма заказа — 1000 рублей. Сроки изготовления: 1-2 рабочих дня, в отдельных случаях до 3 дней.</p><p>Оплата производится по выставленному счёту. После оплаты заказ поступает в производство. Возврат возможен только при наличии производственного брака.</p><p>Доставка осуществляется курьером. Стоимость доставки включена в итоговую сумму заказа.</p>`,
-            design: `<h2>Требования к макетам</h2><p>📐 <strong>Формат:</strong> PDF, PNG, JPG, AI, CDR, EPS</p><p>📏 <strong>Размер:</strong> Макет должен быть в масштабе 1:1 (в натуральную величину).</p><p>🎨 <strong>Цветовая модель:</strong> CMYK (для точной цветопередачи).</p><p>📸 <strong>Разрешение:</strong> Не менее 150 dpi для баннеров, 300 dpi для полиграфии.</p><p>⚠️ <strong>Важно:</strong> Все шрифты должны быть переведены в кривые. Вылеты по 2 мм с каждой стороны для полиграфии.</p>`
+            policy: `<h2>Политика конфиденциальности</h2><p>Мы собираем только необходимые данные: имя, телефон, email и адрес доставки. Эти данные используются исключительно для оформления и выполнения заказа.</p><p>Мы не передаём ваши данные третьим лицам.</p>`,
+            terms: `<h2>Пользовательское соглашение</h2><p>Используя сайт, вы соглашаетесь с условиями. Минимальный заказ — 1000 р. Сроки: 1-2 рабочих дня.</p>`,
+            design: `<h2>Требования к макетам</h2><p>📐 Формат: PDF, PNG, JPG, AI, CDR, EPS</p><p>📏 Масштаб 1:1</p><p>🎨 Цвет: CMYK</p><p>📸 Разрешение: от 150 dpi</p>`
         };
         document.getElementById('modalContent').innerHTML = texts[t] + '<button class="btn btn-primary" onclick="closeModal()" style="margin-top:12px;">Закрыть</button>';
         document.getElementById('modal').classList.add('show');
     }
 
     function closeModal() { document.getElementById('modal').classList.remove('show'); }
-
-    calcMaterial();
 </script>
 </body>
 </html>
