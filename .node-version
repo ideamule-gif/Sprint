@@ -1,4 +1,1 @@
-echo "20.18.1" > .node-version
-git add .node-version
-git commit -m "Фикс версии Node"
-git push
+20.18.1
