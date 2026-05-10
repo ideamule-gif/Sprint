@@ -173,7 +173,7 @@ app.get('/api/admin/chats', async (req, res) => {
     for (const uid of userIds) {
         if (!uid) continue;
         const user = await users.findOne({ _id: require('mongodb').ObjectId.createFromHexString(uid) }).catch(() => null);
-        const lastMsg = await chat.findOne({ userId: uid }).sort({ time: -1 });
+        const lastMsg = await chat.findOne({ userId: uid }, { sort: { time: -1 } });
         result.push({ userId: uid, name: user?.name || user?.email || uid, email: user?.email || '', lastMessage: lastMsg?.text || '', lastTime: lastMsg?.time || null });
     }
     res.json(result);
