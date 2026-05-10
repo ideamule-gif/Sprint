@@ -305,9 +305,11 @@ if ('serviceWorker' in navigator) {
         await fetch(API + '/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ from: currentUser?.email || 'client', text }) });
         loadChat(); }
 
-    function logout() { currentUser = null;
-        localStorage.removeItem('currentUser');
-        loadProfile(); }
+   function logout() { 
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    loadProfile(); 
+}
 
     // Инициализация
     renderOrderStep();
