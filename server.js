@@ -108,7 +108,71 @@ app.get('/api/admin/orders', async (req, res) => {
 // ========== СМЕНА СТАТУСА ==========
 app.post('/api/admin/status', async (req, res) => {
     const { orderId, status } = req.body;
-    await db.collection('orders').updateOne({ _id: orderId }, { $set: { status } });
+    const orders = db.collection('orders');
+    const order = await orders.findOne({ _id: orderId });
+    if (!order) return res.json({ success: false, error: 'Заказ не найден' });
+
+    await orders.updateOne({ _id: orderId }, { $set: { status } });
+
+    const statusNames = {
+        'new': 'Новый',
+        'processing': 'В обработке',
+        'printing': 'В печати',
+        'ready': 'Готов',
+        'shipped': 'Отправлен',
+        'done': 'Доставлен'
+    };
+
+    // Отправка письма клиенту через EmailJS
+    if (order.email) {
+        try {
+            await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    service_id: 'service_6g06b1d',
+                    template_id: 'template_hb05foo',
+                    user_id: '1uNqFkbGPhecG4EaK',
+                    template_params: {
+                        order_id: order._id,
+                        name: order.name,
+                        status: statusNames[status] || status,
+                        material: order.material,
+                        size: `${order.width}×${order.height} мм`,
+                        total: order.total,
+                        email: order.email
+                    }
+                })
+            });
+        } catch (e) {
+            console.error('EmailJS error:', e);
+        }
+    }
+
+    // Письмо админу
+    try {
+        await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                service_id: 'service_6g06b1d',
+                template_id: 'template_hb05foo',
+                user_id: '1uNqFkbGPhecG4EaK',
+                template_params: {
+                    order_id: order._id,
+                    name: 'Админ',
+                    status: statusNames[status] || status,
+                    material: order.material,
+                    size: `${order.width}×${order.height} мм`,
+                    total: order.total,
+                    email: 'ideamule@gmail.com'
+                }
+            })
+        });
+    } catch (e) {
+        console.error('EmailJS error:', e);
+    }
+
     res.json({ success: true });
 });
 
