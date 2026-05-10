@@ -13,11 +13,6 @@
     <style>
         :root { --white: #fff; --black: #0a0a0a; --gray: #999; --border: #e0e0e0; --radius: 14px; --shadow: 0 2px 10px rgba(0,0,0,0.05); --red: #d32f2f; --green: #2e7d32; --accent: #0a0a0a; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        <script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
-}
-</script>
         body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f5f5; color: var(--black); font-weight: 400; max-width: 480px; margin: 0 auto; min-height: 100vh; -webkit-tap-highlight-color: transparent; padding-bottom: 80px; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes glow { 0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.3); } 50% { text-shadow: 0 0 30px rgba(255,255,255,0.5); } }
@@ -26,13 +21,11 @@ if ('serviceWorker' in navigator) {
         .anim-delay1 { animation-delay: 0.1s; opacity: 0; } .anim-delay2 { animation-delay: 0.25s; opacity: 0; } .anim-delay3 { animation-delay: 0.4s; opacity: 0; } .anim-delay4 { animation-delay: 0.55s; opacity: 0; }
         .wave { display: inline-block; animation: wave 0.6s ease-in-out 3; transform-origin: 70% 70%; }
 
-        /* НИЖНЕЕ МЕНЮ */
         .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 14px; z-index: 100; }
         .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--gray); transition: 0.2s; }
         .bottom-nav .nav-item.active { color: var(--accent); }
         .bottom-nav .nav-item .nav-icon { font-size: 22px; }
 
-        /* КОНТЕНТ */
         .tab { display: none; padding: 16px; }
         .tab.active { display: block; }
         .card { background: var(--white); padding: 16px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 12px; }
@@ -68,6 +61,11 @@ if ('serviceWorker' in navigator) {
         .status-ready { background: #e8f5e9; color: #2e7d32; } .status-done { background: #f3e5f5; color: #6a1b9a; }
     </style>
 </head>
+    <script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+}
+</script>
 <body>
 
 <!-- НИЖНЕЕ МЕНЮ -->
