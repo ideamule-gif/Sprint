@@ -12,11 +12,24 @@ const client = new MongoClient(MONGO_URI, { serverApi: ServerApiVersion.v1 });
 
 let db;
 async function connectDB() {
-    await client.connect();
-    db = client.db('sprint');
-    console.log('MongoDB connected');
+    try {
+        await client.connect();
+        db = client.db('sprint');
+        console.log('MongoDB connected');
+    } catch (e) {
+        console.error('MongoDB connection error:', e.message);
+    }
 }
 connectDB();
+
+// Ждём подключения перед обработкой запросов
+app.use(async (req, res, next) => {
+    if (!db) {
+        try { await client.connect();
+            db = client.db('sprint'); } catch (e) { return res.status(500).json({ error: 'База данных недоступна' }); }
+    }
+    next();
+});
 
 app.use(express.static(__dirname));
 app.use(express.json({ limit: '50mb' }));
