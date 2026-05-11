@@ -11,10 +11,10 @@
         body { font-family:'Inter',-apple-system,sans-serif; background:#f5f5f5; color:var(--black); font-weight:400; max-width:480px; margin:0 auto; min-height:100vh; -webkit-tap-highlight-color:transparent; padding-bottom:80px; }
         h2 { font-weight:800; margin-bottom:14px; }
         .card { background:var(--white); padding:16px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:10px; }
-        .bottom-nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:var(--white); border-top:1px solid var(--border); display:flex; justify-content:space-around; padding:10px 0 14px; z-index:100; }
-        .bottom-nav .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; font-size:11px; font-weight:600; color:var(--gray); }
+        .bottom-nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:var(--white); border-top:1px solid var(--border); display:flex; justify-content:space-around; padding:10px 0 14px; z-index:100; flex-wrap:wrap; }
+        .bottom-nav .nav-item { display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; font-size:10px; font-weight:600; color:var(--gray); }
         .bottom-nav .nav-item.active { color:var(--black); }
-        .bottom-nav .nav-item .nav-icon { font-size:22px; }
+        .bottom-nav .nav-item .nav-icon { font-size:20px; }
         .tab { display:none; padding:16px; }
         .tab.active { display:block; }
         .stat-row { display:flex; gap:8px; margin-bottom:14px; }
@@ -33,14 +33,20 @@
         .client-card { background:var(--white); padding:14px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:8px; cursor:pointer; }
         .workshop-card { background:var(--white); padding:14px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:8px; }
         .fab { position:fixed; bottom:90px; right:calc(50% - 220px); width:48px; height:48px; border-radius:50%; background:var(--black); color:#fff; font-size:28px; border:none; cursor:pointer; z-index:50; display:flex; align-items:center; justify-content:center; }
-        .chat-mini { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); height:250px; display:flex; flex-direction:column; overflow:hidden; margin-top:8px; }
-        .chat-mini .chat-msgs { flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:4px; }
-        .chat-mini .chat-msg { max-width:80%; padding:5px 8px; border-radius:10px; font-size:11px; }
-        .chat-mini .chat-msg.client { align-self:flex-end; background:var(--black); color:#fff; }
-        .chat-mini .chat-msg.admin { align-self:flex-start; background:#eee; }
-        .chat-mini .chat-input-row { display:flex; gap:4px; padding:6px; border-top:1px solid var(--border); }
-        .chat-mini .chat-input-row input { flex:1; padding:6px; border:1px solid var(--border); border-radius:12px; font-family:inherit; font-size:12px; }
-        .chat-mini .chat-input-row button { padding:6px 10px; border-radius:12px; background:var(--black); color:#fff; border:none; font-weight:600; cursor:pointer; font-size:11px; }
+        .chat-full { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); height:calc(100vh - 250px); display:flex; flex-direction:column; overflow:hidden; margin-top:8px; }
+        .chat-full .chat-msgs { flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:4px; }
+        .chat-full .chat-msg { max-width:80%; padding:6px 10px; border-radius:12px; font-size:12px; }
+        .chat-full .chat-msg.client { align-self:flex-end; background:var(--black); color:#fff; }
+        .chat-full .chat-msg.admin { align-self:flex-start; background:#eee; }
+        .chat-full .chat-input-row { display:flex; gap:4px; padding:6px; border-top:1px solid var(--border); }
+        .chat-full .chat-input-row input { flex:1; padding:8px; border:1px solid var(--border); border-radius:16px; font-family:inherit; font-size:13px; }
+        .chat-full .chat-input-row button { padding:8px 14px; border-radius:16px; background:var(--black); color:#fff; border:none; font-weight:600; cursor:pointer; }
+        .chat-list-item { background:var(--white); padding:12px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:6px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+        .chat-list-item .chat-preview { flex:1; }
+        .chat-list-item .chat-name { font-weight:700; font-size:13px; }
+        .chat-list-item .chat-last { font-size:11px; color:var(--gray); }
+        .toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--black); color:#fff; padding:12px 20px; border-radius:20px; font-weight:600; font-size:13px; z-index:300; opacity:0; transition:opacity 0.3s; pointer-events:none; }
+        .toast.show { opacity:1; }
     </style>
 </head>
 <body>
@@ -57,29 +63,48 @@
     <div class="tab active" id="tab-dash"></div>
     <div class="tab" id="tab-orders"></div>
     <div class="tab" id="tab-clients"></div>
+    <div class="tab" id="tab-chat"></div>
     <div class="tab" id="tab-workshops"></div>
 
     <nav class="bottom-nav">
         <div class="nav-item active" data-tab="tab-dash"><span class="nav-icon">📊</span>Главная</div>
         <div class="nav-item" data-tab="tab-orders"><span class="nav-icon">📋</span>Заказы</div>
         <div class="nav-item" data-tab="tab-clients"><span class="nav-icon">👥</span>Клиенты</div>
-        <div class="nav-item" data-tab="tab-workshops"><span class="nav-icon">🏭</span>Типографии</div>
+        <div class="nav-item" data-tab="tab-chat"><span class="nav-icon">💬</span>Чат</div>
+        <div class="nav-item" data-tab="tab-workshops"><span class="nav-icon">🏭</span>Тип.</div>
     </nav>
 </div>
 
+<div class="toast" id="toast"></div>
 <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
 <script>
     const API = '/api';
     const PASS = 'kprint2024';
-    let allOrders = [], allUsers = [], allChats = [];
+    let allOrders = [], allUsers = [];
     let workshops = JSON.parse(localStorage.getItem('workshops') || JSON.stringify([{ id:'admiral', name:'Типография Адмирал', email:'aprint23@mail.ru', phone:'+79286609776', address:'ул. Стасова, 178/1' }]));
     const statusNames = { 'new':'Новый','processing':'В обработке','printing':'В печати','ready':'Готов','shipped':'Отправлен','done':'Доставлен' };
 
+    // ========== ЗВУК ==========
+    function playSound() { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 800; const g = ctx.createGain();
+            g.gain.value = 0.1;
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.start();
+            o.stop(ctx.currentTime + 0.15); } catch (e) {} }
+
+    // ========== TOAST ==========
+    function showToast(msg) { const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+        playSound(); }
+
+    // ========== НАВИГАЦИЯ ==========
     function switchTab(id) { document.querySelectorAll('#appBlock .tab').forEach(t => t.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
-        document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if (id === 'tab-dash') loadDashboard(); if (id === 'tab-orders') loadOrdersTab(); if (id === 'tab-clients') loadClientsTab(); if (id === 'tab-workshops') loadWorkshopsTab(); }
+        document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if (id === 'tab-dash') loadDashboard(); if (id === 'tab-orders') loadOrdersTab(); if (id === 'tab-clients') loadClientsTab(); if (id === 'tab-chat') loadChatTab(); if (id === 'tab-workshops') loadWorkshopsTab(); }
     document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.addEventListener('click', () => switchTab(i.dataset.tab)));
 
     function login() { if (document.getElementById('adminPass').value === PASS) { document.getElementById('loginBlock').style.display = 'none';
@@ -99,8 +124,10 @@
     function renderOrders(filter) { const f = filter === 'all' ? allOrders : filter === 'progress' ? allOrders.filter(o => ['processing','printing'].includes(o.status)) : allOrders.filter(o => o.status === filter || (filter === 'ready' && ['ready','shipped','done'].includes(o.status)));
         document.getElementById('ordersList').innerHTML = f.length === 0 ? '<p style="color:var(--gray);text-align:center;">Нет заказов</p>' : f.map(o => `<div class="card"><strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br><span class="status-badge status-${o.status}">${statusNames[o.status]}</span> ${o.workshop?`🏭 ${o.workshop}`:''}<br>👤 ${o.name} | 📞 ${o.phone}<br>${o.fileUrl?`📎 <a href="${o.fileUrl}" target="_blank">Скачать макет</a>`:''}${o.status==='new'?`<button class="btn btn-dark btn-sm" onclick="sendToWorkshop('${o.id}')">🏭 В цех</button>`:''}<select onchange="updateStatus('${o.id}',this.value)" style="width:100%;padding:4px;margin-top:4px;border-radius:4px;">${Object.keys(statusNames).map(s => `<option value="${s}" ${o.status===s?'selected':''}>${statusNames[s]}</option>`).join('')}</select></div>`).join(''); }
 
-    async function updateStatus(id, status) { await fetch(API + '/admin/status', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ orderId:id, status }) }); refreshAll();
-        loadOrdersTab(); }
+    async function updateStatus(id, status) { await fetch(API + '/admin/status', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ orderId:id, status }) });
+        refreshAll();
+        loadOrdersTab();
+        showToast(`📋 Статус заказа #${id}: ${statusNames[status]}`); }
 
     function sendToWorkshop(orderId) { const order = allOrders.find(o => o.id === orderId); if (!order) return;
         document.getElementById('modalContent').innerHTML = `<h3>🏭 Выберите цех</h3>${workshops.map(w => `<div class="workshop-card" onclick="confirmSend('${orderId}','${w.id}')"><strong>${w.name}</strong><br><span style="font-size:11px;color:var(--gray);">📧 ${w.email} | 📞 ${w.phone}</span></div>`).join('')}<button class="btn btn-outline" onclick="closeModal()">Отмена</button>`;
@@ -109,7 +136,6 @@
     async function confirmSend(orderId, wsId) { const ws = workshops.find(w => w.id === wsId), order = allOrders.find(o => o.id === orderId); if (!ws || !order) return;
         await updateStatus(orderId, 'processing');
         order.workshop = ws.name;
-        const body = `Материал: ${order.material}\nТип печати: ${order.material}\nРазмер: ${order.width}×${order.height} мм\nКол-во: ${order.qty} шт`;
         closeModal();
         refreshAll();
         loadOrdersTab(); }
@@ -118,17 +144,32 @@
 
     function renderClients() { document.getElementById('clientsList').innerHTML = allUsers.length === 0 ? '<p style="color:var(--gray);">Нет клиентов</p>' : allUsers.map(u => `<div class="client-card" onclick="openClientChat('${u.id}','${u.name||u.email}')"><strong>${u.name||'Без имени'}</strong><br><span style="font-size:12px;color:var(--gray);">📧 ${u.email} | 📞 ${u.phone||'—'}</span><br><span style="font-size:11px;">Заказов: ${allOrders.filter(o => o.userId === u.id).length}</span></div>`).join(''); }
 
-    async function openClientChat(userId, name) {
-        const res = await fetch(API + '/chat/' + userId);
-        const msgs = await res.json();
-        document.getElementById('modalContent').innerHTML = `<h3>💬 ${name}</h3><div class="chat-mini"><div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}</div>`).join('')}</div><div class="chat-input-row"><input type="text" id="clientChatInput" placeholder="Ответить..."><button onclick="sendClientChat('${userId}')">➤</button></div></div><button class="btn btn-outline" onclick="closeModal()" style="margin-top:8px;">Закрыть</button>`;
-        document.getElementById('modal').classList.add('show');
+    // ========== ЧАТ (отдельная вкладка) ==========
+    async function loadChatTab() {
+        const container = document.getElementById('tab-chat');
+        const res = await fetch(API + '/admin/chats');
+        const chats = await res.json();
+        container.innerHTML = `<h2>💬 Чат с клиентами</h2><div id="chatList"></div><div id="chatDetail"></div>`;
+        document.getElementById('chatList').innerHTML = chats.length === 0 ? '<p style="color:var(--gray);">Нет сообщений</p>' : chats.map(c => `<div class="chat-list-item" onclick="openAdminChat('${c.userId}','${c.name}')"><div class="chat-preview"><div class="chat-name">${c.name}</div><div class="chat-last">${c.lastMessage||''}</div></div><span style="font-size:10px;color:var(--gray);">${c.lastTime?new Date(c.lastTime).toLocaleDateString():''}</span></div>`).join('');
     }
 
-    async function sendClientChat(userId) { const text = document.getElementById('clientChatInput').value.trim(); if (!text) return;
+    async function openAdminChat(userId, name) {
+        const res = await fetch(API + '/chat/' + userId);
+        const msgs = await res.json();
+        document.getElementById('chatDetail').innerHTML = `
+            <button class="btn btn-outline btn-sm" onclick="loadChatTab()" style="margin:8px 0;">← Список чатов</button>
+            <div class="chat-full">
+                <div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div>
+                <div class="chat-input-row"><input type="text" id="adminChatInput" placeholder="Ответить..."><button onclick="sendAdminChat('${userId}')">➤</button></div>
+            </div>`;
+        document.getElementById('chatList').style.display = 'none';
+    }
+
+    async function sendAdminChat(userId) { const text = document.getElementById('adminChatInput').value.trim(); if (!text) return;
         await fetch(API + '/chat', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ from:'admin', text, userId }) });
         const user = allUsers.find(u => u.id === userId);
-        openClientChat(userId, user?.name || 'Клиент'); }
+        openAdminChat(userId, user?.name || 'Клиент');
+        showToast('💬 Сообщение отправлено'); }
 
     function loadWorkshopsTab() { document.getElementById('tab-workshops').innerHTML = `<h2>🏭 Типографии</h2><div id="workshopsList"></div>`; renderWorkshops(); }
     function renderWorkshops() { document.getElementById('workshopsList').innerHTML = workshops.map((w,i) => `<div class="workshop-card"><strong>${w.name}</strong><br><span style="font-size:11px;color:var(--gray);">📧 ${w.email} | 📞 ${w.phone}</span><br><span style="font-size:11px;color:var(--gray);">📍 ${w.address}</span><br><button class="btn btn-outline btn-sm" onclick="editWorkshop(${i})">✏️</button> <button class="btn btn-outline btn-sm" onclick="deleteWorkshop(${i})" style="color:var(--red);border-color:var(--red);">🗑</button></div>`).join('') + '<button class="fab" onclick="addWorkshop()">+</button>'; }
@@ -151,7 +192,16 @@
             loadWorkshopsTab(); } }
     function closeModal() { document.getElementById('modal').classList.remove('show'); }
 
-    setInterval(refreshAll, 20000);
+    // Уведомление о новых сообщениях (проверка каждые 15 сек)
+    setInterval(async () => {
+        if (document.getElementById('appBlock').style.display === 'block') {
+            const prevCount = allOrders.filter(o => o.status === 'new').length;
+            await refreshAll();
+            const newCount = allOrders.filter(o => o.status === 'new').length;
+            if (newCount > prevCount) showToast(`🔵 Новый заказ! (${newCount} новых)`);
+        }
+    }, 15000);
+
     refreshAll();
     document.getElementById('adminPass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 </script>
