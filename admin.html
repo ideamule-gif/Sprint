@@ -110,7 +110,6 @@
         await updateStatus(orderId, 'processing');
         order.workshop = ws.name;
         const body = `Материал: ${order.material}\nТип печати: ${order.material}\nРазмер: ${order.width}×${order.height} мм\nКол-во: ${order.qty} шт`;
-        window.open(`mailto:${ws.email}?subject=${encodeURIComponent('В ПЕЧАТЬ')}&body=${encodeURIComponent(body)}`);
         closeModal();
         refreshAll();
         loadOrdersTab(); }
