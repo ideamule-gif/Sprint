@@ -158,23 +158,14 @@ async function loadChatTab() {
     document.getElementById('chatList').innerHTML = chats.length === 0 ? '<p style="color:var(--gray);">Нет сообщений</p>' : chats.map(c => `<div class="chat-list-item" onclick="openAdminChat('${c.userId}','${c.name}')"><div class="chat-preview"><div class="chat-name">${c.name}</div><div class="chat-last">${c.lastMessage||''}</div></div></div>`).join(''); 
 }
 
-async function openAdminChat(userId, name) { 
-    const savedInput = document.getElementById('adminChatInput');
-    const savedText = savedInput ? savedInput.value : '';
-    const msgsBox = document.getElementById('chatMsgs');
-    const wasAtBottom = msgsBox ? (msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight < 50) : true;
-
-    const res = await fetch(API + '/chat/' + userId); 
-    const msgs = await res.json(); 
-    document.getElementById('chatDetail').innerHTML = `<button class="btn btn-outline btn-sm" onclick="loadChatTab()" style="margin:8px 0;">← Список</button><div class="chat-full"><div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="adminChatInput" placeholder="Ответить..." value="${savedText}"><button onclick="sendAdminChat('${userId}')">➤</button></div></div>`; 
+async function openAdminChat(userId, name) {
+    const inputEl = document.getElementById('adminChatInput');
+    const savedText = inputEl ? inputEl.value : '';
+    const res = await fetch(API + '/chat/' + userId);
+    const msgs = await res.json();
+    document.getElementById('chatDetail').innerHTML = `<button class="btn btn-outline btn-sm" onclick="loadChatTab()" style="margin:8px 0;">← Список</button><div class="chat-full"><div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="adminChatInput" placeholder="Ответить..." value="${savedText}" onkeypress="if(event.key==='Enter'){event.preventDefault();sendAdminChat('${userId}');}"><button onclick="sendAdminChat('${userId}')">➤</button></div></div>`;
     document.getElementById('chatList').style.display = 'none';
-    
-    const newMsgsBox = document.getElementById('chatMsgs');
-    if (wasAtBottom && newMsgsBox) newMsgsBox.scrollTop = newMsgsBox.scrollHeight;
-    
-    const newInput = document.getElementById('adminChatInput');
-    if (newInput && savedText) { newInput.focus(); newInput.setSelectionRange(savedText.length, savedText.length); }
-
+    document.querySelector('.chat-msgs').scrollTop = document.querySelector('.chat-msgs').scrollHeight;
     clearInterval(window._adminChatInterval);
     window._adminChatInterval = setInterval(() => openAdminChat(userId, name), 3000);
 }
