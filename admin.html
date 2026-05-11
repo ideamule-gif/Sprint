@@ -35,11 +35,10 @@
         .modal.show { display:flex; } .modal-box { background:#fff; padding:20px; border-radius:14px; max-width:360px; margin:20px; width:100%; max-height:80vh; overflow-y:auto; }
         .form-group { margin-bottom:10px; }
         .form-group label { display:block; font-weight:600; font-size:11px; margin-bottom:3px; color:#555; text-transform:uppercase; }
-        .form-group input, .form-group select { width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-size:14px; font-family:inherit; }
+        .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-size:14px; font-family:inherit; }
         .client-card { background:var(--white); padding:14px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:8px; cursor:pointer; }
         .client-card.blocked { opacity:0.6; border-left:4px solid var(--blocked); }
         .workshop-card { background:var(--white); padding:14px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:8px; }
-        .fab { position:fixed; bottom:90px; right:calc(50% - 220px); width:48px; height:48px; border-radius:50%; background:var(--black); color:#fff; font-size:28px; border:none; cursor:pointer; z-index:50; display:flex; align-items:center; justify-content:center; }
         .chat-full { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); height:calc(100vh - 220px); display:flex; flex-direction:column; overflow:hidden; margin-top:8px; position:relative; }
         .chat-full .chat-msgs { flex:1; overflow-y:auto; padding:8px 12px; display:flex; flex-direction:column; gap:4px; }
         .chat-full .chat-msg { max-width:80%; padding:6px 10px; border-radius:12px; font-size:12px; }
@@ -63,6 +62,7 @@
 </head>
 <body>
 
+<!-- ========== ЭКРАН ВХОДА ========== -->
 <div id="loginBlock" style="padding:16px;">
     <h2>🔒 Админ</h2>
     <div class="card">
@@ -71,6 +71,7 @@
     </div>
 </div>
 
+<!-- ========== ОСНОВНОЙ БЛОК (после входа) ========== -->
 <div id="appBlock" style="display:none;">
     <div class="tab active" id="tab-dash"></div>
     <div class="tab" id="tab-orders"></div>
@@ -78,6 +79,7 @@
     <div class="tab" id="tab-chat"></div>
     <div class="tab" id="tab-workshops"></div>
 
+    <!-- ========== НИЖНЕЕ МЕНЮ ========== -->
     <nav class="bottom-nav">
         <div class="nav-item active" data-tab="tab-dash"><span class="nav-icon">📊</span>Главная</div>
         <div class="nav-item" data-tab="tab-orders"><span class="nav-icon">📋</span>Заказы</div>
@@ -87,6 +89,7 @@
     </nav>
 </div>
 
+<!-- ========== ТОСТ И МОДАЛЬНОЕ ОКНО ========== -->
 <div class="toast" id="toast"></div>
 <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
@@ -97,7 +100,7 @@
     let workshops = JSON.parse(localStorage.getItem('workshops') || JSON.stringify([{ id:'admiral', name:'Типография Адмирал', email:'aprint23@mail.ru', phone:'+79286609776', address:'ул. Стасова, 178/1' }]));
     const statusNames = { 'new':'Новый','processing':'В обработке','printing':'В печати','ready':'Готов','shipped':'Отправлен','done':'Доставлен' };
 
-    // Сохранение сессии админа
+    // ========== СЕССИЯ (не выкидывает при обновлении) ==========
     if (sessionStorage.getItem('adminAuth') === '1') {
         document.getElementById('loginBlock').style.display = 'none';
         document.getElementById('appBlock').style.display = 'block';
@@ -105,95 +108,106 @@
         switchTab('tab-dash');
     }
 
+    // ========== ЗВУК И ТОСТ ==========
     function playSound() { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 800; const g = ctx.createGain(); g.gain.value = 0.1; o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.15); } catch (e) {} }
     function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); playSound(); }
 
+    // ========== НАВИГАЦИЯ ПО ВКЛАДКАМ ==========
     function switchTab(id) { document.querySelectorAll('#appBlock .tab').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active')); document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if (id === 'tab-dash') loadDashboard(); if (id === 'tab-orders') loadOrdersTab(); if (id === 'tab-clients') loadClientsTab(); if (id === 'tab-chat') loadChatTab(); if (id === 'tab-workshops') loadWorkshopsTab(); }
     document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.addEventListener('click', () => switchTab(i.dataset.tab)));
 
+    // ========== ВХОД ==========
     function login() { if (document.getElementById('adminPass').value === PASS) { sessionStorage.setItem('adminAuth', '1'); document.getElementById('loginBlock').style.display = 'none'; document.getElementById('appBlock').style.display = 'block'; refreshAll(); switchTab('tab-dash'); requestPushPermission(); } else alert('Неверный пароль'); }
-   
-    function loadDashboard() { const n = allOrders.filter(o => o.status === 'new').length, p = allOrders.filter(o => ['processing','printing'].includes(o.status)).length, r = allOrders.filter(o => ['ready','shipped','done'].includes(o.status)).length; document.getElementById('tab-dash').innerHTML = `<h2>📊 Панель</h2><div class="stat-row"><div class="stat-box"><div class="num">${n}</div><div class="lbl">Новых</div></div><div class="stat-box"><div class="num">${p}</div><div class="lbl">В работе</div></div><div class="stat-box"><div class="num">${r}</div><div class="lbl">Готовых</div></div></div><div class="stat-row"><div class="stat-box"><div class="num">${allUsers.length}</div><div class="lbl">Клиентов</div></div><div class="stat-box"><div class="num">${workshops.length}</div><div class="lbl">Цехов</div></div></div>`; }
-    function loadOrdersTab() { document.getElementById('tab-orders').innerHTML = `<h2>📋 Заказы</h2><select onchange="renderOrders(this.value)" style="width:100%;padding:8px;border-radius:8px;margin-bottom:10px;font-family:inherit;"><option value="all">Все</option><option value="new">Новые</option><option value="progress">В работе</option><option value="ready">Готовые</option></select><div id="ordersList"></div>`; renderOrders('all'); }
-function renderOrders(filter) { 
-    const f = filter === 'all' ? allOrders : filter === 'progress' ? allOrders.filter(o => ['processing','printing'].includes(o.status)) : allOrders.filter(o => o.status === filter || (filter === 'ready' && ['ready','shipped','done'].includes(o.status)));
-    document.getElementById('ordersList').innerHTML = `
-        <input type="text" id="orderSearch" placeholder="🔍 Поиск по номеру, имени, телефону..." oninput="searchOrders()" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;margin-bottom:10px;font-family:inherit;font-size:14px;">
-        <div id="ordersResult">${f.length === 0 ? '<p style="color:var(--gray);text-align:center;">Нет заказов</p>' : f.map(o => `
-            <div class="card" data-search="${o.id} ${o.name||''} ${o.phone||''} ${o.material||''}">
-                <strong>#${o.id}</strong> — ${o.material}<br>
-                ${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br>
-                <span style="font-size:11px;color:var(--gray);">📅 ${new Date(o.createdAt).toLocaleDateString()}</span>
-                <span class="status-badge status-${o.status}">${statusNames[o.status]}</span> ${o.workshop?`🏭 ${o.workshop}`:''}<br>
-                👤 ${o.name} | 📞 <a href="tel:${o.phone}">${o.phone}</a><br>
-                ${o.fileUrl?`📎 <a href="${o.fileUrl}" target="_blank">Скачать макет</a>`:''}
-                ${o.status==='new'?`<button class="btn btn-dark btn-sm" onclick="sendToWorkshop('${o.id}')">🏭 Отправить в цех</button>`:''}
-                <select onchange="updateStatus('${o.id}',this.value)" style="width:100%;padding:4px;margin-top:4px;border-radius:4px;">${Object.keys(statusNames).map(s => `<option value="${s}" ${o.status===s?'selected':''}>${statusNames[s]}</option>`).join('')}</select>
-            </div>`).join('')}</div>`;
-}
 
-function searchOrders() {
-    const query = document.getElementById('orderSearch').value.toLowerCase();
-    document.querySelectorAll('#ordersResult .card').forEach(c => {
-        c.style.display = c.dataset.search.toLowerCase().includes(query) ? 'block' : 'none';
-    });
-}
+    // ========== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ==========
+    async function refreshAll() { try { allOrders = await (await fetch(API + '/admin/orders')).json(); allUsers = await (await fetch(API + '/users')).json(); } catch (e) {} }
+
+    // ========== ГЛАВНАЯ (ДАШБОРД) ==========
+    function loadDashboard() { const n = allOrders.filter(o => o.status === 'new').length, p = allOrders.filter(o => ['processing','printing'].includes(o.status)).length, r = allOrders.filter(o => ['ready','shipped','done'].includes(o.status)).length; document.getElementById('tab-dash').innerHTML = `<h2>📊 Панель</h2><div class="stat-row"><div class="stat-box"><div class="num">${n}</div><div class="lbl">Новых</div></div><div class="stat-box"><div class="num">${p}</div><div class="lbl">В работе</div></div><div class="stat-box"><div class="num">${r}</div><div class="lbl">Готовых</div></div></div><div class="stat-row"><div class="stat-box"><div class="num">${allUsers.length}</div><div class="lbl">Клиентов</div></div><div class="stat-box"><div class="num">${workshops.length}</div><div class="lbl">Цехов</div></div></div>`; }
+
+    // ========== ЗАКАЗЫ (список, поиск, добавить, редактировать) ==========
+    function loadOrdersTab() { document.getElementById('tab-orders').innerHTML = `<h2>📋 Заказы</h2><button class="btn btn-dark btn-sm" onclick="addOrder()" style="margin-bottom:8px;">+ Новый заказ</button><select onchange="renderOrders(this.value)" style="width:100%;padding:8px;border-radius:8px;margin-bottom:10px;font-family:inherit;"><option value="all">Все</option><option value="new">Новые</option><option value="progress">В работе</option><option value="ready">Готовые</option></select><div id="ordersList"></div>`; renderOrders('all'); }
+
+    function renderOrders(filter) { 
+        const f = filter === 'all' ? allOrders : filter === 'progress' ? allOrders.filter(o => ['processing','printing'].includes(o.status)) : allOrders.filter(o => o.status === filter || (filter === 'ready' && ['ready','shipped','done'].includes(o.status)));
+        document.getElementById('ordersList').innerHTML = `
+            <input type="text" id="orderSearch" placeholder="🔍 Поиск по номеру, имени, телефону..." oninput="searchOrders()" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;margin-bottom:10px;font-family:inherit;font-size:14px;">
+            <div id="ordersResult">${f.length === 0 ? '<p style="color:var(--gray);text-align:center;">Нет заказов</p>' : f.map(o => `
+                <div class="card" data-search="${o.id} ${o.name||''} ${o.phone||''} ${o.material||''}">
+                    <strong>#${o.id}</strong> — ${o.material}<br>
+                    ${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br>
+                    <span style="font-size:11px;color:var(--gray);">📅 ${new Date(o.createdAt).toLocaleDateString()}</span>
+                    <span class="status-badge status-${o.status}">${statusNames[o.status]}</span> ${o.workshop?`🏭 ${o.workshop}`:''}<br>
+                    👤 <a href="#" onclick="event.preventDefault();openClientProfile('${o.userId}')">${o.name||'—'}</a> | 📞 <a href="tel:${o.phone}">${o.phone}</a><br>
+                    ${o.fileUrl?`📎 <a href="${o.fileUrl}" target="_blank">Скачать макет</a>`:''}
+                    ${o.status==='new'?`<button class="btn btn-dark btn-sm" onclick="sendToWorkshop('${o.id}')">🏭 Отправить в цех</button>`:''}
+                    <button class="btn btn-outline btn-sm" onclick="editOrder('${o.id}')">✏️ Редактировать</button>
+                    <select onchange="updateStatus('${o.id}',this.value)" style="width:100%;padding:4px;margin-top:4px;border-radius:4px;">${Object.keys(statusNames).map(s => `<option value="${s}" ${o.status===s?'selected':''}>${statusNames[s]}</option>`).join('')}</select>
+                </div>`).join('')}</div>`;
+    }
+
+    function searchOrders() { const query = document.getElementById('orderSearch').value.toLowerCase(); document.querySelectorAll('#ordersResult .card').forEach(c => { c.style.display = c.dataset.search.toLowerCase().includes(query) ? 'block' : 'none'; }); }
+
+    function addOrder() {
+        document.getElementById('modalContent').innerHTML = `<h3>➕ Новый заказ</h3>
+            <div class="form-group"><label>Материал</label><input type="text" id="newOrdMat" value="Баннер 440г"></div>
+            <div class="form-group"><label>Ширина, мм</label><input type="number" id="newOrdW" value="1000"></div>
+            <div class="form-group"><label>Высота, мм</label><input type="number" id="newOrdH" value="1000"></div>
+            <div class="form-group"><label>Кол-во</label><input type="number" id="newOrdQty" value="1"></div>
+            <div class="form-group"><label>Итого, р.</label><input type="number" id="newOrdTotal" value="1000"></div>
+            <div class="form-group"><label>Имя клиента</label><input type="text" id="newOrdName"></div>
+            <div class="form-group"><label>Телефон</label><input type="tel" id="newOrdPhone"></div>
+            <button class="btn btn-dark" onclick="saveNewOrder()">Сохранить</button><button class="btn btn-outline" onclick="closeModal()">Отмена</button>`;
+        document.getElementById('modal').classList.add('show');
+    }
+
+    function saveNewOrder() {
+        const order = { _id: String(allOrders.length + 1).padStart(6, '0'), material: document.getElementById('newOrdMat').value, width: parseInt(document.getElementById('newOrdW').value), height: parseInt(document.getElementById('newOrdH').value), qty: parseInt(document.getElementById('newOrdQty').value), total: parseInt(document.getElementById('newOrdTotal').value), name: document.getElementById('newOrdName').value, phone: document.getElementById('newOrdPhone').value, status: 'new', createdAt: new Date().toISOString() };
+        allOrders.unshift(order);
+        closeModal();
+        loadOrdersTab();
+        showToast('✅ Заказ добавлен');
+    }
+
+    function editOrder(orderId) {
+        const o = allOrders.find(x => x.id === orderId); if (!o) return;
+        document.getElementById('modalContent').innerHTML = `<h3>✏️ Редактировать #${o.id}</h3>
+            <div class="form-group"><label>Материал</label><input type="text" id="editOrdMat" value="${o.material}"></div>
+            <div class="form-group"><label>Ширина, мм</label><input type="number" id="editOrdW" value="${o.width}"></div>
+            <div class="form-group"><label>Высота, мм</label><input type="number" id="editOrdH" value="${o.height}"></div>
+            <div class="form-group"><label>Кол-во</label><input type="number" id="editOrdQty" value="${o.qty}"></div>
+            <div class="form-group"><label>Итого, р.</label><input type="number" id="editOrdTotal" value="${o.total}"></div>
+            <div class="form-group"><label>Имя</label><input type="text" id="editOrdName" value="${o.name||''}"></div>
+            <div class="form-group"><label>Телефон</label><input type="tel" id="editOrdPhone" value="${o.phone||''}"></div>
+            <button class="btn btn-dark" onclick="saveEditOrder('${orderId}')">Сохранить</button><button class="btn btn-outline" onclick="closeModal()">Отмена</button>`;
+        document.getElementById('modal').classList.add('show');
+    }
+
+    function saveEditOrder(orderId) {
+        const o = allOrders.find(x => x.id === orderId); if (!o) return;
+        o.material = document.getElementById('editOrdMat').value; o.width = parseInt(document.getElementById('editOrdW').value); o.height = parseInt(document.getElementById('editOrdH').value); o.qty = parseInt(document.getElementById('editOrdQty').value); o.total = parseInt(document.getElementById('editOrdTotal').value); o.name = document.getElementById('editOrdName').value; o.phone = document.getElementById('editOrdPhone').value;
+        closeModal();
+        loadOrdersTab();
+        showToast('✅ Заказ обновлён');
+    }
+
     async function updateStatus(id, status) { await fetch(API + '/admin/status', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ orderId:id, status }) }); refreshAll(); loadOrdersTab(); showToast(`📋 Статус #${id}: ${statusNames[status]}`); }
     function sendToWorkshop(orderId) { const order = allOrders.find(o => o.id === orderId); if (!order) return; document.getElementById('modalContent').innerHTML = `<h3>🏭 Выберите цех</h3>${workshops.map(w => `<div class="workshop-card" onclick="confirmSend('${orderId}','${w.id}')"><strong>${w.name}</strong><br><a href="mailto:${w.email}">📧 ${w.email}</a> | <a href="tel:${w.phone}">📞 ${w.phone}</a></div>`).join('')}<button class="btn btn-outline" onclick="closeModal()">Отмена</button>`; document.getElementById('modal').classList.add('show'); }
     async function confirmSend(orderId, wsId) { const ws = workshops.find(w => w.id === wsId), order = allOrders.find(o => o.id === orderId); if (!ws || !order) return; await updateStatus(orderId, 'processing'); order.workshop = ws.name; closeModal(); refreshAll(); loadOrdersTab(); }
 
-    function loadClientsTab() { document.getElementById('tab-clients').innerHTML = `<h2>👥 Клиенты</h2><div id="clientsList"></div>`; renderClients(); }
-    function renderClients() { document.getElementById('clientsList').innerHTML = allUsers.length === 0 ? '<p style="color:var(--gray);">Нет клиентов</p>' : allUsers.map(u => `<div class="client-card ${u.blocked?'blocked':''}" onclick="openClientProfile('${u.id}')"><strong>${u.name||'Без имени'}</strong> ${u.blocked?'🚫':''}<br><a href="mailto:${u.email}" onclick="event.stopPropagation()">📧 ${u.email}</a> | <a href="tel:${u.phone}" onclick="event.stopPropagation()">📞 ${u.phone||'—'}</a><br><span style="font-size:11px;">Заказов: ${allOrders.filter(o => o.userId === u.id).length} | ID: ${u.id?.slice(-6)||'—'}</span></div>`).join(''); }
+    // ========== КЛИЕНТЫ (список, поиск, профиль, блокировка, удаление) ==========
+    function loadClientsTab() { document.getElementById('tab-clients').innerHTML = `<h2>👥 Клиенты</h2><input type="text" id="clientSearch" placeholder="🔍 Поиск клиентов..." oninput="searchClients()" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;margin-bottom:10px;font-family:inherit;font-size:14px;"><div id="clientsList"></div>`; renderClients(); }
+    function renderClients() { document.getElementById('clientsList').innerHTML = allUsers.length === 0 ? '<p style="color:var(--gray);">Нет клиентов</p>' : allUsers.map(u => `<div class="client-card ${u.blocked?'blocked':''}" data-csearch="${u.name||''} ${u.email||''} ${u.phone||''}" onclick="openClientProfile('${u.id}')"><strong>${u.name||'Без имени'}</strong> ${u.blocked?'🚫':''}<br><a href="mailto:${u.email}" onclick="event.stopPropagation()">📧 ${u.email}</a> | <a href="tel:${u.phone}" onclick="event.stopPropagation()">📞 ${u.phone||'—'}</a><br><span style="font-size:11px;">Заказов: ${allOrders.filter(o => o.userId === u.id).length} | ID: ${u.id?.slice(-6)||'—'}</span></div>`).join(''); }
+    function searchClients() { const q = document.getElementById('clientSearch').value.toLowerCase(); document.querySelectorAll('#clientsList .client-card').forEach(c => { c.style.display = c.dataset.csearch.toLowerCase().includes(q) ? 'block' : 'none'; }); }
+
     function openClientProfile(userId) { const user = allUsers.find(u => u.id === userId); if (!user) return; document.getElementById('modalContent').innerHTML = `<h3>👤 ${user.name||'Без имени'}</h3><p><strong>ID:</strong> ${user.id}</p><p>📧 <a href="mailto:${user.email}">${user.email}</a></p><p>📞 <a href="tel:${user.phone}">${user.phone||'—'}</a></p><p>📅 Зарегистрирован: ${new Date(user.createdAt).toLocaleDateString()}</p><p>🚫 Статус: ${user.blocked ? 'Заблокирован' : 'Активен'}</p><button class="btn btn-outline btn-sm" onclick="toggleBlockUser('${userId}')">${user.blocked ? '✅ Разблокировать' : '🚫 Заблокировать'}</button><button class="btn btn-red btn-sm" onclick="deleteUser('${userId}')">🗑 Удалить клиента</button><button class="btn btn-outline" onclick="closeModal()" style="margin-top:8px;">Закрыть</button>`; document.getElementById('modal').classList.add('show'); }
     function toggleBlockUser(userId) { let user = allUsers.find(u => u.id === userId); if (!user) return; user.blocked = !user.blocked; localStorage.setItem('blocked_' + userId, user.blocked ? '1' : ''); closeModal(); loadClientsTab(); }
-    function deleteUser(userId) { if (!confirm('Точно удалить клиента? Все его заказы сохранятся.')) return; allUsers = allUsers.filter(u => u.id !== userId); closeModal(); loadClientsTab(); showToast('🗑 Клиент удалён'); }
+    function deleteUser(userId) { if (!confirm('Точно удалить клиента?')) return; allUsers = allUsers.filter(u => u.id !== userId); closeModal(); loadClientsTab(); showToast('🗑 Клиент удалён'); }
 
     // ========== ЧАТ ==========
-    async function loadChatTab() { 
-        clearInterval(window._adminChatInterval);
-        const container = document.getElementById('tab-chat'); 
-        const res = await fetch(API + '/admin/chats'); 
-        const chats = await res.json(); 
-        container.innerHTML = `<h2>💬 Чат</h2><div id="chatList"></div><div id="chatDetail"></div>`; 
-        document.getElementById('chatList').innerHTML = chats.length === 0 ? '<p style="color:var(--gray);">Нет сообщений</p>' : chats.map(c => `<div class="chat-list-item" onclick="openAdminChat('${c.userId}','${c.name}')"><div class="chat-preview"><div class="chat-name">${c.name}</div><div class="chat-last">${c.lastMessage||''}</div></div></div>`).join(''); 
-    }
-
-    async function openAdminChat(userId, name) {
-        const res = await fetch(API + '/chat/' + userId);
-        const msgs = await res.json();
-        const msgsBox = document.querySelector('#chatDetail .chat-msgs');
-        if (msgsBox) {
-            const wasAtBottom = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight < 60;
-            msgsBox.innerHTML = msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('');
-            const btn = document.querySelector('.scroll-down-btn');
-            if (btn) btn.style.display = wasAtBottom ? 'none' : 'flex';
-            if (wasAtBottom) msgsBox.scrollTop = msgsBox.scrollHeight;
-        } else {
-            document.getElementById('chatDetail').innerHTML = `
-                <button class="btn btn-outline btn-sm" onclick="loadChatTab()" style="margin:8px 0;">← Список</button>
-                <div class="chat-full">
-                    <div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div>
-                    <button class="scroll-down-btn" onclick="document.querySelector('.chat-msgs').scrollTop = document.querySelector('.chat-msgs').scrollHeight; this.style.display='none';">↓</button>
-                    <div class="chat-input-row"><input type="text" id="adminChatInput" placeholder="Ответить..." onkeypress="if(event.key==='Enter'){event.preventDefault();sendAdminChat('${userId}');}"><button onclick="sendAdminChat('${userId}')">➤</button></div>
-                </div>`;
-            document.getElementById('chatList').style.display = 'none';
-            const msgsEl = document.querySelector('.chat-msgs');
-            if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight;
-        }
-        clearInterval(window._adminChatInterval);
-        window._adminChatInterval = setInterval(() => openAdminChat(userId, name), 3000);
-    }
-
-    async function sendAdminChat(userId) {
-        const input = document.getElementById('adminChatInput');
-        const text = input.value.trim();
-        if (!text) return;
-        input.value = '';
-        await fetch(API + '/chat', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ from:'admin', text, userId }) });
-        const user = allUsers.find(u => u.id === userId);
-        openAdminChat(userId, user?.name || 'Клиент');
-        showToast('💬 Отправлено');
-    }
+    async function loadChatTab() { clearInterval(window._adminChatInterval); const container = document.getElementById('tab-chat'); const res = await fetch(API + '/admin/chats'); const chats = await res.json(); container.innerHTML = `<h2>💬 Чат</h2><div id="chatList"></div><div id="chatDetail"></div>`; document.getElementById('chatList').innerHTML = chats.length === 0 ? '<p style="color:var(--gray);">Нет сообщений</p>' : chats.map(c => `<div class="chat-list-item" onclick="openAdminChat('${c.userId}','${c.name}')"><div class="chat-preview"><div class="chat-name">${c.name}</div><div class="chat-last">${c.lastMessage||''}</div></div></div>`).join(''); }
+    async function openAdminChat(userId, name) { const res = await fetch(API + '/chat/' + userId); const msgs = await res.json(); const msgsBox = document.querySelector('#chatDetail .chat-msgs'); if (msgsBox) { const wasAtBottom = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight < 60; msgsBox.innerHTML = msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join(''); const btn = document.querySelector('.scroll-down-btn'); if (btn) btn.style.display = wasAtBottom ? 'none' : 'flex'; if (wasAtBottom) msgsBox.scrollTop = msgsBox.scrollHeight; } else { document.getElementById('chatDetail').innerHTML = `<button class="btn btn-outline btn-sm" onclick="loadChatTab()" style="margin:8px 0;">← Список</button><div class="chat-full"><div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><button class="scroll-down-btn" onclick="document.querySelector('.chat-msgs').scrollTop = document.querySelector('.chat-msgs').scrollHeight; this.style.display='none';">↓</button><div class="chat-input-row"><input type="text" id="adminChatInput" placeholder="Ответить..." onkeypress="if(event.key==='Enter'){event.preventDefault();sendAdminChat('${userId}');}"><button onclick="sendAdminChat('${userId}')">➤</button></div></div>`; document.getElementById('chatList').style.display = 'none'; const msgsEl = document.querySelector('.chat-msgs'); if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight; } clearInterval(window._adminChatInterval); window._adminChatInterval = setInterval(() => openAdminChat(userId, name), 3000); }
+    async function sendAdminChat(userId) { const input = document.getElementById('adminChatInput'); const text = input.value.trim(); if (!text) return; input.value = ''; await fetch(API + '/chat', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ from:'admin', text, userId }) }); const user = allUsers.find(u => u.id === userId); openAdminChat(userId, user?.name || 'Клиент'); showToast('💬 Отправлено'); }
 
     // ========== ЦЕХ ==========
     function loadWorkshopsTab() { document.getElementById('tab-workshops').innerHTML = `<div class="workshop-header"><h2>🏭 Цеха</h2><button class="btn-add-sm" onclick="addWorkshop()">+</button></div><div id="workshopsList"></div>`; renderWorkshops(); }
@@ -205,32 +219,14 @@ function searchOrders() {
     function deleteWorkshop(i) { if (confirm('Удалить цех?')) { workshops.splice(i, 1); localStorage.setItem('workshops', JSON.stringify(workshops)); loadWorkshopsTab(); } }
     function closeModal() { document.getElementById('modal').classList.remove('show'); }
 
+    // ========== АВТООБНОВЛЕНИЕ И PUSH ==========
     setInterval(async () => { if (document.getElementById('appBlock').style.display === 'block') { const prev = allOrders.filter(o => o.status === 'new').length; await refreshAll(); const now = allOrders.filter(o => o.status === 'new').length; if (now > prev) showToast(`🔵 Новых заказов: ${now}`); } }, 15000);
-
     refreshAll();
     document.getElementById('adminPass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 
-   // ========== PUSH-УВЕДОМЛЕНИЯ ДЛЯ АДМИНА ==========
-async function requestPushPermission() {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-    const reg = await navigator.serviceWorker.ready;
-    let sub = await reg.pushManager.getSubscription();
-    if (!sub) {
-        const perm = await Notification.requestPermission();
-        if (perm === 'granted') {
-            sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array('BO4rOIC4gMmMlgze-laJFcHh71oauLdhZji_Knqag6Z2MIosXOdueOofIbvlnH-EHIdr170jTLrFWhAOL-NcVds') });
-        }
-    }
-}
-
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
-    return outputArray;
-}
+    // ========== PUSH-УВЕДОМЛЕНИЯ ДЛЯ АДМИНА ==========
+    async function requestPushPermission() { if (!('serviceWorker' in navigator) || !('PushManager' in window)) return; const perm = await Notification.requestPermission(); if (perm === 'granted') { const reg = await navigator.serviceWorker.ready; let sub = await reg.pushManager.getSubscription(); if (!sub) { sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array('BO4rOIC4gMmMlgze-laJFcHh71oauLdhZji_Knqag6Z2MIosXOdueOofIbvlnH-EHIdr170jTLrFWhAOL-NcVds') }); } } }
+    function urlBase64ToUint8Array(base64String) { const padding = '='.repeat((4 - base64String.length % 4) % 4); const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/'); const rawData = window.atob(base64); const outputArray = new Uint8Array(rawData.length); for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); } return outputArray; }
 </script>
 </body>
 </html>
