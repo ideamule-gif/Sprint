@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const webpush = require('web-push');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -30,14 +31,10 @@ const BOT_TOKEN = '8727458645:AAEp0YLowPJYs9FirMYDFM9votOm9vOZieU';
 const ADMIN_CHAT_ID = '7656839845';
 const statusNames = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' };
 
+webpush.setVapidDetails('mailto:ideamule@gmail.com', 'BO4rOIC4gMmMlgze-laJFcHh71oauLdhZji_Knqag6Z2MIosXOdueOofIbvlnH-EHIdr170jTLrFWhAOL-NcVds', 'C_Vy3LyU0wSHsZYy_S6yoSK7iFkmPoOPDFVJcOozRa8');
+
 async function sendTelegram(chatId, text) {
-    try {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text })
-        });
-    } catch (e) { console.error('TG error:', e.message); }
+    try { await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chatId, text }) }); } catch (e) {}
 }
 
 // Главная
@@ -97,11 +94,8 @@ app.post('/api/order', async (req, res) => {
     }
     delete order.fileBase64;
     await orders.insertOne(order);
-
     const extrasText = order.extras?.length > 0 ? order.extras.map(e => `${e.name}: ${Math.round(e.cost)} р.`).join(', ') : 'Нет';
-    const msg = `🔵 НОВЫЙ ЗАКАЗ #${order._id}\n\n📦 ${order.material}\n📐 ${order.width}×${order.height} мм\n🔢 ${order.qty} шт\n🔧 ${extrasText}\n🚕 Доставка: 300 р.\n💰 Сумма: ${order.total} р.\n\n👤 ${order.name}\n📞 ${order.phone}\n📍 ${order.addr||'—'}${order.fileUrl?'\n\n📎 '+order.fileUrl:''}`;
-    sendTelegram(ADMIN_CHAT_ID, msg);
-
+    sendTelegram(ADMIN_CHAT_ID, `🔵 НОВЫЙ ЗАКАЗ #${order._id}\n\n📦 ${order.material}\n📐 ${order.width}×${order.height} мм\n🔢 ${order.qty} шт\n🔧 ${extrasText}\n🚕 Доставка: 300 р.\n💰 Сумма: ${order.total} р.\n\n👤 ${order.name}\n📞 ${order.phone}\n📍 ${order.addr||'—'}${order.fileUrl?'\n\n📎 '+order.fileUrl:''}`);
     res.json({ success: true, id: order._id });
 });
 
@@ -113,8 +107,7 @@ app.get('/api/orders/:userId', async (req, res) => {
 
 // ========== ВСЕ ЗАКАЗЫ (АДМИН) ==========
 app.get('/api/admin/orders', async (req, res) => {
-    const orders = await db.collection('orders').find().sort({ createdAt: -1 }).toArray();
-    res.json(orders.map(o => ({ ...o, id: o._id })));
+    res.json(await db.collection('orders').find().sort({ createdAt: -1 }).toArray().then(o => o.map(x => ({ ...x, id: x._id }))));
 });
 
 // ========== СМЕНА СТАТУСА ==========
@@ -123,25 +116,31 @@ app.post('/api/admin/status', async (req, res) => {
     const order = await db.collection('orders').findOne({ _id: orderId });
     if (!order) return res.json({ success: false, error: 'Заказ не найден' });
     await db.collection('orders').updateOne({ _id: orderId }, { $set: { status } });
-
-    // Уведомление админу
     sendTelegram(ADMIN_CHAT_ID, `📋 Статус заказа #${orderId}: ${statusNames[status] || status}`);
-
-    // Уведомление клиенту в Telegram
     if (order.userId) {
         const user = await db.collection('users').findOne({ _id: new (require('mongodb').ObjectId)(order.userId) }).catch(() => null);
-        if (user?.telegramId) {
-            sendTelegram(user.telegramId, `📋 Ваш заказ #${orderId}\nСтатус: ${statusNames[status] || status}\nМатериал: ${order.material}`);
+        if (user?.telegramId) sendTelegram(user.telegramId, `📋 Ваш заказ #${orderId}\nСтатус: ${statusNames[status] || status}\nМатериал: ${order.material}`);
+        if (user?.pushSub) {
+            webpush.sendNotification(user.pushSub, JSON.stringify({ title: 'Статус заказа', body: `Заказ #${orderId}: ${statusNames[status] || status}`, url: '/' })).catch(() => {});
         }
     }
-
     res.json({ success: true });
+});
+
+// ========== PUSH-ПОДПИСКА ==========
+app.post('/api/push-subscribe', async (req, res) => {
+    const { userId, subscription } = req.body;
+    if (!userId || !subscription) return res.json({ success: false });
+    try {
+        await db.collection('users').updateOne({ _id: new (require('mongodb').ObjectId)(userId) }, { $set: { pushSub: subscription } });
+        res.json({ success: true });
+    } catch (e) { res.json({ success: false, error: e.message }); }
 });
 
 // ========== ВСЕ ПОЛЬЗОВАТЕЛИ ==========
 app.get('/api/users', async (req, res) => {
     const users = await db.collection('users').find().toArray();
-    res.json(users.map(u => ({ id: u._id.toString(), email: u.email, name: u.name, phone: u.phone, telegramId: u.telegramId, createdAt: u.createdAt })));
+    res.json(users.map(u => ({ id: u._id.toString(), email: u.email, name: u.name, phone: u.phone, telegramId: u.telegramId, blocked: u.blocked, createdAt: u.createdAt })));
 });
 
 // ========== ЧАТ ==========
@@ -152,20 +151,16 @@ app.get('/api/chat/:userId', async (req, res) => {
 app.post('/api/chat', async (req, res) => {
     const msg = { ...req.body, time: new Date() };
     await db.collection('chat').insertOne(msg);
-
-    // Уведомление админу
     if (msg.from !== 'admin') {
-        sendTelegram(ADMIN_CHAT_ID, `💬 Новое сообщение от клиента ${msg.userId}:\n${msg.text}`);
+        sendTelegram(ADMIN_CHAT_ID, `💬 Новое сообщение от клиента:\n${msg.text}`);
     }
-
-    // Уведомление клиенту
     if (msg.from === 'admin' && msg.userId) {
         const user = await db.collection('users').findOne({ _id: new (require('mongodb').ObjectId)(msg.userId) }).catch(() => null);
-        if (user?.telegramId) {
-            sendTelegram(user.telegramId, `💬 Поддержка:\n${msg.text}`);
+        if (user?.telegramId) sendTelegram(user.telegramId, `💬 Поддержка:\n${msg.text}`);
+        if (user?.pushSub) {
+            webpush.sendNotification(user.pushSub, JSON.stringify({ title: 'Новое сообщение', body: msg.text, url: '/' })).catch(() => {});
         }
     }
-
     res.json({ success: true });
 });
 
@@ -178,9 +173,7 @@ app.get('/api/admin/chats', async (req, res) => {
     for (const uid of userIds) {
         if (!uid || uid.length !== 24) continue;
         let user = null;
-        try {
-            user = await users.findOne({ _id: new (require('mongodb').ObjectId)(uid) });
-        } catch (e) { continue; }
+        try { user = await users.findOne({ _id: new (require('mongodb').ObjectId)(uid) }); } catch (e) { continue; }
         const lastMsg = await chat.findOne({ userId: uid }, { sort: { time: -1 } });
         result.push({ userId: uid, name: user?.name || uid, email: user?.email || '', lastMessage: lastMsg?.text || '', lastTime: lastMsg?.time || null });
     }
