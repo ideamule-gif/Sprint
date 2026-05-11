@@ -1,6 +1,6 @@
 {
-    "name": "Заказ печати",
-    "short_name": "Печать",
+    "name": "Сервис заказ баннеров",
+    "short_name": "Landpa",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#0a0a0a",
