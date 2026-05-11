@@ -132,7 +132,6 @@
     function renderOrderStep() {
         const container = document.getElementById('orderStep');
         clearInterval(window._chatInterval);
-window._chatInterval = setInterval(loadChatPage, 3000);
         if (orderStep === 1) {
             container.innerHTML = `<h2 style="font-weight:800;margin-bottom:14px;">Выберите материал</h2><div class="tile-row"><div class="tile" onclick="selectMaterial('banner')"><div class="tile-icon">🪧</div><div class="tile-title">Баннер</div><div class="tile-sub">300г / 440г / 510г</div></div><div class="tile" onclick="selectMaterial('selfad')"><div class="tile-icon">🏷️</div><div class="tile-title">Самоклейка</div><div class="tile-sub">Матовая / глянцевая</div></div><div class="tile" onclick="selectMaterial('poster')"><div class="tile-icon">🖼️</div><div class="tile-title">Плакат</div><div class="tile-sub">Blueback / белая бумага</div></div></div>`;
         } else if (orderStep === 2) {
@@ -170,13 +169,20 @@ window._chatInterval = setInterval(loadChatPage, 3000);
         try { const res = await fetch(API + '/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) }); const data = await res.json(); if (data.success) { if (!currentUser && email) { currentUser = { email, name, phone, addr: order.addr }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); } alert('✅ Заказ #' + data.id + ' оформлен!'); orderStep = 1; renderOrderStep(); switchTab('tab-home'); } } catch (e) { alert('Ошибка сервера'); }
     }
 
-    async function loadChatPage() {
-        const container = document.getElementById('chatPage');
-        if (!currentUser) { container.innerHTML = '<div class="card"><p style="color:var(--gray);text-align:center;">Войдите в профиль, чтобы использовать чат.</p><button class="btn btn-primary" onclick="switchTab(\'tab-profile\')">👤 Войти</button></div>'; return; }
-        const res = await fetch(API + '/chat/' + currentUser.id); const msgs = await res.json();
-        container.innerHTML = `<div class="chat-box"><div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..." onkeydown="if(event.key==='Enter')sendChatPage()"><button onclick="sendChatPage()">➤</button></div></div>`;
-        document.getElementById('chatMsgs').scrollTop = document.getElementById('chatMsgs').scrollHeight;
+   async function loadChatPage() {
+    const container = document.getElementById('chatPage');
+    if (!currentUser) { 
+        container.innerHTML = '<div class="card"><p style="color:var(--gray);text-align:center;">Войдите в профиль, чтобы использовать чат.</p><button class="btn btn-primary" onclick="switchTab(\'tab-profile\')">👤 Войти</button></div>'; 
+        clearInterval(window._chatInterval);
+        return; 
     }
+    const res = await fetch(API + '/chat/' + currentUser.id); 
+    const msgs = await res.json();
+    container.innerHTML = `<div class="chat-box"><div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..." onkeydown="if(event.key==='Enter')sendChatPage()"><button onclick="sendChatPage()">➤</button></div></div>`;
+    document.getElementById('chatMsgs').scrollTop = document.getElementById('chatMsgs').scrollHeight;
+    clearInterval(window._chatInterval);
+    window._chatInterval = setInterval(loadChatPage, 3000);
+}
     async function sendChatPage() { const text = document.getElementById('chatInput').value.trim(); if (!text || !currentUser?.id) return; await fetch(API + '/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id, from: currentUser.email || 'client', text }) }); loadChatPage(); }
 
     function loadProfile() {
