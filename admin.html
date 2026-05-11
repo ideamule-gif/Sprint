@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Админ-панель</title>
+    <link rel="manifest" href="/manifest-admin.json">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --white:#fff; --black:#0a0a0a; --gray:#999; --border:#e0e0e0; --radius:14px; --shadow:0 2px 10px rgba(0,0,0,0.05); --green:#2e7d32; --blue:#1565c0; --orange:#e65100; --red:#c62828; }
+        :root { --white:#fff; --black:#0a0a0a; --gray:#999; --border:#e0e0e0; --radius:14px; --shadow:0 2px 10px rgba(0,0,0,0.05); --green:#2e7d32; --blue:#1565c0; --orange:#e65100; --red:#c62828; --blocked:#ff4757; }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter',-apple-system,sans-serif; background:#f5f5f5; color:var(--black); font-weight:400; max-width:480px; margin:0 auto; min-height:100vh; -webkit-tap-highlight-color:transparent; padding-bottom:80px; }
         h2 { font-weight:800; margin-bottom:14px; }
@@ -25,12 +30,14 @@
         .btn { display:block; width:100%; padding:10px; border-radius:8px; font-weight:700; font-size:13px; border:none; cursor:pointer; font-family:inherit; text-align:center; margin-top:6px; }
         .btn-dark { background:var(--black); color:#fff; } .btn-outline { background:transparent; border:2px solid var(--black); color:var(--black); margin-top:10px; }
         .btn-sm { width:auto; display:inline-block; padding:6px 12px; font-size:11px; }
+        .btn-red { background:var(--red); color:#fff; }
         .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:200; justify-content:center; align-items:center; }
         .modal.show { display:flex; } .modal-box { background:#fff; padding:20px; border-radius:14px; max-width:360px; margin:20px; width:100%; max-height:80vh; overflow-y:auto; }
         .form-group { margin-bottom:10px; }
         .form-group label { display:block; font-weight:600; font-size:11px; margin-bottom:3px; color:#555; text-transform:uppercase; }
         .form-group input, .form-group select { width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-size:14px; font-family:inherit; }
         .client-card { background:var(--white); padding:14px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:8px; cursor:pointer; }
+        .client-card.blocked { opacity:0.6; border-left:4px solid var(--blocked); }
         .workshop-card { background:var(--white); padding:14px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:8px; }
         .fab { position:fixed; bottom:90px; right:calc(50% - 220px); width:48px; height:48px; border-radius:50%; background:var(--black); color:#fff; font-size:28px; border:none; cursor:pointer; z-index:50; display:flex; align-items:center; justify-content:center; }
         .chat-full { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); height:calc(100vh - 250px); display:flex; flex-direction:column; overflow:hidden; margin-top:8px; }
@@ -41,12 +48,13 @@
         .chat-full .chat-input-row { display:flex; gap:4px; padding:6px; border-top:1px solid var(--border); }
         .chat-full .chat-input-row input { flex:1; padding:8px; border:1px solid var(--border); border-radius:16px; font-family:inherit; font-size:13px; }
         .chat-full .chat-input-row button { padding:8px 14px; border-radius:16px; background:var(--black); color:#fff; border:none; font-weight:600; cursor:pointer; }
-        .chat-list-item { background:var(--white); padding:12px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:6px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+        .chat-list-item { background:var(--white); padding:12px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:6px; cursor:pointer; display:flex; justify-content:space-between; }
         .chat-list-item .chat-preview { flex:1; }
         .chat-list-item .chat-name { font-weight:700; font-size:13px; }
         .chat-list-item .chat-last { font-size:11px; color:var(--gray); }
         .toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--black); color:#fff; padding:12px 20px; border-radius:20px; font-weight:600; font-size:13px; z-index:300; opacity:0; transition:opacity 0.3s; pointer-events:none; }
         .toast.show { opacity:1; }
+        a { color:var(--blue); text-decoration:none; }
     </style>
 </head>
 <body>
@@ -71,7 +79,7 @@
         <div class="nav-item" data-tab="tab-orders"><span class="nav-icon">📋</span>Заказы</div>
         <div class="nav-item" data-tab="tab-clients"><span class="nav-icon">👥</span>Клиенты</div>
         <div class="nav-item" data-tab="tab-chat"><span class="nav-icon">💬</span>Чат</div>
-        <div class="nav-item" data-tab="tab-workshops"><span class="nav-icon">🏭</span>Тип.</div>
+        <div class="nav-item" data-tab="tab-workshops"><span class="nav-icon">🏭</span>Цех</div>
     </nav>
 </div>
 
@@ -85,122 +93,82 @@
     let workshops = JSON.parse(localStorage.getItem('workshops') || JSON.stringify([{ id:'admiral', name:'Типография Адмирал', email:'aprint23@mail.ru', phone:'+79286609776', address:'ул. Стасова, 178/1' }]));
     const statusNames = { 'new':'Новый','processing':'В обработке','printing':'В печати','ready':'Готов','shipped':'Отправлен','done':'Доставлен' };
 
-    // ========== ЗВУК ==========
-    function playSound() { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 800; const g = ctx.createGain();
-            g.gain.value = 0.1;
-            o.connect(g);
-            g.connect(ctx.destination);
-            o.start();
-            o.stop(ctx.currentTime + 0.15); } catch (e) {} }
+    function playSound() { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 800; const g = ctx.createGain(); g.gain.value = 0.1; o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.15); } catch (e) {} }
+    function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); playSound(); }
 
-    // ========== TOAST ==========
-    function showToast(msg) { const t = document.getElementById('toast');
-        t.innerText = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-        playSound(); }
-
-    // ========== НАВИГАЦИЯ ==========
-    function switchTab(id) { document.querySelectorAll('#appBlock .tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
-        document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if (id === 'tab-dash') loadDashboard(); if (id === 'tab-orders') loadOrdersTab(); if (id === 'tab-clients') loadClientsTab(); if (id === 'tab-chat') loadChatTab(); if (id === 'tab-workshops') loadWorkshopsTab(); }
+    function switchTab(id) { document.querySelectorAll('#appBlock .tab').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active')); document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if (id === 'tab-dash') loadDashboard(); if (id === 'tab-orders') loadOrdersTab(); if (id === 'tab-clients') loadClientsTab(); if (id === 'tab-chat') loadChatTab(); if (id === 'tab-workshops') loadWorkshopsTab(); }
     document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.addEventListener('click', () => switchTab(i.dataset.tab)));
 
-    function login() { if (document.getElementById('adminPass').value === PASS) { document.getElementById('loginBlock').style.display = 'none';
-            document.getElementById('appBlock').style.display = 'block';
-            refreshAll();
-            switchTab('tab-dash'); } else alert('Неверный пароль'); }
+    function login() { if (document.getElementById('adminPass').value === PASS) { document.getElementById('loginBlock').style.display = 'none'; document.getElementById('appBlock').style.display = 'block'; refreshAll(); switchTab('tab-dash'); } else alert('Неверный пароль'); }
+    async function refreshAll() { try { allOrders = await (await fetch(API + '/admin/orders')).json(); allUsers = await (await fetch(API + '/users')).json(); } catch (e) {} }
 
-    async function refreshAll() { try { const o = await fetch(API + '/admin/orders');
-            allOrders = await o.json(); const u = await fetch(API + '/users');
-            allUsers = await u.json(); } catch (e) {} }
-
-    function loadDashboard() { const n = allOrders.filter(o => o.status === 'new').length, p = allOrders.filter(o => ['processing','printing'].includes(o.status)).length, r = allOrders.filter(o => ['ready','shipped','done'].includes(o.status)).length;
-        document.getElementById('tab-dash').innerHTML = `<h2>📊 Панель</h2><div class="stat-row"><div class="stat-box"><div class="num">${n}</div><div class="lbl">Новых</div></div><div class="stat-box"><div class="num">${p}</div><div class="lbl">В работе</div></div><div class="stat-box"><div class="num">${r}</div><div class="lbl">Готовых</div></div></div><div class="stat-row"><div class="stat-box"><div class="num">${allUsers.length}</div><div class="lbl">Клиентов</div></div><div class="stat-box"><div class="num">${workshops.length}</div><div class="lbl">Типографий</div></div></div>`; }
+    function loadDashboard() { const n = allOrders.filter(o => o.status === 'new').length, p = allOrders.filter(o => ['processing','printing'].includes(o.status)).length, r = allOrders.filter(o => ['ready','shipped','done'].includes(o.status)).length; document.getElementById('tab-dash').innerHTML = `<h2>📊 Панель</h2><div class="stat-row"><div class="stat-box"><div class="num">${n}</div><div class="lbl">Новых</div></div><div class="stat-box"><div class="num">${p}</div><div class="lbl">В работе</div></div><div class="stat-box"><div class="num">${r}</div><div class="lbl">Готовых</div></div></div><div class="stat-row"><div class="stat-box"><div class="num">${allUsers.length}</div><div class="lbl">Клиентов</div></div><div class="stat-box"><div class="num">${workshops.length}</div><div class="lbl">Цехов</div></div></div>`; }
 
     function loadOrdersTab() { document.getElementById('tab-orders').innerHTML = `<h2>📋 Заказы</h2><select onchange="renderOrders(this.value)" style="width:100%;padding:8px;border-radius:8px;margin-bottom:10px;font-family:inherit;"><option value="all">Все</option><option value="new">Новые</option><option value="progress">В работе</option><option value="ready">Готовые</option></select><div id="ordersList"></div>`; renderOrders('all'); }
+    function renderOrders(filter) { const f = filter === 'all' ? allOrders : filter === 'progress' ? allOrders.filter(o => ['processing','printing'].includes(o.status)) : allOrders.filter(o => o.status === filter || (filter === 'ready' && ['ready','shipped','done'].includes(o.status))); document.getElementById('ordersList').innerHTML = f.length === 0 ? '<p style="color:var(--gray);text-align:center;">Нет заказов</p>' : f.map(o => `<div class="card"><strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br><span class="status-badge status-${o.status}">${statusNames[o.status]}</span> ${o.workshop?`🏭 ${o.workshop}`:''}<br>👤 ${o.name} | 📞 <a href="tel:${o.phone}">${o.phone}</a><br>${o.fileUrl?`📎 <a href="${o.fileUrl}" target="_blank">Скачать макет</a>`:''}${o.status==='new'?`<button class="btn btn-dark btn-sm" onclick="sendToWorkshop('${o.id}')">🏭 В цех</button>`:''}<select onchange="updateStatus('${o.id}',this.value)" style="width:100%;padding:4px;margin-top:4px;border-radius:4px;">${Object.keys(statusNames).map(s => `<option value="${s}" ${o.status===s?'selected':''}>${statusNames[s]}</option>`).join('')}</select></div>`).join(''); }
 
-    function renderOrders(filter) { const f = filter === 'all' ? allOrders : filter === 'progress' ? allOrders.filter(o => ['processing','printing'].includes(o.status)) : allOrders.filter(o => o.status === filter || (filter === 'ready' && ['ready','shipped','done'].includes(o.status)));
-        document.getElementById('ordersList').innerHTML = f.length === 0 ? '<p style="color:var(--gray);text-align:center;">Нет заказов</p>' : f.map(o => `<div class="card"><strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br><span class="status-badge status-${o.status}">${statusNames[o.status]}</span> ${o.workshop?`🏭 ${o.workshop}`:''}<br>👤 ${o.name} | 📞 ${o.phone}<br>${o.fileUrl?`📎 <a href="${o.fileUrl}" target="_blank">Скачать макет</a>`:''}${o.status==='new'?`<button class="btn btn-dark btn-sm" onclick="sendToWorkshop('${o.id}')">🏭 В цех</button>`:''}<select onchange="updateStatus('${o.id}',this.value)" style="width:100%;padding:4px;margin-top:4px;border-radius:4px;">${Object.keys(statusNames).map(s => `<option value="${s}" ${o.status===s?'selected':''}>${statusNames[s]}</option>`).join('')}</select></div>`).join(''); }
+    async function updateStatus(id, status) { await fetch(API + '/admin/status', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ orderId:id, status }) }); refreshAll(); loadOrdersTab(); showToast(`📋 Статус #${id}: ${statusNames[status]}`); }
+    function sendToWorkshop(orderId) { const order = allOrders.find(o => o.id === orderId); if (!order) return; document.getElementById('modalContent').innerHTML = `<h3>🏭 Выберите цех</h3>${workshops.map(w => `<div class="workshop-card" onclick="confirmSend('${orderId}','${w.id}')"><strong>${w.name}</strong><br><a href="mailto:${w.email}">📧 ${w.email}</a> | <a href="tel:${w.phone}">📞 ${w.phone}</a></div>`).join('')}<button class="btn btn-outline" onclick="closeModal()">Отмена</button>`; document.getElementById('modal').classList.add('show'); }
+    async function confirmSend(orderId, wsId) { const ws = workshops.find(w => w.id === wsId), order = allOrders.find(o => o.id === orderId); if (!ws || !order) return; await updateStatus(orderId, 'processing'); order.workshop = ws.name; closeModal(); refreshAll(); loadOrdersTab(); }
 
-    async function updateStatus(id, status) { await fetch(API + '/admin/status', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ orderId:id, status }) });
-        refreshAll();
-        loadOrdersTab();
-        showToast(`📋 Статус заказа #${id}: ${statusNames[status]}`); }
-
-    function sendToWorkshop(orderId) { const order = allOrders.find(o => o.id === orderId); if (!order) return;
-        document.getElementById('modalContent').innerHTML = `<h3>🏭 Выберите цех</h3>${workshops.map(w => `<div class="workshop-card" onclick="confirmSend('${orderId}','${w.id}')"><strong>${w.name}</strong><br><span style="font-size:11px;color:var(--gray);">📧 ${w.email} | 📞 ${w.phone}</span></div>`).join('')}<button class="btn btn-outline" onclick="closeModal()">Отмена</button>`;
-        document.getElementById('modal').classList.add('show'); }
-
-    async function confirmSend(orderId, wsId) { const ws = workshops.find(w => w.id === wsId), order = allOrders.find(o => o.id === orderId); if (!ws || !order) return;
-        await updateStatus(orderId, 'processing');
-        order.workshop = ws.name;
-        closeModal();
-        refreshAll();
-        loadOrdersTab(); }
-
+    // ========== КЛИЕНТЫ ==========
     function loadClientsTab() { document.getElementById('tab-clients').innerHTML = `<h2>👥 Клиенты</h2><div id="clientsList"></div>`; renderClients(); }
+    function renderClients() { document.getElementById('clientsList').innerHTML = allUsers.length === 0 ? '<p style="color:var(--gray);">Нет клиентов</p>' : allUsers.map(u => `<div class="client-card ${u.blocked?'blocked':''}" onclick="openClientProfile('${u.id}')"><strong>${u.name||'Без имени'}</strong> ${u.blocked?'🚫':''}<br><a href="mailto:${u.email}" onclick="event.stopPropagation()">📧 ${u.email}</a> | <a href="tel:${u.phone}" onclick="event.stopPropagation()">📞 ${u.phone||'—'}</a><br><span style="font-size:11px;">Заказов: ${allOrders.filter(o => o.userId === u.id).length} | ID: ${u.id?.slice(-6)||'—'}</span></div>`).join(''); }
 
-    function renderClients() { document.getElementById('clientsList').innerHTML = allUsers.length === 0 ? '<p style="color:var(--gray);">Нет клиентов</p>' : allUsers.map(u => `<div class="client-card" onclick="openClientChat('${u.id}','${u.name||u.email}')"><strong>${u.name||'Без имени'}</strong><br><span style="font-size:12px;color:var(--gray);">📧 ${u.email} | 📞 ${u.phone||'—'}</span><br><span style="font-size:11px;">Заказов: ${allOrders.filter(o => o.userId === u.id).length}</span></div>`).join(''); }
-
-    // ========== ЧАТ (отдельная вкладка) ==========
-    async function loadChatTab() {
-        const container = document.getElementById('tab-chat');
-        const res = await fetch(API + '/admin/chats');
-        const chats = await res.json();
-        container.innerHTML = `<h2>💬 Чат с клиентами</h2><div id="chatList"></div><div id="chatDetail"></div>`;
-        document.getElementById('chatList').innerHTML = chats.length === 0 ? '<p style="color:var(--gray);">Нет сообщений</p>' : chats.map(c => `<div class="chat-list-item" onclick="openAdminChat('${c.userId}','${c.name}')"><div class="chat-preview"><div class="chat-name">${c.name}</div><div class="chat-last">${c.lastMessage||''}</div></div><span style="font-size:10px;color:var(--gray);">${c.lastTime?new Date(c.lastTime).toLocaleDateString():''}</span></div>`).join('');
-    }
-
-    async function openAdminChat(userId, name) {
-        const res = await fetch(API + '/chat/' + userId);
-        const msgs = await res.json();
-        document.getElementById('chatDetail').innerHTML = `
-            <button class="btn btn-outline btn-sm" onclick="loadChatTab()" style="margin:8px 0;">← Список чатов</button>
-            <div class="chat-full">
-                <div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div>
-                <div class="chat-input-row"><input type="text" id="adminChatInput" placeholder="Ответить..."><button onclick="sendAdminChat('${userId}')">➤</button></div>
-            </div>`;
-        document.getElementById('chatList').style.display = 'none';
-    }
-
-    async function sendAdminChat(userId) { const text = document.getElementById('adminChatInput').value.trim(); if (!text) return;
-        await fetch(API + '/chat', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ from:'admin', text, userId }) });
+    function openClientProfile(userId) {
         const user = allUsers.find(u => u.id === userId);
-        openAdminChat(userId, user?.name || 'Клиент');
-        showToast('💬 Сообщение отправлено'); }
+        if (!user) return;
+        document.getElementById('modalContent').innerHTML = `
+            <h3>👤 ${user.name||'Без имени'}</h3>
+            <p><strong>ID:</strong> ${user.id}</p>
+            <p>📧 <a href="mailto:${user.email}">${user.email}</a></p>
+            <p>📞 <a href="tel:${user.phone}">${user.phone||'—'}</a></p>
+            <p>📅 Зарегистрирован: ${new Date(user.createdAt).toLocaleDateString()}</p>
+            <p>🚫 Статус: ${user.blocked ? 'Заблокирован' : 'Активен'}</p>
+            <button class="btn btn-outline btn-sm" onclick="toggleBlockUser('${userId}')">${user.blocked ? '✅ Разблокировать' : '🚫 Заблокировать'}</button>
+            <button class="btn btn-red btn-sm" onclick="deleteUser('${userId}')">🗑 Удалить клиента</button>
+            <button class="btn btn-outline" onclick="closeModal()" style="margin-top:8px;">Закрыть</button>`;
+        document.getElementById('modal').classList.add('show');
+    }
 
-    function loadWorkshopsTab() { document.getElementById('tab-workshops').innerHTML = `<h2>🏭 Типографии</h2><div id="workshopsList"></div>`; renderWorkshops(); }
-    function renderWorkshops() { document.getElementById('workshopsList').innerHTML = workshops.map((w,i) => `<div class="workshop-card"><strong>${w.name}</strong><br><span style="font-size:11px;color:var(--gray);">📧 ${w.email} | 📞 ${w.phone}</span><br><span style="font-size:11px;color:var(--gray);">📍 ${w.address}</span><br><button class="btn btn-outline btn-sm" onclick="editWorkshop(${i})">✏️</button> <button class="btn btn-outline btn-sm" onclick="deleteWorkshop(${i})" style="color:var(--red);border-color:var(--red);">🗑</button></div>`).join('') + '<button class="fab" onclick="addWorkshop()">+</button>'; }
-    function addWorkshop() { document.getElementById('modalContent').innerHTML = `<h3>Новая типография</h3><div class="form-group"><label>Название</label><input type="text" id="wsName"></div><div class="form-group"><label>Email</label><input type="email" id="wsEmail"></div><div class="form-group"><label>Телефон</label><input type="tel" id="wsPhone"></div><div class="form-group"><label>Адрес</label><input type="text" id="wsAddr"></div><button class="btn btn-dark" onclick="saveWorkshop()">Сохранить</button><button class="btn btn-outline" onclick="closeModal()">Отмена</button>`;
-        document.getElementById('modal').classList.add('show'); }
-    function saveWorkshop() { const w = { id:'ws-'+Date.now(), name:document.getElementById('wsName').value, email:document.getElementById('wsEmail').value, phone:document.getElementById('wsPhone').value, address:document.getElementById('wsAddr').value }; if (!w.name) return;
-        workshops.push(w);
-        localStorage.setItem('workshops', JSON.stringify(workshops));
+    function toggleBlockUser(userId) {
+        let user = allUsers.find(u => u.id === userId);
+        if (!user) return;
+        user.blocked = !user.blocked;
+        localStorage.setItem('blocked_' + userId, user.blocked ? '1' : '');
         closeModal();
-        loadWorkshopsTab(); }
-    function editWorkshop(i) { const w = workshops[i];
-        document.getElementById('modalContent').innerHTML = `<h3>Редактировать</h3><div class="form-group"><label>Название</label><input type="text" id="wsName" value="${w.name}"></div><div class="form-group"><label>Email</label><input type="email" id="wsEmail" value="${w.email}"></div><div class="form-group"><label>Телефон</label><input type="tel" id="wsPhone" value="${w.phone}"></div><div class="form-group"><label>Адрес</label><input type="text" id="wsAddr" value="${w.address}"></div><button class="btn btn-dark" onclick="updateWorkshop(${i})">Сохранить</button><button class="btn btn-outline" onclick="closeModal()">Отмена</button>`;
-        document.getElementById('modal').classList.add('show'); }
-    function updateWorkshop(i) { workshops[i] = { ...workshops[i], name:document.getElementById('wsName').value, email:document.getElementById('wsEmail').value, phone:document.getElementById('wsPhone').value, address:document.getElementById('wsAddr').value };
-        localStorage.setItem('workshops', JSON.stringify(workshops));
+        loadClientsTab();
+    }
+
+    function deleteUser(userId) {
+        if (!confirm('Точно удалить клиента? Все его заказы сохранятся.')) return;
+        allUsers = allUsers.filter(u => u.id !== userId);
         closeModal();
-        loadWorkshopsTab(); }
-    function deleteWorkshop(i) { if (confirm('Удалить?')) { workshops.splice(i, 1);
-            localStorage.setItem('workshops', JSON.stringify(workshops));
-            loadWorkshopsTab(); } }
+        loadClientsTab();
+        showToast('🗑 Клиент удалён');
+    }
+
+    // ========== ЧАТ ==========
+    async function loadChatTab() { const container = document.getElementById('tab-chat'); const res = await fetch(API + '/admin/chats'); const chats = await res.json(); container.innerHTML = `<h2>💬 Чат</h2><div id="chatList"></div><div id="chatDetail"></div>`; document.getElementById('chatList').innerHTML = chats.length === 0 ? '<p style="color:var(--gray);">Нет сообщений</p>' : chats.map(c => `<div class="chat-list-item" onclick="openAdminChat('${c.userId}','${c.name}')"><div class="chat-preview"><div class="chat-name">${c.name}</div><div class="chat-last">${c.lastMessage||''}</div></div></div>`).join(''); }
+    async function openAdminChat(userId, name) { const res = await fetch(API + '/chat/' + userId); const msgs = await res.json(); document.getElementById('chatDetail').innerHTML = `<button class="btn btn-outline btn-sm" onclick="loadChatTab()" style="margin:8px 0;">← Список</button><div class="chat-full"><div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="adminChatInput" placeholder="Ответить..."><button onclick="sendAdminChat('${userId}')">➤</button></div></div>`; document.getElementById('chatList').style.display = 'none'; }
+    async function sendAdminChat(userId) { const text = document.getElementById('adminChatInput').value.trim(); if (!text) return; await fetch(API + '/chat', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ from:'admin', text, userId }) }); const user = allUsers.find(u => u.id === userId); openAdminChat(userId, user?.name || 'Клиент'); showToast('💬 Отправлено'); }
+
+    // ========== ЦЕХ ==========
+    function loadWorkshopsTab() { document.getElementById('tab-workshops').innerHTML = `<h2>🏭 Цеха</h2><div id="workshopsList"></div>`; renderWorkshops(); }
+    function renderWorkshops() { document.getElementById('workshopsList').innerHTML = workshops.map((w,i) => `<div class="workshop-card"><strong>${w.name}</strong><br><a href="mailto:${w.email}">📧 ${w.email}</a> | <a href="tel:${w.phone}">📞 ${w.phone}</a><br>📍 ${w.address}<br><button class="btn btn-outline btn-sm" onclick="editWorkshop(${i})">✏️</button> <button class="btn btn-outline btn-sm" onclick="deleteWorkshop(${i})" style="color:var(--red);border-color:var(--red);">🗑</button></div>`).join('') + '<button class="fab" onclick="addWorkshop()">+</button>'; }
+    function addWorkshop() { document.getElementById('modalContent').innerHTML = `<h3>Новый цех</h3><div class="form-group"><label>Название</label><input type="text" id="wsName"></div><div class="form-group"><label>Email</label><input type="email" id="wsEmail"></div><div class="form-group"><label>Телефон</label><input type="tel" id="wsPhone"></div><div class="form-group"><label>Адрес</label><input type="text" id="wsAddr"></div><button class="btn btn-dark" onclick="saveWorkshop()">Сохранить</button><button class="btn btn-outline" onclick="closeModal()">Отмена</button>`; document.getElementById('modal').classList.add('show'); }
+    function saveWorkshop() { const w = { id:'ws-'+Date.now(), name:document.getElementById('wsName').value, email:document.getElementById('wsEmail').value, phone:document.getElementById('wsPhone').value, address:document.getElementById('wsAddr').value }; if (!w.name) return; workshops.push(w); localStorage.setItem('workshops', JSON.stringify(workshops)); closeModal(); loadWorkshopsTab(); }
+    function editWorkshop(i) { const w = workshops[i]; document.getElementById('modalContent').innerHTML = `<h3>Редактировать</h3><div class="form-group"><label>Название</label><input type="text" id="wsName" value="${w.name}"></div><div class="form-group"><label>Email</label><input type="email" id="wsEmail" value="${w.email}"></div><div class="form-group"><label>Телефон</label><input type="tel" id="wsPhone" value="${w.phone}"></div><div class="form-group"><label>Адрес</label><input type="text" id="wsAddr" value="${w.address}"></div><button class="btn btn-dark" onclick="updateWorkshop(${i})">Сохранить</button><button class="btn btn-outline" onclick="closeModal()">Отмена</button>`; document.getElementById('modal').classList.add('show'); }
+    function updateWorkshop(i) { workshops[i] = { ...workshops[i], name:document.getElementById('wsName').value, email:document.getElementById('wsEmail').value, phone:document.getElementById('wsPhone').value, address:document.getElementById('wsAddr').value }; localStorage.setItem('workshops', JSON.stringify(workshops)); closeModal(); loadWorkshopsTab(); }
+    function deleteWorkshop(i) { if (confirm('Удалить цех?')) { workshops.splice(i, 1); localStorage.setItem('workshops', JSON.stringify(workshops)); loadWorkshopsTab(); } }
     function closeModal() { document.getElementById('modal').classList.remove('show'); }
 
-    // Уведомление о новых сообщениях (проверка каждые 15 сек)
-    setInterval(async () => {
-        if (document.getElementById('appBlock').style.display === 'block') {
-            const prevCount = allOrders.filter(o => o.status === 'new').length;
-            await refreshAll();
-            const newCount = allOrders.filter(o => o.status === 'new').length;
-            if (newCount > prevCount) showToast(`🔵 Новый заказ! (${newCount} новых)`);
-        }
-    }, 15000);
+    // ========== PUSH (админ) ==========
+    const VAPID_PUBLIC = 'BO4rOIC4gMmMlgze-laJFcHh71oauLdhZji_Knqag6Z2MIosXOdueOofIbvlnH-EHIdr170jTLrFWhAOL-NcVds';
+    async function subscribePush() { if (!('serviceWorker' in navigator) || !('PushManager' in window)) return; const reg = await navigator.serviceWorker.ready; let sub = await reg.pushManager.getSubscription(); if (!sub) { sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: await (async b => { const p='='.repeat((4-b.length%4)%4); const r=(b+p).replace(/-/g,'+').replace(/_/g,'/'); const d=atob(r); return new Uint8Array([...d].map(c=>c.charCodeAt(0))); })(VAPID_PUBLIC) }); } }
+    subscribePush();
+
+    setInterval(async () => { if (document.getElementById('appBlock').style.display === 'block') { const prev = allOrders.filter(o => o.status === 'new').length; await refreshAll(); const now = allOrders.filter(o => o.status === 'new').length; if (now > prev) showToast(`🔵 Новых заказов: ${now}`); } }, 15000);
 
     refreshAll();
     document.getElementById('adminPass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
