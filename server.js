@@ -176,8 +176,11 @@ app.get('/api/admin/chats', async (req, res) => {
     const userIds = await chat.distinct('userId');
     const result = [];
     for (const uid of userIds) {
-        if (!uid) continue;
-        const user = await users.findOne({ _id: new (require('mongodb').ObjectId)(uid) }).catch(() => null);
+        if (!uid || uid.length !== 24) continue;
+        let user = null;
+        try {
+            user = await users.findOne({ _id: new (require('mongodb').ObjectId)(uid) });
+        } catch (e) { continue; }
         const lastMsg = await chat.findOne({ userId: uid }, { sort: { time: -1 } });
         result.push({ userId: uid, name: user?.name || uid, email: user?.email || '', lastMessage: lastMsg?.text || '', lastTime: lastMsg?.time || null });
     }
