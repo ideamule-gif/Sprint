@@ -148,11 +148,33 @@
         showToast('🗑 Клиент удалён');
     }
 
-    // ========== ЧАТ ==========
-    async function loadChatTab() { const container = document.getElementById('tab-chat'); const res = await fetch(API + '/admin/chats'); const chats = await res.json(); container.innerHTML = `<h2>💬 Чат</h2><div id="chatList"></div><div id="chatDetail"></div>`; document.getElementById('chatList').innerHTML = chats.length === 0 ? '<p style="color:var(--gray);">Нет сообщений</p>' : chats.map(c => `<div class="chat-list-item" onclick="openAdminChat('${c.userId}','${c.name}')"><div class="chat-preview"><div class="chat-name">${c.name}</div><div class="chat-last">${c.lastMessage||''}</div></div></div>`).join(''); }
-    async function openAdminChat(userId, name) { const res = await fetch(API + '/chat/' + userId); const msgs = await res.json(); document.getElementById('chatDetail').innerHTML = `<button class="btn btn-outline btn-sm" onclick="loadChatTab()" style="margin:8px 0;">← Список</button><div class="chat-full"><div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="adminChatInput" placeholder="Ответить..."><button onclick="sendAdminChat('${userId}')">➤</button></div></div>`; document.getElementById('chatList').style.display = 'none'; }
-    async function sendAdminChat(userId) { const text = document.getElementById('adminChatInput').value.trim(); if (!text) return; await fetch(API + '/chat', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ from:'admin', text, userId }) }); const user = allUsers.find(u => u.id === userId); openAdminChat(userId, user?.name || 'Клиент'); showToast('💬 Отправлено'); }
+   // ========== ЧАТ ==========
+async function loadChatTab() { 
+    clearInterval(window._adminChatInterval);
+    const container = document.getElementById('tab-chat'); 
+    const res = await fetch(API + '/admin/chats'); 
+    const chats = await res.json(); 
+    container.innerHTML = `<h2>💬 Чат</h2><div id="chatList"></div><div id="chatDetail"></div>`; 
+    document.getElementById('chatList').innerHTML = chats.length === 0 ? '<p style="color:var(--gray);">Нет сообщений</p>' : chats.map(c => `<div class="chat-list-item" onclick="openAdminChat('${c.userId}','${c.name}')"><div class="chat-preview"><div class="chat-name">${c.name}</div><div class="chat-last">${c.lastMessage||''}</div></div></div>`).join(''); 
+}
 
+async function openAdminChat(userId, name) { 
+    const res = await fetch(API + '/chat/' + userId); 
+    const msgs = await res.json(); 
+    document.getElementById('chatDetail').innerHTML = `<button class="btn btn-outline btn-sm" onclick="loadChatTab()" style="margin:8px 0;">← Список</button><div class="chat-full"><div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="adminChatInput" placeholder="Ответить..."><button onclick="sendAdminChat('${userId}')">➤</button></div></div>`; 
+    document.getElementById('chatList').style.display = 'none';
+    clearInterval(window._adminChatInterval);
+    window._adminChatInterval = setInterval(() => openAdminChat(userId, name), 3000);
+}
+
+async function sendAdminChat(userId) { 
+    const text = document.getElementById('adminChatInput').value.trim(); 
+    if (!text) return; 
+    await fetch(API + '/chat', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ from:'admin', text, userId }) }); 
+    const user = allUsers.find(u => u.id === userId); 
+    openAdminChat(userId, user?.name || 'Клиент'); 
+    showToast('💬 Отправлено'); 
+}
     // ========== ЦЕХ ==========
     function loadWorkshopsTab() { document.getElementById('tab-workshops').innerHTML = `<h2>🏭 Цеха</h2><div id="workshopsList"></div>`; renderWorkshops(); }
     function renderWorkshops() { document.getElementById('workshopsList').innerHTML = workshops.map((w,i) => `<div class="workshop-card"><strong>${w.name}</strong><br><a href="mailto:${w.email}">📧 ${w.email}</a> | <a href="tel:${w.phone}">📞 ${w.phone}</a><br>📍 ${w.address}<br><button class="btn btn-outline btn-sm" onclick="editWorkshop(${i})">✏️</button> <button class="btn btn-outline btn-sm" onclick="deleteWorkshop(${i})" style="color:var(--red);border-color:var(--red);">🗑</button></div>`).join('') + '<button class="fab" onclick="addWorkshop()">+</button>'; }
