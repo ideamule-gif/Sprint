@@ -111,9 +111,8 @@
     function switchTab(id) { document.querySelectorAll('#appBlock .tab').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active')); document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if (id === 'tab-dash') loadDashboard(); if (id === 'tab-orders') loadOrdersTab(); if (id === 'tab-clients') loadClientsTab(); if (id === 'tab-chat') loadChatTab(); if (id === 'tab-workshops') loadWorkshopsTab(); }
     document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.addEventListener('click', () => switchTab(i.dataset.tab)));
 
-    function login() { if (document.getElementById('adminPass').value === PASS) { sessionStorage.setItem('adminAuth', '1'); document.getElementById('loginBlock').style.display = 'none'; document.getElementById('appBlock').style.display = 'block'; refreshAll(); switchTab('tab-dash'); } else alert('Неверный пароль'); }
-    async function refreshAll() { try { allOrders = await (await fetch(API + '/admin/orders')).json(); allUsers = await (await fetch(API + '/users')).json(); } catch (e) {} }
-
+    function login() { if (document.getElementById('adminPass').value === PASS) { sessionStorage.setItem('adminAuth', '1'); document.getElementById('loginBlock').style.display = 'none'; document.getElementById('appBlock').style.display = 'block'; refreshAll(); switchTab('tab-dash'); requestPushPermission(); } else alert('Неверный пароль'); }
+   
     function loadDashboard() { const n = allOrders.filter(o => o.status === 'new').length, p = allOrders.filter(o => ['processing','printing'].includes(o.status)).length, r = allOrders.filter(o => ['ready','shipped','done'].includes(o.status)).length; document.getElementById('tab-dash').innerHTML = `<h2>📊 Панель</h2><div class="stat-row"><div class="stat-box"><div class="num">${n}</div><div class="lbl">Новых</div></div><div class="stat-box"><div class="num">${p}</div><div class="lbl">В работе</div></div><div class="stat-box"><div class="num">${r}</div><div class="lbl">Готовых</div></div></div><div class="stat-row"><div class="stat-box"><div class="num">${allUsers.length}</div><div class="lbl">Клиентов</div></div><div class="stat-box"><div class="num">${workshops.length}</div><div class="lbl">Цехов</div></div></div>`; }
     function loadOrdersTab() { document.getElementById('tab-orders').innerHTML = `<h2>📋 Заказы</h2><select onchange="renderOrders(this.value)" style="width:100%;padding:8px;border-radius:8px;margin-bottom:10px;font-family:inherit;"><option value="all">Все</option><option value="new">Новые</option><option value="progress">В работе</option><option value="ready">Готовые</option></select><div id="ordersList"></div>`; renderOrders('all'); }
 function renderOrders(filter) { 
@@ -210,6 +209,28 @@ function searchOrders() {
 
     refreshAll();
     document.getElementById('adminPass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+   // ========== PUSH-УВЕДОМЛЕНИЯ ДЛЯ АДМИНА ==========
+async function requestPushPermission() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+        const perm = await Notification.requestPermission();
+        if (perm === 'granted') {
+            sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array('BO4rOIC4gMmMlgze-laJFcHh71oauLdhZji_Knqag6Z2MIosXOdueOofIbvlnH-EHIdr170jTLrFWhAOL-NcVds') });
+        }
+    }
+}
+
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+    return outputArray;
+}
 </script>
 </body>
 </html>
