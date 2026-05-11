@@ -46,7 +46,7 @@
         .footer-links { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
         .footer-links a { font-size: 11px; color: var(--gray); text-decoration: underline; }
         .back-btn { background: none; border: none; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--gray); padding: 4px 0; margin-bottom: 12px; }
-        .chat-box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); height: 300px; display: flex; flex-direction: column; overflow: hidden; }
+        .chat-box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); height: calc(100vh - 200px); display: flex; flex-direction: column; overflow: hidden; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
         .chat-msg { max-width: 80%; padding: 8px 12px; border-radius: 14px; font-size: 13px; }
         .chat-msg.client { align-self: flex-end; background: var(--black); color: #fff; }
@@ -64,7 +64,7 @@
 <nav class="bottom-nav">
     <div class="nav-item active" data-tab="tab-home"><span class="nav-icon">🏠</span>Главная</div>
     <div class="nav-item" data-tab="tab-order"><span class="nav-icon">📐</span>Заказ</div>
-    <div class="nav-item" data-tab="tab-history"><span class="nav-icon">📋</span>История</div>
+    <div class="nav-item" data-tab="tab-chat"><span class="nav-icon">💬</span>Чат</div>
     <div class="nav-item" data-tab="tab-profile"><span class="nav-icon">👤</span>Профиль</div>
 </nav>
 
@@ -82,7 +82,7 @@
 </div>
 
 <div class="tab" id="tab-order"><div id="orderStep"></div></div>
-<div class="tab" id="tab-history"><h2 style="font-weight:800;margin-bottom:14px;">📋 История заказов</h2><div id="historyContent"><p style="color:var(--gray);">Войдите в профиль, чтобы видеть историю.</p></div></div>
+<div class="tab" id="tab-chat"><h2 style="font-weight:800;margin-bottom:14px;">💬 Чат с поддержкой</h2><div id="chatPage"></div></div>
 <div class="tab" id="tab-profile"><h2 style="font-weight:800;margin-bottom:14px;">👤 Профиль</h2><div id="profileContent"></div></div>
 
 <script>
@@ -100,7 +100,7 @@
         document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
         sessionStorage.setItem('activeTab', tabId);
         if (tabId === 'tab-order') renderOrderStep();
-        if (tabId === 'tab-history') loadHistory();
+        if (tabId === 'tab-chat') loadChatPage();
         if (tabId === 'tab-profile') loadProfile();
     }
     document.querySelectorAll('.bottom-nav .nav-item').forEach(item => { item.addEventListener('click', () => switchTab(item.dataset.tab)); });
@@ -148,13 +148,23 @@
         try { const res = await fetch(API + '/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) }); const data = await res.json(); if (data.success) { if (!currentUser && email) { currentUser = { email, name, phone, addr: order.addr }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); } alert('✅ Заказ #' + data.id + ' оформлен!'); orderStep = 1; renderOrderStep(); switchTab('tab-home'); } } catch (e) { alert('Ошибка сервера'); }
     }
 
-    async function loadHistory() {
-        const container = document.getElementById('historyContent');
-        if (!currentUser) { container.innerHTML = '<p style="color:var(--gray);">Войдите в профиль, чтобы видеть историю.</p>'; return; }
-        try { const res = await fetch(API + '/orders/' + (currentUser.id || '')); const orders = await res.json(); const sn = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' }; container.innerHTML = orders.length === 0 ? '<p style="color:var(--gray);">Нет заказов</p>' : orders.map(o => `<div class="card"><strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br><span class="status-badge status-${o.status||'new'}">${sn[o.status]||'Новый'}</span></div>`).join(''); } catch (e) { container.innerHTML = '<p style="color:var(--gray);">Ошибка загрузки</p>'; }
+    // ========== ЧАТ (отдельная вкладка) ==========
+    async function loadChatPage() {
+        const container = document.getElementById('chatPage');
+        if (!currentUser) {
+            container.innerHTML = '<div class="card"><p style="color:var(--gray);text-align:center;">Войдите в профиль, чтобы использовать чат.</p><button class="btn btn-primary" onclick="switchTab(\'tab-profile\')">👤 Войти</button></div>';
+            return;
+        }
+        const res = await fetch(API + '/chat/' + currentUser.id);
+        const msgs = await res.json();
+        container.innerHTML = `<div class="chat-box"><div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..." onkeydown="if(event.key==='Enter')sendChatPage()"><button onclick="sendChatPage()">➤</button></div></div>`;
+        document.getElementById('chatMsgs').scrollTop = document.getElementById('chatMsgs').scrollHeight;
     }
 
-        function loadProfile() {
+    async function sendChatPage() { const text = document.getElementById('chatInput').value.trim(); if (!text || !currentUser?.id) return; await fetch(API + '/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id, from: currentUser.email || 'client', text }) }); loadChatPage(); }
+
+    // ========== ПРОФИЛЬ (с историей заказов) ==========
+    function loadProfile() {
         const container = document.getElementById('profileContent');
         if (!currentUser) {
             container.innerHTML = `
@@ -179,8 +189,28 @@
             tgScript.setAttribute('data-request-access', 'write');
             tgContainer.appendChild(tgScript);
         } else {
-            container.innerHTML = `<div class="card"><p><strong>${currentUser.name||''}</strong></p><p style="color:var(--gray);">${currentUser.email||''}</p><p style="color:var(--gray);">${currentUser.phone||''}</p><button class="btn btn-outline" onclick="loadChat()">💬 Чат с поддержкой</button><button class="btn btn-outline" onclick="logout()">🚪 Выйти</button></div><div id="chatContainer"></div>`;
+            container.innerHTML = `
+                <div class="card">
+                    <p><strong>${currentUser.name||''}</strong></p>
+                    <p style="color:var(--gray);">${currentUser.email||''}</p>
+                    <p style="color:var(--gray);">${currentUser.phone||''}</p>
+                    <button class="btn btn-outline" onclick="logout()">🚪 Выйти</button>
+                </div>
+                <h3 style="margin-top:16px;">📋 История заказов</h3>
+                <div id="profileOrders"></div>`;
+            loadProfileOrders();
         }
+    }
+
+    async function loadProfileOrders() {
+        const container = document.getElementById('profileOrders');
+        if (!container) return;
+        try {
+            const res = await fetch(API + '/orders/' + (currentUser.id || ''));
+            const orders = await res.json();
+            const sn = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' };
+            container.innerHTML = orders.length === 0 ? '<p style="color:var(--gray);">Нет заказов</p>' : orders.map(o => `<div class="card"><strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br><span class="status-badge status-${o.status||'new'}">${sn[o.status]||'Новый'}</span></div>`).join('');
+        } catch (e) { container.innerHTML = '<p style="color:var(--gray);">Ошибка загрузки</p>'; }
     }
 
     let isReg = false;
@@ -189,15 +219,6 @@
     async function doLogin() { const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPass').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); } else alert(data.error); }
     async function doRegister() { const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPass').value.trim(), name = document.getElementById('regName').value.trim(), phone = document.getElementById('regPhone').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, name, phone }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); } else alert(data.error); }
 
-    async function loadChat() {
-        if (!currentUser?.id) return;
-        const res = await fetch(API + '/chat/' + currentUser.id);
-        const msgs = await res.json();
-        document.getElementById('chatContainer').innerHTML = `<div class="chat-box" style="margin-top:12px;"><div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}</div>`).join('')}</div><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..."><button onclick="sendChat()">➤</button></div></div>`;
-        document.getElementById('chatMsgs').scrollTop = document.getElementById('chatMsgs').scrollHeight;
-    }
-
-    async function sendChat() { const text = document.getElementById('chatInput').value.trim(); if (!text || !currentUser?.id) return; await fetch(API + '/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id, from: currentUser.email || 'client', text }) }); loadChat(); }
     function logout() { currentUser = null; localStorage.removeItem('currentUser'); loadProfile(); }
 
     function onTelegramAuth(user) {
