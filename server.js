@@ -28,7 +28,7 @@ const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
 const BOT_TOKEN = '8727458645:AAEp0YLowPJYs9FirMYDFM9votOm9vOZieU';
-const ADMIN_CHAT_ID = '//7656839845';
+const ADMIN_CHAT_ID = '7656839845';
 const statusNames = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' };
 
 webpush.setVapidDetails('mailto:ideamule@gmail.com', 'BO4rOIC4gMmMlgze-laJFcHh71oauLdhZji_Knqag6Z2MIosXOdueOofIbvlnH-EHIdr170jTLrFWhAOL-NcVds', 'C_Vy3LyU0wSHsZYy_S6yoSK7iFkmPoOPDFVJcOozRa8');
@@ -49,6 +49,7 @@ app.post('/api/register', async (req, res) => {
     if (await users.findOne({ email })) return res.json({ success: false, error: 'Email уже зарегистрирован' });
     const user = { email, password: crypto.createHash('sha256').update(password).digest('hex'), name: name || '', phone: phone || '', createdAt: new Date() };
     const result = await users.insertOne(user);
+    sendTelegram(ADMIN_CHAT_ID, `👤 Новый клиент: ${email}\nИмя: ${name || '—'}\nТелефон: ${phone || '—'}`);
     res.json({ success: true, user: { id: result.insertedId.toString(), email, name: user.name, phone: user.phone } });
 });
 
