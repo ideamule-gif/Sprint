@@ -6,26 +6,17 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// MongoDB
 const MONGO_URI = 'mongodb+srv://ideamule_db_user:BUFRqKh9raaJ8vyA@sprint.nygqpkm.mongodb.net/?appName=Sprint';
 const client = new MongoClient(MONGO_URI, { serverApi: ServerApiVersion.v1 });
 
 let db;
 async function connectDB() {
-    try {
-        await client.connect();
-        db = client.db('sprint');
-        console.log('MongoDB connected');
-    } catch (e) {
-        console.error('MongoDB connection error:', e.message);
-    }
+    try { await client.connect(); db = client.db('sprint'); console.log('MongoDB connected'); } catch (e) { console.error('MongoDB error:', e.message); }
 }
 connectDB();
 
 app.use(async (req, res, next) => {
-    if (!db) {
-        try { await client.connect(); db = client.db('sprint'); } catch (e) { return res.status(500).json({ error: 'База данных недоступна' }); }
-    }
+    if (!db) { try { await client.connect(); db = client.db('sprint'); } catch (e) { return res.status(500).json({ error: 'DB unavailable' }); } }
     next();
 });
 
@@ -35,31 +26,19 @@ app.use(express.json({ limit: '50mb' }));
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
-// EmailJS конфиг
-const EMAILJS = {
-    service_id: 'service_6g06b1d',
-    template_id: 'template_hb05foo',
-    user_id: '1uNqFkbGPhecG4EaK'
-};
+const BOT_TOKEN = '8727458645:AAEp0YLowPJYs9FirMYDFM9votOm9vOZieU';
+const ADMIN_CHAT_ID = '7656839845';
+const statusNames = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' };
 
-async function sendEmail(toEmail, params) {
+async function sendTelegram(chatId, text) {
     try {
-        await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                service_id: EMAILJS.service_id,
-                template_id: EMAILJS.template_id,
-                user_id: EMAILJS.user_id,
-                template_params: { ...params, email: toEmail }
-            })
+            body: JSON.stringify({ chat_id: chatId, text })
         });
-    } catch (e) {
-        console.error('EmailJS error:', e.message);
-    }
+    } catch (e) { console.error('TG error:', e.message); }
 }
-
-const statusNames = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' };
 
 // Главная
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
@@ -86,6 +65,22 @@ app.post('/api/login', async (req, res) => {
     res.json({ success: true, user: { id: user._id.toString(), email: user.email, name: user.name, phone: user.phone } });
 });
 
+// ========== TELEGRAM LOGIN ==========
+app.post('/api/telegram-login', async (req, res) => {
+    const { id, first_name, last_name, username, photo_url } = req.body;
+    if (!id) return res.json({ success: false, error: 'Нет ID' });
+    const users = db.collection('users');
+    let user = await users.findOne({ telegramId: String(id) });
+    if (!user) {
+        user = { telegramId: String(id), name: [first_name, last_name].filter(Boolean).join(' ') || username || 'Клиент', username, photo_url, createdAt: new Date() };
+        const result = await users.insertOne(user);
+        user._id = result.insertedId;
+    } else {
+        await users.updateOne({ _id: user._id }, { $set: { name: [first_name, last_name].filter(Boolean).join(' ') || user.name, username: username || user.username, photo_url: photo_url || user.photo_url } });
+    }
+    res.json({ success: true, user: { id: user._id.toString(), telegramId: user.telegramId, name: user.name, email: user.email || '', phone: user.phone || '' } });
+});
+
 // ========== ЗАКАЗ ==========
 app.post('/api/order', async (req, res) => {
     const order = req.body;
@@ -103,10 +98,9 @@ app.post('/api/order', async (req, res) => {
     delete order.fileBase64;
     await orders.insertOne(order);
 
-    const botToken = '8727458645:AAEp0YLowPJYs9FirMYDFM9votOm9vOZieU';
     const extrasText = order.extras?.length > 0 ? order.extras.map(e => `${e.name}: ${Math.round(e.cost)} р.`).join(', ') : 'Нет';
     const msg = `🔵 НОВЫЙ ЗАКАЗ #${order._id}\n\n📦 ${order.material}\n📐 ${order.width}×${order.height} мм\n🔢 ${order.qty} шт\n🔧 ${extrasText}\n🚕 Доставка: 300 р.\n💰 Сумма: ${order.total} р.\n\n👤 ${order.name}\n📞 ${order.phone}\n📍 ${order.addr||'—'}${order.fileUrl?'\n\n📎 '+order.fileUrl:''}`;
-    fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: '7656839845', text: msg }) }).catch(() => {});
+    sendTelegram(ADMIN_CHAT_ID, msg);
 
     res.json({ success: true, id: order._id });
 });
@@ -126,14 +120,20 @@ app.get('/api/admin/orders', async (req, res) => {
 // ========== СМЕНА СТАТУСА ==========
 app.post('/api/admin/status', async (req, res) => {
     const { orderId, status } = req.body;
-    const orders = db.collection('orders');
-    const order = await orders.findOne({ _id: orderId });
+    const order = await db.collection('orders').findOne({ _id: orderId });
     if (!order) return res.json({ success: false, error: 'Заказ не найден' });
-    await orders.updateOne({ _id: orderId }, { $set: { status } });
+    await db.collection('orders').updateOne({ _id: orderId }, { $set: { status } });
 
-    const params = { order_id: order._id, status: statusNames[status] || status, material: order.material, size: `${order.width}×${order.height} мм`, total: order.total, name: order.name };
-    if (order.email) sendEmail(order.email, params);
-    sendEmail('ideamule@gmail.com', { ...params, name: 'Админ' });
+    // Уведомление админу
+    sendTelegram(ADMIN_CHAT_ID, `📋 Статус заказа #${orderId}: ${statusNames[status] || status}`);
+
+    // Уведомление клиенту в Telegram
+    if (order.userId) {
+        const user = await db.collection('users').findOne({ _id: new (require('mongodb').ObjectId)(order.userId) }).catch(() => null);
+        if (user?.telegramId) {
+            sendTelegram(user.telegramId, `📋 Ваш заказ #${orderId}\nСтатус: ${statusNames[status] || status}\nМатериал: ${order.material}`);
+        }
+    }
 
     res.json({ success: true });
 });
@@ -141,30 +141,35 @@ app.post('/api/admin/status', async (req, res) => {
 // ========== ВСЕ ПОЛЬЗОВАТЕЛИ ==========
 app.get('/api/users', async (req, res) => {
     const users = await db.collection('users').find().toArray();
-    res.json(users.map(u => ({ id: u._id.toString(), email: u.email, name: u.name, phone: u.phone, createdAt: u.createdAt })));
+    res.json(users.map(u => ({ id: u._id.toString(), email: u.email, name: u.name, phone: u.phone, telegramId: u.telegramId, createdAt: u.createdAt })));
 });
 
-// ========== ЧАТ (по userId) ==========
+// ========== ЧАТ ==========
 app.get('/api/chat/:userId', async (req, res) => {
-    const msgs = await db.collection('chat').find({ userId: req.params.userId }).sort({ time: 1 }).toArray();
-    res.json(msgs);
+    res.json(await db.collection('chat').find({ userId: req.params.userId }).sort({ time: 1 }).toArray());
 });
 
 app.post('/api/chat', async (req, res) => {
     const msg = { ...req.body, time: new Date() };
     await db.collection('chat').insertOne(msg);
 
-    // Уведомление на почту
+    // Уведомление админу
     if (msg.from !== 'admin') {
-        sendEmail('ideamule@gmail.com', { order_id: 'Чат', name: 'Новое сообщение', status: msg.text, material: msg.from, size: '', total: '' });
-    } else if (msg.userId) {
-        const user = await db.collection('users').findOne({ _id: require('mongodb').ObjectId.createFromHexString(msg.userId) }).catch(() => null);
-        if (user?.email) sendEmail(user.email, { order_id: 'Чат', name: user.name || 'Клиент', status: 'Новое сообщение от поддержки', material: msg.text, size: '', total: '' });
+        sendTelegram(ADMIN_CHAT_ID, `💬 Новое сообщение от клиента ${msg.userId}:\n${msg.text}`);
     }
+
+    // Уведомление клиенту
+    if (msg.from === 'admin' && msg.userId) {
+        const user = await db.collection('users').findOne({ _id: new (require('mongodb').ObjectId)(msg.userId) }).catch(() => null);
+        if (user?.telegramId) {
+            sendTelegram(user.telegramId, `💬 Поддержка:\n${msg.text}`);
+        }
+    }
+
     res.json({ success: true });
 });
 
-// ========== ВСЕ ЧАТЫ (АДМИН - список пользователей с сообщениями) ==========
+// ========== ВСЕ ЧАТЫ (АДМИН) ==========
 app.get('/api/admin/chats', async (req, res) => {
     const chat = db.collection('chat');
     const users = db.collection('users');
@@ -172,9 +177,9 @@ app.get('/api/admin/chats', async (req, res) => {
     const result = [];
     for (const uid of userIds) {
         if (!uid) continue;
-        const user = await users.findOne({ _id: require('mongodb').ObjectId.createFromHexString(uid) }).catch(() => null);
+        const user = await users.findOne({ _id: new (require('mongodb').ObjectId)(uid) }).catch(() => null);
         const lastMsg = await chat.findOne({ userId: uid }, { sort: { time: -1 } });
-        result.push({ userId: uid, name: user?.name || user?.email || uid, email: user?.email || '', lastMessage: lastMsg?.text || '', lastTime: lastMsg?.time || null });
+        result.push({ userId: uid, name: user?.name || uid, email: user?.email || '', lastMessage: lastMsg?.text || '', lastTime: lastMsg?.time || null });
     }
     res.json(result);
 });
