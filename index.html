@@ -177,17 +177,20 @@ async function loadChatPage() {
         clearInterval(window._chatInterval);
         return;
     }
-    const inputEl = document.getElementById('chatInput');
-    const savedText = inputEl ? inputEl.value : '';
     const res = await fetch(API + '/chat/' + currentUser.id);
     const msgs = await res.json();
-    container.innerHTML = `<div class="chat-box"><div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter'){event.preventDefault();sendChatPage();}"><button onclick="sendChatPage()">➤</button></div></div>`;
-    document.getElementById('chatMsgs').scrollTop = document.getElementById('chatMsgs').scrollHeight;
-    document.getElementById('chatInput').value = savedText;
+    const msgsBox = document.getElementById('chatMsgs');
+    if (msgsBox) {
+        const wasAtBottom = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight < 60;
+        msgsBox.innerHTML = msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('');
+        if (wasAtBottom) msgsBox.scrollTop = msgsBox.scrollHeight;
+    } else {
+        container.innerHTML = `<div class="chat-box"><div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter'){event.preventDefault();sendChatPage();}"><button onclick="sendChatPage()">➤</button></div></div>`;
+    }
     clearInterval(window._chatInterval);
     window._chatInterval = setInterval(loadChatPage, 3000);
 }
-
+    
 async function sendChatPage() {
     const input = document.getElementById('chatInput');
     const text = input.value.trim();
