@@ -116,8 +116,29 @@
 
     function loadDashboard() { const n = allOrders.filter(o => o.status === 'new').length, p = allOrders.filter(o => ['processing','printing'].includes(o.status)).length, r = allOrders.filter(o => ['ready','shipped','done'].includes(o.status)).length; document.getElementById('tab-dash').innerHTML = `<h2>📊 Панель</h2><div class="stat-row"><div class="stat-box"><div class="num">${n}</div><div class="lbl">Новых</div></div><div class="stat-box"><div class="num">${p}</div><div class="lbl">В работе</div></div><div class="stat-box"><div class="num">${r}</div><div class="lbl">Готовых</div></div></div><div class="stat-row"><div class="stat-box"><div class="num">${allUsers.length}</div><div class="lbl">Клиентов</div></div><div class="stat-box"><div class="num">${workshops.length}</div><div class="lbl">Цехов</div></div></div>`; }
     function loadOrdersTab() { document.getElementById('tab-orders').innerHTML = `<h2>📋 Заказы</h2><select onchange="renderOrders(this.value)" style="width:100%;padding:8px;border-radius:8px;margin-bottom:10px;font-family:inherit;"><option value="all">Все</option><option value="new">Новые</option><option value="progress">В работе</option><option value="ready">Готовые</option></select><div id="ordersList"></div>`; renderOrders('all'); }
-    function renderOrders(filter) { const f = filter === 'all' ? allOrders : filter === 'progress' ? allOrders.filter(o => ['processing','printing'].includes(o.status)) : allOrders.filter(o => o.status === filter || (filter === 'ready' && ['ready','shipped','done'].includes(o.status))); document.getElementById('ordersList').innerHTML = f.length === 0 ? '<p style="color:var(--gray);text-align:center;">Нет заказов</p>' : f.map(o => `<div class="card"><strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br><span class="status-badge status-${o.status}">${statusNames[o.status]}</span> ${o.workshop?`🏭 ${o.workshop}`:''}<br>👤 ${o.name} | 📞 <a href="tel:${o.phone}">${o.phone}</a><br>${o.fileUrl?`📎 <a href="${o.fileUrl}" target="_blank">Скачать макет</a>`:''}${o.status==='new'?`<button class="btn btn-dark btn-sm" onclick="sendToWorkshop('${o.id}')">🏭 В цех</button>`:''}<select onchange="updateStatus('${o.id}',this.value)" style="width:100%;padding:4px;margin-top:4px;border-radius:4px;">${Object.keys(statusNames).map(s => `<option value="${s}" ${o.status===s?'selected':''}>${statusNames[s]}</option>`).join('')}</select></div>`).join(''); }
+function renderOrders(filter) { 
+    const f = filter === 'all' ? allOrders : filter === 'progress' ? allOrders.filter(o => ['processing','printing'].includes(o.status)) : allOrders.filter(o => o.status === filter || (filter === 'ready' && ['ready','shipped','done'].includes(o.status)));
+    document.getElementById('ordersList').innerHTML = `
+        <input type="text" id="orderSearch" placeholder="🔍 Поиск по номеру, имени, телефону..." oninput="searchOrders()" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;margin-bottom:10px;font-family:inherit;font-size:14px;">
+        <div id="ordersResult">${f.length === 0 ? '<p style="color:var(--gray);text-align:center;">Нет заказов</p>' : f.map(o => `
+            <div class="card" data-search="${o.id} ${o.name||''} ${o.phone||''} ${o.material||''}">
+                <strong>#${o.id}</strong> — ${o.material}<br>
+                ${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br>
+                <span style="font-size:11px;color:var(--gray);">📅 ${new Date(o.createdAt).toLocaleDateString()}</span>
+                <span class="status-badge status-${o.status}">${statusNames[o.status]}</span> ${o.workshop?`🏭 ${o.workshop}`:''}<br>
+                👤 ${o.name} | 📞 <a href="tel:${o.phone}">${o.phone}</a><br>
+                ${o.fileUrl?`📎 <a href="${o.fileUrl}" target="_blank">Скачать макет</a>`:''}
+                ${o.status==='new'?`<button class="btn btn-dark btn-sm" onclick="sendToWorkshop('${o.id}')">🏭 Отправить в цех</button>`:''}
+                <select onchange="updateStatus('${o.id}',this.value)" style="width:100%;padding:4px;margin-top:4px;border-radius:4px;">${Object.keys(statusNames).map(s => `<option value="${s}" ${o.status===s?'selected':''}>${statusNames[s]}</option>`).join('')}</select>
+            </div>`).join('')}</div>`;
+}
 
+function searchOrders() {
+    const query = document.getElementById('orderSearch').value.toLowerCase();
+    document.querySelectorAll('#ordersResult .card').forEach(c => {
+        c.style.display = c.dataset.search.toLowerCase().includes(query) ? 'block' : 'none';
+    });
+}
     async function updateStatus(id, status) { await fetch(API + '/admin/status', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ orderId:id, status }) }); refreshAll(); loadOrdersTab(); showToast(`📋 Статус #${id}: ${statusNames[status]}`); }
     function sendToWorkshop(orderId) { const order = allOrders.find(o => o.id === orderId); if (!order) return; document.getElementById('modalContent').innerHTML = `<h3>🏭 Выберите цех</h3>${workshops.map(w => `<div class="workshop-card" onclick="confirmSend('${orderId}','${w.id}')"><strong>${w.name}</strong><br><a href="mailto:${w.email}">📧 ${w.email}</a> | <a href="tel:${w.phone}">📞 ${w.phone}</a></div>`).join('')}<button class="btn btn-outline" onclick="closeModal()">Отмена</button>`; document.getElementById('modal').classList.add('show'); }
     async function confirmSend(orderId, wsId) { const ws = workshops.find(w => w.id === wsId), order = allOrders.find(o => o.id === orderId); if (!ws || !order) return; await updateStatus(orderId, 'processing'); order.workshop = ws.name; closeModal(); refreshAll(); loadOrdersTab(); }
