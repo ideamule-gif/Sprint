@@ -62,6 +62,42 @@ app.post('/api/login', async (req, res) => {
     res.json({ success: true, user: { id: user._id.toString(), email: user.email, name: user.name, phone: user.phone } });
 });
 
+// ========== ВОССТАНОВЛЕНИЕ ПАРОЛЯ ==========
+app.post('/api/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.json({ success: false, error: 'Введите email' });
+    const user = await db.collection('users').findOne({ email });
+    if (!user) return res.json({ success: false, error: 'Email не найден' });
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    await db.collection('users').updateOne({ _id: user._id }, { $set: { resetCode: code, resetExpires: Date.now() + 3600000 } });
+    try {
+        await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ service_id: 'service_6g06b1d', template_id: 'template_hb05foo', user_id: '1uNqFkbGPhecG4EaK', template_params: { order_id: 'Восстановление пароля', name: user.name || 'Клиент', status: `Код: ${code}`, material: '', size: '', total: '', email: email } })
+        });
+    } catch (e) {}
+    res.json({ success: true });
+});
+
+app.post('/api/reset-password', async (req, res) => {
+    const { email, code, newPassword } = req.body;
+    if (!email || !code || !newPassword) return res.json({ success: false, error: 'Все поля обязательны' });
+    const user = await db.collection('users').findOne({ email, resetCode: code, resetExpires: { $gt: Date.now() } });
+    if (!user) return res.json({ success: false, error: 'Неверный код или срок истёк' });
+    await db.collection('users').updateOne({ _id: user._id }, { $set: { password: crypto.createHash('sha256').update(newPassword).digest('hex') }, $unset: { resetCode: '', resetExpires: '' } });
+    res.json({ success: true });
+});
+
+// ========== УДАЛЕНИЕ ПРОФИЛЯ ==========
+app.post('/api/delete-account', async (req, res) => {
+    const { userId } = req.body;
+    if (!userId) return res.json({ success: false });
+    try {
+        await db.collection('users').deleteOne({ _id: new (require('mongodb').ObjectId)(userId) });
+        res.json({ success: true });
+    } catch (e) { res.json({ success: false, error: e.message }); }
+});
+
 // ========== TELEGRAM LOGIN ==========
 app.post('/api/telegram-login', async (req, res) => {
     const { id, first_name, last_name, username, photo_url } = req.body;
@@ -120,9 +156,7 @@ app.post('/api/admin/status', async (req, res) => {
     if (order.userId) {
         const user = await db.collection('users').findOne({ _id: new (require('mongodb').ObjectId)(order.userId) }).catch(() => null);
         if (user?.telegramId) sendTelegram(user.telegramId, `📋 Ваш заказ #${orderId}\nСтатус: ${statusNames[status] || status}\nМатериал: ${order.material}`);
-        if (user?.pushSub) {
-            webpush.sendNotification(user.pushSub, JSON.stringify({ title: 'Статус заказа', body: `Заказ #${orderId}: ${statusNames[status] || status}`, url: '/' })).catch(() => {});
-        }
+        if (user?.pushSub) webpush.sendNotification(user.pushSub, JSON.stringify({ title: 'Статус заказа', body: `Заказ #${orderId}: ${statusNames[status] || status}`, url: '/' })).catch(() => {});
     }
     res.json({ success: true });
 });
@@ -131,10 +165,7 @@ app.post('/api/admin/status', async (req, res) => {
 app.post('/api/push-subscribe', async (req, res) => {
     const { userId, subscription } = req.body;
     if (!userId || !subscription) return res.json({ success: false });
-    try {
-        await db.collection('users').updateOne({ _id: new (require('mongodb').ObjectId)(userId) }, { $set: { pushSub: subscription } });
-        res.json({ success: true });
-    } catch (e) { res.json({ success: false, error: e.message }); }
+    try { await db.collection('users').updateOne({ _id: new (require('mongodb').ObjectId)(userId) }, { $set: { pushSub: subscription } }); res.json({ success: true }); } catch (e) { res.json({ success: false }); }
 });
 
 // ========== ВСЕ ПОЛЬЗОВАТЕЛИ ==========
@@ -144,39 +175,23 @@ app.get('/api/users', async (req, res) => {
 });
 
 // ========== ЧАТ ==========
-app.get('/api/chat/:userId', async (req, res) => {
-    res.json(await db.collection('chat').find({ userId: req.params.userId }).sort({ time: 1 }).toArray());
-});
+app.get('/api/chat/:userId', async (req, res) => res.json(await db.collection('chat').find({ userId: req.params.userId }).sort({ time: 1 }).toArray()));
 
 app.post('/api/chat', async (req, res) => {
     const msg = { ...req.body, time: new Date() };
     await db.collection('chat').insertOne(msg);
-    if (msg.from !== 'admin') {
-        sendTelegram(ADMIN_CHAT_ID, `💬 Новое сообщение от клиента:\n${msg.text}`);
-    }
+    if (msg.from !== 'admin') sendTelegram(ADMIN_CHAT_ID, `💬 Новое сообщение от клиента:\n${msg.text}`);
     if (msg.from === 'admin' && msg.userId) {
         const user = await db.collection('users').findOne({ _id: new (require('mongodb').ObjectId)(msg.userId) }).catch(() => null);
         if (user?.telegramId) sendTelegram(user.telegramId, `💬 Поддержка:\n${msg.text}`);
-        if (user?.pushSub) {
-            webpush.sendNotification(user.pushSub, JSON.stringify({ title: 'Новое сообщение', body: msg.text, url: '/' })).catch(() => {});
-        }
+        if (user?.pushSub) webpush.sendNotification(user.pushSub, JSON.stringify({ title: 'Новое сообщение', body: msg.text, url: '/' })).catch(() => {});
     }
     res.json({ success: true });
 });
 
-// ========== ВСЕ ЧАТЫ (АДМИН) ==========
 app.get('/api/admin/chats', async (req, res) => {
-    const chat = db.collection('chat');
-    const users = db.collection('users');
-    const userIds = await chat.distinct('userId');
-    const result = [];
-    for (const uid of userIds) {
-        if (!uid || uid.length !== 24) continue;
-        let user = null;
-        try { user = await users.findOne({ _id: new (require('mongodb').ObjectId)(uid) }); } catch (e) { continue; }
-        const lastMsg = await chat.findOne({ userId: uid }, { sort: { time: -1 } });
-        result.push({ userId: uid, name: user?.name || uid, email: user?.email || '', lastMessage: lastMsg?.text || '', lastTime: lastMsg?.time || null });
-    }
+    const chat = db.collection('chat'); const users = db.collection('users'); const userIds = await chat.distinct('userId'); const result = [];
+    for (const uid of userIds) { if (!uid || uid.length !== 24) continue; let user = null; try { user = await users.findOne({ _id: new (require('mongodb').ObjectId)(uid) }); } catch (e) { continue; } const lastMsg = await chat.findOne({ userId: uid }, { sort: { time: -1 } }); result.push({ userId: uid, name: user?.name || uid, email: user?.email || '', lastMessage: lastMsg?.text || '', lastTime: lastMsg?.time || null }); }
     res.json(result);
 });
 
