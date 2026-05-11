@@ -203,35 +203,78 @@ async function sendChatPage() {
     loadChatPage();
 }
     
-    function loadProfile() {
-        const container = document.getElementById('profileContent');
-        if (!currentUser) {
-            container.innerHTML = `<div id="tgWidgetContainer"></div><p style="text-align:center;margin:12px 0;color:var(--gray);">или</p><div class="card"><div class="form-group"><label>Email</label><input type="email" id="authEmail"></div><div class="form-group"><label>Пароль</label><input type="password" id="authPass"></div><div id="regFields" style="display:none;"><div class="form-group"><label>Имя</label><input type="text" id="regName"></div><div class="form-group"><label>Телефон</label><input type="tel" id="regPhone"></div></div><button class="btn btn-primary" id="authBtn" onclick="doLogin()">Войти</button><button class="btn btn-outline" onclick="toggleReg()" id="regToggle">Создать аккаунт</button><a href="https://t.me/someprintbot" target="_blank" style="display:block;text-align:center;font-size:12px;color:var(--gray);margin-top:8px;">Забыли пароль? Напишите в поддержку</a></div>`;
-            const tgScript = document.createElement('script'); tgScript.async = true; tgScript.src = 'https://telegram.org/js/telegram-widget.js?22'; tgScript.setAttribute('data-telegram-login', 'Someprintbot'); tgScript.setAttribute('data-size', 'medium'); tgScript.setAttribute('data-radius', '10'); tgScript.setAttribute('data-onauth', 'onTelegramAuth(user)'); tgScript.setAttribute('data-request-access', 'write');
-            document.getElementById('tgWidgetContainer').appendChild(tgScript);
-        } else {
-            container.innerHTML = `<div class="card"><p><strong>${currentUser.name||''}</strong></p><p style="color:var(--gray);">${currentUser.email||''}</p><p style="color:var(--gray);">${currentUser.phone||''}</p><button class="btn btn-outline" onclick="logout()">🚪 Выйти</button></div><h3 style="margin-top:16px;">📋 История заказов</h3><div id="profileOrders"></div>`;
-            loadProfileOrders();
-        }
+   function loadProfile() {
+    const container = document.getElementById('profileContent');
+    if (!currentUser) {
+        container.innerHTML = `<div id="tgWidgetContainer"></div><p style="text-align:center;margin:12px 0;color:var(--gray);">или</p><div class="card"><div class="form-group"><label>Email</label><input type="email" id="authEmail"></div><div class="form-group"><label>Пароль</label><input type="password" id="authPass"></div><div id="regFields" style="display:none;"><div class="form-group"><label>Имя</label><input type="text" id="regName"></div><div class="form-group"><label>Телефон</label><input type="tel" id="regPhone"></div></div><button class="btn btn-primary" id="authBtn" onclick="doLogin()">Войти</button><button class="btn btn-outline" onclick="toggleReg()" id="regToggle">Создать аккаунт</button><a href="#" onclick="showForgotPassword()" style="display:block;text-align:center;font-size:12px;color:var(--gray);margin-top:8px;">Забыли пароль?</a></div>`;
+        const tgScript = document.createElement('script'); tgScript.async = true; tgScript.src = 'https://telegram.org/js/telegram-widget.js?22'; tgScript.setAttribute('data-telegram-login', 'Someprintbot'); tgScript.setAttribute('data-size', 'medium'); tgScript.setAttribute('data-radius', '10'); tgScript.setAttribute('data-onauth', 'onTelegramAuth(user)'); tgScript.setAttribute('data-request-access', 'write');
+        document.getElementById('tgWidgetContainer').appendChild(tgScript);
+    } else {
+        container.innerHTML = `<div class="card"><p><strong>${currentUser.name||''}</strong></p><p style="color:var(--gray);">${currentUser.email||''}</p><p style="color:var(--gray);">${currentUser.phone||''}</p><button class="btn btn-outline" onclick="logout()">🚪 Выйти</button><button class="btn btn-outline" onclick="deleteAccount()" style="color:var(--red);border-color:var(--red);">🗑 Удалить профиль</button></div><h3 style="margin-top:16px;">📋 История заказов</h3><div id="profileOrders"></div>`;
+        loadProfileOrders();
     }
-    async function loadProfileOrders() {
-        const container = document.getElementById('profileOrders'); if (!container) return;
-        try { const res = await fetch(API + '/orders/' + (currentUser.id || '')); const orders = await res.json(); const sn = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' }; container.innerHTML = orders.length === 0 ? '<p style="color:var(--gray);">Нет заказов</p>' : orders.map(o => `<div class="card"><strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br><span class="status-badge status-${o.status||'new'}">${sn[o.status]||'Новый'}</span></div>`).join(''); } catch (e) { container.innerHTML = '<p style="color:var(--gray);">Ошибка загрузки</p>'; }
-    }
+}
 
-    let isReg = false;
-    function toggleReg() { isReg = !isReg; document.getElementById('regFields').style.display = isReg ? 'block' : 'none'; document.getElementById('regToggle').innerText = isReg ? 'Уже есть аккаунт' : 'Создать аккаунт'; document.getElementById('authBtn').innerText = isReg ? 'Зарегистрироваться' : 'Войти'; document.getElementById('authBtn').onclick = isReg ? doRegister : doLogin; }
+function showForgotPassword() {
+    document.getElementById('profileContent').innerHTML = `
+        <div class="card" id="forgotForm">
+            <h3>Восстановление пароля</h3>
+            <div class="form-group"><label>Email</label><input type="email" id="forgotEmail"></div>
+            <button class="btn btn-primary" onclick="sendResetCode()">Отправить код</button>
+            <button class="btn btn-outline" onclick="loadProfile()">← Назад</button>
+        </div>`;
+}
 
-    async function doLogin() { const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPass').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); subscribePush(); } else alert(data.error); }
-    async function doRegister() { const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPass').value.trim(), name = document.getElementById('regName').value.trim(), phone = document.getElementById('regPhone').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, name, phone }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); subscribePush(); } else alert(data.error); }
-    function logout() { currentUser = null; localStorage.removeItem('currentUser'); loadProfile(); }
+async function sendResetCode() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    if (!email) { alert('Введите email'); return; }
+    const res = await fetch(API + '/forgot-password', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email}) });
+    const data = await res.json();
+    if (data.success) {
+        document.getElementById('forgotForm').innerHTML = `
+            <h3>Код отправлен</h3>
+            <p style="font-size:13px;color:var(--gray);">Проверьте почту ${email}</p>
+            <div class="form-group"><label>Код из письма</label><input type="text" id="resetCode"></div>
+            <div class="form-group"><label>Новый пароль</label><input type="password" id="newPass"></div>
+            <button class="btn btn-primary" onclick="resetPassword()">Сменить пароль</button>
+            <button class="btn btn-outline" onclick="loadProfile()">← Назад</button>`;
+    } else alert(data.error);
+}
 
-    function onTelegramAuth(user) {
-        fetch(API + '/telegram-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(user) })
-            .then(r => r.json()).then(data => { if (data.success) { currentUser = data.user; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); subscribePush(); } });
-    }
+async function resetPassword() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    const code = document.getElementById('resetCode').value.trim();
+    const pass = document.getElementById('newPass').value.trim();
+    if (!code || !pass) { alert('Заполните все поля'); return; }
+    const res = await fetch(API + '/reset-password', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email, code, newPassword: pass}) });
+    const data = await res.json();
+    if (data.success) { alert('Пароль изменён! Теперь войдите.'); loadProfile(); } else alert(data.error);
+}
 
-    renderOrderStep();
+async function deleteAccount() {
+    if (!confirm('Точно удалить профиль? Все данные будут потеряны.')) return;
+    await fetch(API + '/delete-account', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId: currentUser.id}) });
+    logout();
+}
+
+async function loadProfileOrders() {
+    const container = document.getElementById('profileOrders'); if (!container) return;
+    try { const res = await fetch(API + '/orders/' + (currentUser.id || '')); const orders = await res.json(); const sn = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' }; container.innerHTML = orders.length === 0 ? '<p style="color:var(--gray);">Нет заказов</p>' : orders.map(o => `<div class="card"><strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br><span class="status-badge status-${o.status||'new'}">${sn[o.status]||'Новый'}</span></div>`).join(''); } catch (e) { container.innerHTML = '<p style="color:var(--gray);">Ошибка загрузки</p>'; }
+}
+
+let isReg = false;
+function toggleReg() { isReg = !isReg; document.getElementById('regFields').style.display = isReg ? 'block' : 'none'; document.getElementById('regToggle').innerText = isReg ? 'Уже есть аккаунт' : 'Создать аккаунт'; document.getElementById('authBtn').innerText = isReg ? 'Зарегистрироваться' : 'Войти'; document.getElementById('authBtn').onclick = isReg ? doRegister : doLogin; }
+
+async function doLogin() { const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPass').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); subscribePush(); } else alert(data.error); }
+async function doRegister() { const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPass').value.trim(), name = document.getElementById('regName').value.trim(), phone = document.getElementById('regPhone').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, name, phone }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); subscribePush(); } else alert(data.error); }
+function logout() { currentUser = null; localStorage.removeItem('currentUser'); loadProfile(); }
+
+function onTelegramAuth(user) {
+    fetch(API + '/telegram-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(user) })
+        .then(r => r.json()).then(data => { if (data.success) { currentUser = data.user; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); subscribePush(); } });
+}
+
+renderOrderStep();
 </script>
 <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }</script>
 </body>
