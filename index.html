@@ -20,12 +20,10 @@
         .anim-fade { animation: fadeInUp 0.6s ease forwards; }
         .anim-delay1 { animation-delay: 0.1s; opacity: 0; } .anim-delay2 { animation-delay: 0.25s; opacity: 0; } .anim-delay3 { animation-delay: 0.4s; opacity: 0; } .anim-delay4 { animation-delay: 0.55s; opacity: 0; }
         .wave { display: inline-block; animation: wave 0.6s ease-in-out 3; transform-origin: 70% 70%; }
-
         .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 14px; z-index: 100; }
         .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--gray); transition: 0.2s; }
         .bottom-nav .nav-item.active { color: var(--accent); }
         .bottom-nav .nav-item .nav-icon { font-size: 22px; }
-
         .tab { display: none; padding: 16px; }
         .tab.active { display: block; }
         .card { background: var(--white); padding: 16px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 12px; }
@@ -93,9 +91,8 @@
     let matData = {};
     let uploadedFile = null;
     let orderStep = 1;
-
     const savedTab = sessionStorage.getItem('activeTab') || 'tab-home';
-    
+
     function switchTab(tabId) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
@@ -106,11 +103,7 @@
         if (tabId === 'tab-history') loadHistory();
         if (tabId === 'tab-profile') loadProfile();
     }
-
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-        item.addEventListener('click', () => switchTab(item.dataset.tab));
-    });
-
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => { item.addEventListener('click', () => switchTab(item.dataset.tab)); });
     switchTab(savedTab);
 
     let currentMaterial = 'banner';
@@ -133,18 +126,12 @@
     function getBasePrice() { if (currentMaterial === 'banner') return basePrices['banner-' + (document.getElementById('bDens')?.value || '700')]; if (currentMaterial === 'selfad') return 840; return basePrices['poster-' + (document.getElementById('pType')?.value || '500')]; }
 
     function calc() {
-        const w = parseFloat(document.getElementById('mWidth').value) || 1000;
-        const h = parseFloat(document.getElementById('mHeight').value) || 1000;
-        const qty = parseInt(document.getElementById('mQty').value) || 1;
-        const area = (w / 1000) * (h / 1000);
-        const totalArea = area * qty;
+        const w = parseFloat(document.getElementById('mWidth').value) || 1000, h = parseFloat(document.getElementById('mHeight').value) || 1000, qty = parseInt(document.getElementById('mQty').value) || 1, area = (w / 1000) * (h / 1000), totalArea = area * qty;
         let maxW = currentMaterial === 'banner' ? 3200 : 1500;
         const hint = document.getElementById('widthHint'); if (w > maxW) { document.getElementById('mWidth').classList.add('error'); hint.style.display = 'block'; hint.innerText = `⚠️ Макс. ширина — ${maxW} мм`; } else { document.getElementById('mWidth').classList.remove('error'); hint.style.display = 'none'; }
-        let base = getBasePrice();
-        let ppm = totalArea >= 5 ? base : Math.round(base * 1.3);
-        const perim = ((w + h) * 2) / 1000;
-        const extras = [];
-        if (currentMaterial === 'banner') { if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty }); if (document.getElementById('bLyuv')?.checked) { const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2; extras.push({ name: `Люверсы (${lc < 4 ? 4 * qty : lc * qty} шт)`, cost: (lc < 4 ? 4 * qty : lc * qty) * 20 }); } } else if (currentMaterial === 'selfad') { if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty }); }
+        let base = getBasePrice(), ppm = totalArea >= 5 ? base : Math.round(base * 1.3), perim = ((w + h) * 2) / 1000, extras = [];
+        if (currentMaterial === 'banner') { if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty }); if (document.getElementById('bLyuv')?.checked) { const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2; extras.push({ name: `Люверсы (${lc < 4 ? 4 * qty : lc * qty} шт)`, cost: (lc < 4 ? 4 * qty : lc * qty) * 20 }); } }
+        else if (currentMaterial === 'selfad') { if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty }); }
         let total = area * ppm * qty; extras.forEach(e => total += e.cost); total += 300; if (total < 1000) total = 1000;
         document.getElementById('mTotal').innerText = Math.round(total).toLocaleString() + ' р.';
         matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' } [currentMaterial] };
@@ -154,8 +141,7 @@
     function handleFile(e) { const f = e.target.files[0]; if (f) { document.getElementById('uploadZone').classList.add('has-file'); document.getElementById('uploadText').innerText = '✅ ' + f.name; uploadedFile = f; } }
 
     async function submitOrder() {
-        const name = document.getElementById('custName').value.trim();
-        const phone = document.getElementById('custPhone').value.trim(); if (!name || !phone) { alert('Заполните имя и телефон'); return; }
+        const name = document.getElementById('custName').value.trim(), phone = document.getElementById('custPhone').value.trim(); if (!name || !phone) { alert('Заполните имя и телефон'); return; }
         const email = document.getElementById('custEmail').value.trim();
         const order = { ...matData, name, phone, email, addr: document.getElementById('custAddr').value.trim(), userId: currentUser?.id || '' };
         if (uploadedFile) { const reader = new FileReader(); const base64 = await new Promise(r => { reader.onload = () => r(reader.result.split(',')[1]); reader.readAsDataURL(uploadedFile); }); order.fileBase64 = base64; order.fileName = uploadedFile.name; }
@@ -171,47 +157,46 @@
     function loadProfile() {
         const container = document.getElementById('profileContent');
         if (!currentUser) {
-            container.innerHTML = `<div class="card"><div class="form-group"><label>Email</label><input type="email" id="authEmail"></div><div class="form-group"><label>Пароль</label><input type="password" id="authPass"></div><div id="regFields" style="display:none;"><div class="form-group"><label>Имя</label><input type="text" id="regName"></div><div class="form-group"><label>Телефон</label><input type="tel" id="regPhone"></div></div><button class="btn btn-primary" id="authBtn" onclick="doLogin()">Войти</button><button class="btn btn-outline" onclick="toggleReg()" id="regToggle">Создать аккаунт</button><a href="https://t.me/someprintbot" target="_blank" style="display:block;text-align:center;font-size:12px;color:var(--gray);margin-top:8px;">Забыли пароль? Напишите в поддержку</a></div>`;
+            container.innerHTML = `
+                <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="Someprintbot" data-size="medium" data-radius="10" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+                <p style="text-align:center;margin:12px 0;color:var(--gray);">или</p>
+                <div class="card">
+                    <div class="form-group"><label>Email</label><input type="email" id="authEmail"></div>
+                    <div class="form-group"><label>Пароль</label><input type="password" id="authPass"></div>
+                    <div id="regFields" style="display:none;"><div class="form-group"><label>Имя</label><input type="text" id="regName"></div><div class="form-group"><label>Телефон</label><input type="tel" id="regPhone"></div></div>
+                    <button class="btn btn-primary" id="authBtn" onclick="doLogin()">Войти</button>
+                    <button class="btn btn-outline" onclick="toggleReg()" id="regToggle">Создать аккаунт</button>
+                    <a href="https://t.me/someprintbot" target="_blank" style="display:block;text-align:center;font-size:12px;color:var(--gray);margin-top:8px;">Забыли пароль? Напишите в поддержку</a>
+                </div>`;
         } else {
-            container.innerHTML = `<div class="card"><p><strong>${currentUser.name||''}</strong></p><p style="color:var(--gray);">${currentUser.email}</p><p style="color:var(--gray);">${currentUser.phone||''}</p><button class="btn btn-outline" onclick="loadChat()">💬 Чат с поддержкой</button><button class="btn btn-outline" onclick="logout()">🚪 Выйти</button></div><div id="chatContainer"></div>`;
+            container.innerHTML = `<div class="card"><p><strong>${currentUser.name||''}</strong></p><p style="color:var(--gray);">${currentUser.email||''}</p><p style="color:var(--gray);">${currentUser.phone||''}</p><button class="btn btn-outline" onclick="loadChat()">💬 Чат с поддержкой</button><button class="btn btn-outline" onclick="logout()">🚪 Выйти</button></div><div id="chatContainer"></div>`;
         }
     }
 
     let isReg = false;
     function toggleReg() { isReg = !isReg; document.getElementById('regFields').style.display = isReg ? 'block' : 'none'; document.getElementById('regToggle').innerText = isReg ? 'Уже есть аккаунт' : 'Создать аккаунт'; document.getElementById('authBtn').innerText = isReg ? 'Зарегистрироваться' : 'Войти'; document.getElementById('authBtn').onclick = isReg ? doRegister : doLogin; }
 
-    async function doLogin() { const email = document.getElementById('authEmail').value.trim(); const pass = document.getElementById('authPass').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); } else alert(data.error); }
-    async function doRegister() { const email = document.getElementById('authEmail').value.trim(); const pass = document.getElementById('authPass').value.trim(); const name = document.getElementById('regName').value.trim(); const phone = document.getElementById('regPhone').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, name, phone }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); } else alert(data.error); }
+    async function doLogin() { const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPass').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); } else alert(data.error); }
+    async function doRegister() { const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPass').value.trim(), name = document.getElementById('regName').value.trim(), phone = document.getElementById('regPhone').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, name, phone }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); } else alert(data.error); }
 
     async function loadChat() {
         if (!currentUser?.id) return;
         const res = await fetch(API + '/chat/' + currentUser.id);
         const msgs = await res.json();
-        document.getElementById('chatContainer').innerHTML = `
-            <div class="chat-box" style="margin-top:12px;">
-                <div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}</div>`).join('')}</div>
-                <div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..."><button onclick="sendChat()">➤</button></div>
-            </div>`;
+        document.getElementById('chatContainer').innerHTML = `<div class="chat-box" style="margin-top:12px;"><div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}</div>`).join('')}</div><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..."><button onclick="sendChat()">➤</button></div></div>`;
         document.getElementById('chatMsgs').scrollTop = document.getElementById('chatMsgs').scrollHeight;
     }
 
-    async function sendChat() {
-        const text = document.getElementById('chatInput').value.trim();
-        if (!text || !currentUser?.id) return;
-        await fetch(API + '/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: currentUser.id, from: currentUser.email || 'client', text })
-        });
-        loadChat();
-    }
-
+    async function sendChat() { const text = document.getElementById('chatInput').value.trim(); if (!text || !currentUser?.id) return; await fetch(API + '/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id, from: currentUser.email || 'client', text }) }); loadChat(); }
     function logout() { currentUser = null; localStorage.removeItem('currentUser'); loadProfile(); }
+
+    function onTelegramAuth(user) {
+        fetch(API + '/telegram-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(user) })
+            .then(r => r.json()).then(data => { if (data.success) { currentUser = data.user; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); } });
+    }
 
     renderOrderStep();
 </script>
-<script>
-if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
-</script>
+<script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }</script>
 </body>
 </html>
