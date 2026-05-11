@@ -169,7 +169,7 @@
         try { const res = await fetch(API + '/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) }); const data = await res.json(); if (data.success) { if (!currentUser && email) { currentUser = { email, name, phone, addr: order.addr }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); } alert('✅ Заказ #' + data.id + ' оформлен!'); orderStep = 1; renderOrderStep(); switchTab('tab-home'); } } catch (e) { alert('Ошибка сервера'); }
     }
 
-  // ========== ЧАТ (отдельная вкладка) ==========
+// ========== ЧАТ (отдельная вкладка) ==========
 async function loadChatPage() {
     const container = document.getElementById('chatPage');
     if (!currentUser) {
@@ -177,20 +177,23 @@ async function loadChatPage() {
         clearInterval(window._chatInterval);
         return;
     }
+    const msgsBox = document.getElementById('chatMsgs');
+    const wasAtBottom = msgsBox ? (msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight < 60) : true;
+    
     const res = await fetch(API + '/chat/' + currentUser.id);
     const msgs = await res.json();
-    const msgsBox = document.getElementById('chatMsgs');
+    
     if (msgsBox) {
-        const wasAtBottom = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight < 60;
         msgsBox.innerHTML = msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('');
         if (wasAtBottom) msgsBox.scrollTop = msgsBox.scrollHeight;
     } else {
-        container.innerHTML = `<div class="chat-box"><div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter'){event.preventDefault();sendChatPage();}"><button onclick="sendChatPage()">➤</button></div></div>`;
+        container.innerHTML = `<div class="chat-box"><div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><button class="scroll-down-btn" onclick="const m=document.getElementById('chatMsgs');m.scrollTop=m.scrollHeight;this.style.display='none';">⌄</button><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter'){event.preventDefault();sendChatPage();}"><button onclick="sendChatPage()">➤</button></div></div>`;
+        document.getElementById('chatMsgs').scrollTop = document.getElementById('chatMsgs').scrollHeight;
     }
     clearInterval(window._chatInterval);
     window._chatInterval = setInterval(loadChatPage, 3000);
 }
-    
+
 async function sendChatPage() {
     const input = document.getElementById('chatInput');
     const text = input.value.trim();
