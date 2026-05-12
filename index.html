@@ -180,16 +180,26 @@
     function getBasePrice() { if (currentMaterial === 'banner') return basePrices['banner-' + (document.getElementById('bDens')?.value || '700')]; if (currentMaterial === 'selfad') return 840; return basePrices['poster-' + (document.getElementById('pType')?.value || '500')]; }
 
     function calc() {
-        const w = parseFloat(document.getElementById('mWidth').value) || 1000, h = parseFloat(document.getElementById('mHeight').value) || 1000, qty = parseInt(document.getElementById('mQty').value) || 1, area = (w / 1000) * (h / 1000), totalArea = area * qty;
-        let maxW = currentMaterial === 'banner' ? 3200 : 1500;
-        const hint = document.getElementById('widthHint'); if (w > maxW) { document.getElementById('mWidth').classList.add('error'); hint.style.display = 'block'; hint.innerText = `⚠️ Макс. ширина — ${maxW} мм`; } else { document.getElementById('mWidth').classList.remove('error'); hint.style.display = 'none'; }
-        let base = getBasePrice(), ppm = totalArea >= 5 ? base : Math.round(base * 1.3), perim = ((w + h) * 2) / 1000, extras = [];
-        if (currentMaterial === 'banner') { if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty }); if (document.getElementById('bLyuv')?.checked) { const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2; extras.push({ name: `Люверсы (${lc < 4 ? 4 * qty : lc * qty} шт)`, cost: (lc < 4 ? 4 * qty : lc * qty) * 20 }); } }
-        else if (currentMaterial === 'selfad') { if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty }); }
-        let total = area * ppm * qty; extras.forEach(e => total += e.cost); total += 300; if (total < 1000) total = 1000;
+    if (currentMaterial === 'cards') {
+        const cardsPrices = { 500: 855, 1000: 867, 2000: 1733, 3000: 2600, 4000: 3466, 5000: 4275, 10000: 8436 };
+        const qty = parseInt(document.getElementById('cardsQty').value);
+        let total = cardsPrices[qty] || 1000;
+        if (document.getElementById('cardsFast')?.checked) total = Math.round(total * 1.3);
         document.getElementById('mTotal').innerText = Math.round(total).toLocaleString() + ' р.';
-        matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' } [currentMaterial] };
+        matData = { type: currentMaterial, width: 90, height: 50, qty: qty, total: Math.round(total), totalArea: 0, extras: [], material: '📇 Визитки' };
+        return;
     }
+        
+    const w = parseFloat(document.getElementById('mWidth').value) || 1000, h = parseFloat(document.getElementById('mHeight').value) || 1000, qty = parseInt(document.getElementById('mQty').value) || 1, area = (w / 1000) * (h / 1000), totalArea = area * qty;
+    let maxW = currentMaterial === 'banner' ? 3200 : 1500;
+    const hint = document.getElementById('widthHint'); if (w > maxW) { document.getElementById('mWidth').classList.add('error'); hint.style.display = 'block'; hint.innerText = `⚠️ Макс. ширина — ${maxW} мм`; } else { document.getElementById('mWidth').classList.remove('error'); hint.style.display = 'none'; }
+    let base = getBasePrice(), ppm = totalArea >= 5 ? base : Math.round(base * 1.3), perim = ((w + h) * 2) / 1000, extras = [];
+    if (currentMaterial === 'banner') { if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty }); if (document.getElementById('bLyuv')?.checked) { const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2; extras.push({ name: `Люверсы (${lc < 4 ? 4 * qty : lc * qty} шт)`, cost: (lc < 4 ? 4 * qty : lc * qty) * 20 }); } }
+    else if (currentMaterial === 'selfad') { if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty }); }
+    let total = area * ppm * qty; extras.forEach(e => total += e.cost); total += 300; if (total < 1000) total = 1000;
+    document.getElementById('mTotal').innerText = Math.round(total).toLocaleString() + ' р.';
+    matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' } [currentMaterial] };
+}
 
     function buildSummary() { const d = matData; return `<div class="summary-row"><span>Материал:</span><span>${d.material}</span></div><div class="summary-row"><span>Размер:</span><span>${d.width}×${d.height} мм</span></div><div class="summary-row"><span>Кол-во:</span><span>${d.qty} шт</span></div>${d.extras.map(e => `<div class="summary-row"><span>${e.name}:</span><span>${Math.round(e.cost)} р.</span></div>`).join('')}<div class="summary-row"><span>Доставка:</span><span>300 р.</span></div><div class="summary-row total"><span>Итого:</span><span>${d.total.toLocaleString()} р.</span></div>`; }
     function handleFile(e) { const f = e.target.files[0]; if (f) { document.getElementById('uploadZone').classList.add('has-file'); document.getElementById('uploadText').innerText = '✅ ' + f.name; uploadedFile = f; } }
