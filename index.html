@@ -201,7 +201,7 @@
     matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' } [currentMaterial] };
 }
 
-    function buildSummary() { const d = matData; return `<div class="summary-row"><span>Материал:</span><span>${d.material}</span></div><div class="summary-row"><span>Размер:</span><span>${d.width}×${d.height} мм</span></div><div class="summary-row"><span>Кол-во:</span><span>${d.qty} шт</span></div>${d.extras.map(e => `<div class="summary-row"><span>${e.name}:</span><span>${Math.round(e.cost)} р.</span></div>`).join('')}<div class="summary-row"><span>Доставка:</span><span>300 р.</span></div><div class="summary-row total"><span>Итого:</span><span>${d.total.toLocaleString()} р.</span></div>`; }
+    function buildSummary() { const d = matData; return `<div class="summary-row"><span>Материал:</span><span>${d.material}</span></div><div class="summary-row"><span>Размер:</span><span>${d.type==='cards'?'90×50':d.width+'×'+d.height} мм</span></div><div class="summary-row"><span>Кол-во:</span><span>${d.qty} шт</span></div>${d.extras.map(e => `<div class="summary-row"><span>${e.name}:</span><span>${Math.round(e.cost)} р.</span></div>`).join('')}${currentMaterial!=='cards'?'<div class="summary-row"><span>Доставка:</span><span>300 р.</span></div>':''}<div class="summary-row total"><span>Итого:</span><span>${d.total.toLocaleString()} р.</span></div>`; }
     function handleFile(e) { const f = e.target.files[0]; if (f) { document.getElementById('uploadZone').classList.add('has-file'); document.getElementById('uploadText').innerText = '✅ ' + f.name; uploadedFile = f; } }
 
     async function submitOrder() {
