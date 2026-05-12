@@ -201,26 +201,48 @@ function assignWorkshop(orderId, wsId) {
 
     function searchOrders() { const query = document.getElementById('orderSearch').value.toLowerCase(); document.querySelectorAll('#ordersResult .card').forEach(c => { c.style.display = c.dataset.search.toLowerCase().includes(query) ? 'block' : 'none'; }); }
 
-    function addOrder() {
-        document.getElementById('modalContent').innerHTML = `<h3>➕ Новый заказ</h3>
-            <div class="form-group"><label>Материал</label><input type="text" id="newOrdMat" value="Баннер 440г"></div>
-            <div class="form-group"><label>Ширина, мм</label><input type="number" id="newOrdW" value="1000"></div>
-            <div class="form-group"><label>Высота, мм</label><input type="number" id="newOrdH" value="1000"></div>
-            <div class="form-group"><label>Кол-во</label><input type="number" id="newOrdQty" value="1"></div>
-            <div class="form-group"><label>Итого, р.</label><input type="number" id="newOrdTotal" value="1000"></div>
-            <div class="form-group"><label>Имя клиента</label><input type="text" id="newOrdName"></div>
-            <div class="form-group"><label>Телефон</label><input type="tel" id="newOrdPhone"></div>
-            <button class="btn btn-dark" onclick="saveNewOrder()">Сохранить</button><button class="btn btn-outline" onclick="closeModal()">Отмена</button>`;
-        document.getElementById('modal').classList.add('show');
-    }
+   function addOrder() {
+    document.getElementById('modalContent').innerHTML = `<h3>➕ Новый заказ</h3>
+        <div class="form-group"><label>Материал</label><select id="newOrdMat"><option>Баннер 300г</option><option selected>Баннер 440г</option><option>Баннер 510г</option><option>Самоклейка матовая</option><option>Самоклейка глянцевая</option><option>Blueback</option><option>Белая бумага</option><option>Визитки</option></select></div>
+        <div class="form-group"><label>Ширина, мм</label><input type="number" id="newOrdW" value="1000"></div>
+        <div class="form-group"><label>Высота, мм</label><input type="number" id="newOrdH" value="1000"></div>
+        <div class="form-group"><label>Кол-во</label><input type="number" id="newOrdQty" value="1"></div>
+        <div class="form-group"><label>Итого, р.</label><input type="number" id="newOrdTotal" value="1000"></div>
+        <div class="form-group"><label>Имя клиента</label><input type="text" id="newOrdName" oninput="autofillClient()"></div>
+        <div class="form-group"><label>Телефон</label><input type="tel" id="newOrdPhone"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="newOrdMail"></div>
+        <button class="btn btn-dark" onclick="saveNewOrder()">Сохранить</button><button class="btn btn-outline" onclick="closeModal()">Отмена</button>`;
+    document.getElementById('modal').classList.add('show');
+}
 
-    function saveNewOrder() {
-        const order = { _id: String(allOrders.length + 1).padStart(6, '0'), material: document.getElementById('newOrdMat').value, width: parseInt(document.getElementById('newOrdW').value), height: parseInt(document.getElementById('newOrdH').value), qty: parseInt(document.getElementById('newOrdQty').value), total: parseInt(document.getElementById('newOrdTotal').value), name: document.getElementById('newOrdName').value, phone: document.getElementById('newOrdPhone').value, status: 'new', createdAt: new Date().toISOString() };
-        allOrders.unshift(order);
-        closeModal();
-        loadOrdersTab();
-        showToast('✅ Заказ добавлен');
+function autofillClient() {
+    const name = document.getElementById('newOrdName').value.trim();
+    const client = allUsers.find(u => (u.name || '').toLowerCase() === name.toLowerCase() || (u.email || '').toLowerCase() === name.toLowerCase() || (u.phone || '').includes(name));
+    if (client) {
+        document.getElementById('newOrdPhone').value = client.phone || '';
+        document.getElementById('newOrdMail').value = client.email || '';
     }
+}
+
+function saveNewOrder() {
+    const order = {
+        id: String(allOrders.length + 1).padStart(6, '0'),
+        material: document.getElementById('newOrdMat').value,
+        width: parseInt(document.getElementById('newOrdW').value),
+        height: parseInt(document.getElementById('newOrdH').value),
+        qty: parseInt(document.getElementById('newOrdQty').value),
+        total: parseInt(document.getElementById('newOrdTotal').value),
+        name: document.getElementById('newOrdName').value,
+        phone: document.getElementById('newOrdPhone').value,
+        email: document.getElementById('newOrdMail').value,
+        status: 'new',
+        createdAt: new Date().toISOString()
+    };
+    allOrders.unshift(order);
+    closeModal();
+    loadOrdersTab();
+    showToast('✅ Заказ добавлен');
+}
 
     function editOrder(orderId) {
         const o = allOrders.find(x => x.id === orderId); if (!o) return;
