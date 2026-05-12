@@ -317,7 +317,12 @@ function openModal(t) {
 
 function closeModal() { document.getElementById('modal').classList.remove('show'); }
     
-    renderOrderStep();
+function toggleDelivery() {
+    const type = document.getElementById('deliveryType').value;
+    document.getElementById('pvzBlock').style.display = type === 'pickup' ? 'block' : 'none';
+}
+
+renderOrderStep();
 </script>
 <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }</script>
 </body>
