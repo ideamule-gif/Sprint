@@ -159,6 +159,7 @@
     }
     document.querySelectorAll('.bottom-nav .nav-item').forEach(item => { item.addEventListener('click', () => switchTab(item.dataset.tab)); });
     switchTab(savedTab);
+    if (window.location.search.includes('tab=chat')) switchTab('tab-chat');
 
     let currentMaterial = 'banner';
     const basePrices = { 'banner-500': 500, 'banner-700': 700, 'banner-820': 820, 'selfad-840': 840, 'poster-500': 500, 'poster-800': 800 };
