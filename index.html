@@ -196,7 +196,7 @@
     let base = getBasePrice(), ppm = totalArea >= 5 ? base : Math.round(base * 1.3), perim = ((w + h) * 2) / 1000, extras = [];
     if (currentMaterial === 'banner') { if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty }); if (document.getElementById('bLyuv')?.checked) { const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2; extras.push({ name: `Люверсы (${lc < 4 ? 4 * qty : lc * qty} шт)`, cost: (lc < 4 ? 4 * qty : lc * qty) * 20 }); } }
     else if (currentMaterial === 'selfad') { if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty }); }
-    let total = area * ppm * qty; extras.forEach(e => total += e.cost); total += 300; if (total < 1000) total = 1000;
+   let total = area * ppm * qty; extras.forEach(e => total += e.cost); if (currentMaterial !== 'cards') total += 300; if (total < 1000) total = 1000;
     document.getElementById('mTotal').innerText = Math.round(total).toLocaleString() + ' р.';
     matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' } [currentMaterial] };
 }
