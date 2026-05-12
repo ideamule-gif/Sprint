@@ -9,7 +9,7 @@ self.addEventListener('push', e => {
         icon: '/icon-192.png',
         badge: '/icon-192.png',
         vibrate: [200, 100, 200],
-        data: { url: data.url || '/' }
+      data: { url: data.url || '/?tab=chat' }
     };
     e.waitUntil(self.registration.showNotification(title, options));
 });
