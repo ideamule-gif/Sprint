@@ -126,6 +126,8 @@
     function loadDashboard() { const n = allOrders.filter(o => o.status === 'new').length, p = allOrders.filter(o => ['processing','printing'].includes(o.status)).length, r = allOrders.filter(o => ['ready','shipped','done'].includes(o.status)).length; document.getElementById('tab-dash').innerHTML = `<h2>📊 Панель</h2><div class="stat-row"><div class="stat-box"><div class="num">${n}</div><div class="lbl">Новых</div></div><div class="stat-box"><div class="num">${p}</div><div class="lbl">В работе</div></div><div class="stat-box"><div class="num">${r}</div><div class="lbl">Готовых</div></div></div><div class="stat-row"><div class="stat-box"><div class="num">${allUsers.length}</div><div class="lbl">Клиентов</div></div><div class="stat-box"><div class="num">${workshops.length}</div><div class="lbl">Цехов</div></div></div>`; }
 
     // ========== ЗАКАЗЫ (список, поиск, добавить, редактировать) ==========
+function loadOrdersTab() { document.getElementById('tab-orders').innerHTML = `<h2>📋 Заказы</h2><select onchange="renderOrders(this.value)" style="width:100%;padding:8px;border-radius:8px;margin-bottom:10px;font-family:inherit;"><option value="all">Все</option><option value="new">Новые</option><option value="progress">В работе</option><option value="ready">Готовые</option></select><div id="ordersList"></div>`; renderOrders('all'); }
+    
 function renderOrders(filter) { 
     const f = filter === 'all' ? allOrders : filter === 'progress' ? allOrders.filter(o => ['processing','printing'].includes(o.status)) : allOrders.filter(o => o.status === filter || (filter === 'ready' && ['ready','shipped','done'].includes(o.status)));
     document.getElementById('ordersList').innerHTML = `
