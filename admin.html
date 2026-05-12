@@ -148,27 +148,28 @@ function assignWorkshop(orderId, wsId) {
     loadOrdersTab();
     showToast(ws ? `🏭 Цех: ${ws.name}` : 'Цех сброшен');
 }
-    function loadOrdersTab() { document.getElementById('tab-orders').innerHTML = `<div class="workshop-header"><h2>📋 Заказы</h2><button class="btn-add-sm" onclick="addOrder()">+</button></div><select onchange="renderOrders(this.value)" style="width:100%;padding:8px;border-radius:8px;margin-bottom:10px;font-family:inherit;"><option value="all">Все</option><option value="new">Новые</option><option value="progress">В работе</option><option value="ready">Готовые</option></select><div id="ordersList"></div>`; renderOrders('all'); }
-
+function loadOrdersTab() { document.getElementById('tab-orders').innerHTML = `<div class="workshop-header"><h2>📋 Заказы</h2><button class="btn-add-sm" onclick="addOrder()">+</button></div><select onchange="renderOrders(this.value)" style="width:100%;padding:8px;border-radius:8px;margin-bottom:10px;font-family:inherit;"><option value="all">Все</option><option value="new">Новые</option><option value="progress">В работе</option><option value="ready">Готовые</option></select><div id="ordersList"></div>`; renderOrders('all'); }
 function renderOrders(filter) { 
     const f = filter === 'all' ? allOrders : filter === 'progress' ? allOrders.filter(o => ['processing','printing'].includes(o.status)) : allOrders.filter(o => o.status === filter || (filter === 'ready' && ['ready','shipped','done'].includes(o.status)));
     document.getElementById('ordersList').innerHTML = `
         <input type="text" id="orderSearch" placeholder="🔍 Поиск по номеру, имени, телефону..." oninput="searchOrders()" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;margin-bottom:10px;font-family:inherit;font-size:14px;">
         <div id="ordersResult">${f.length === 0 ? '<p style="color:var(--gray);text-align:center;">Нет заказов</p>' : f.map(o => `
-            <div class="card" data-search="${o.id} ${o.name||''} ${o.phone||''} ${o.material||''}" style="position:relative;">
-                <span style="position:absolute;top:12px;right:12px;font-size:11px;color:var(--gray);">📅 ${new Date(o.createdAt).toLocaleDateString()}</span>
+            <div class="card" data-search="${o.id} ${o.name||''} ${o.phone||''} ${o.material||''}">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                    <span class="status-badge status-${o.status}" style="font-size:10px;">${statusNames[o.status]}</span>
+                    <span style="font-size:10px;color:var(--gray);">📅 ${new Date(o.createdAt).toLocaleDateString()}</span>
+                </div>
                 <strong>#${o.id}</strong> — ${o.material}<br>
-                ${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br>
-                <span class="status-badge status-${o.status}">${statusNames[o.status]}</span> ${o.workshop?`🏭 ${o.workshop}`:''}<br>
-                👤 <a href="#" onclick="event.preventDefault();openClientProfile('${o.userId}')">${o.name||'—'}</a> | 📞 <a href="tel:${o.phone}">${o.phone}</a><br>
+                ${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р. ${o.workshop?`🏭 ${o.workshop}`:''}<br>
+                👤 ${o.name||'—'} | 📞 <a href="tel:${o.phone}">${o.phone}</a> | <a href="mailto:${o.email}">📧</a><br>
                 ${o.fileUrl?`📎 <a href="${o.fileUrl}" target="_blank">Скачать макет</a>`:''}
-                <div style="display:flex;gap:6px;margin-top:8px;align-items:center;">
+                <div style="display:flex;gap:6px;margin-top:6px;align-items:center;">
                     <button class="btn btn-outline btn-sm" onclick="editOrder('${o.id}')" title="Редактировать">✏️</button>
                     <button class="btn btn-outline btn-sm" onclick="shareOrder('${o.id}')" title="Поделиться">📤</button>
                     <button class="btn btn-outline btn-sm" onclick="deleteOrder('${o.id}')" title="Удалить" style="color:var(--red);border-color:var(--red);">🗑</button>
-                    <select onchange="updateStatus('${o.id}',this.value)" style="flex:1;padding:4px;border-radius:4px;font-family:inherit;font-size:11px;">${Object.keys(statusNames).map(s => `<option value="${s}" ${o.status===s?'selected':''}>${statusNames[s]}</option>`).join('')}</select>
-                    <select onchange="assignWorkshop('${o.id}',this.value)" style="flex:1;padding:4px;border-radius:4px;font-family:inherit;font-size:11px;">
-                        <option value="">Цех</option>
+                    <select onchange="updateStatus('${o.id}',this.value)" style="width:auto;padding:3px 6px;border-radius:4px;font-family:inherit;font-size:10px;">${Object.keys(statusNames).map(s => `<option value="${s}" ${o.status===s?'selected':''}>${statusNames[s]}</option>`).join('')}</select>
+                    <select onchange="assignWorkshop('${o.id}',this.value)" style="width:auto;padding:3px 6px;border-radius:4px;font-family:inherit;font-size:10px;">
+                        <option value="">🏭 Цех</option>
                         ${workshops.map(w => `<option value="${w.id}" ${o.workshop===w.name?'selected':''}>${w.name}</option>`).join('')}
                     </select>
                 </div>
