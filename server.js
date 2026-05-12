@@ -74,7 +74,7 @@ app.post('/api/forgot-password', async (req, res) => {
     try {
         await fetch('https://api.emailjs.com/api/v1.0/email/send', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ service_id: 'service_6g06b1d', template_id: 'template_hb05foo', user_id: '1uNqFkbGPhecG4EaK', template_params: { order_id: 'Восстановление пароля', name: user.name || 'Клиент', status: `Код: ${code}`, material: '', size: '', total: '', email: email } })
+            body: JSON.stringify({ service_id: 'service_6g06b1d', template_id: 'template_td443v9', user_id: '1uNqFkbGPhecG4EaK', template_params: { name: user.name || 'Клиент', code: code, email: email }
         });
     } catch (e) {}
     res.json({ success: true });
