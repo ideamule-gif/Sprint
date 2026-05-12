@@ -128,7 +128,8 @@
         try {
             const res = await fetch(API + '/chat/' + currentUser.id);
             const msgs = await res.json();
-            const adminMsgs = msgs.filter(m => m.from === 'admin').length;
+           const readCount = parseInt(localStorage.getItem('chatRead_' + currentUser.id) || '0');
+           const adminMsgs = msgs.filter(m => m.from === 'admin').length - readCount;
             const badge = document.querySelector('[data-tab="tab-chat"] .badge');
             if (adminMsgs > 0) {
                 if (!badge) {
@@ -153,7 +154,7 @@
         document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
         sessionStorage.setItem('activeTab', tabId);
         if (tabId === 'tab-order') renderOrderStep();
-        if (tabId === 'tab-chat') { loadChatPage(); unreadCount = 0; updateChatBadge(); }
+       if (tabId === 'tab-chat') { loadChatPage(); fetch(API + '/chat/' + currentUser?.id).then(r => r.json()).then(msgs => { localStorage.setItem('chatRead_' + currentUser.id, msgs.filter(m => m.from === 'admin').length); updateChatBadge(); }); }
         if (tabId === 'tab-profile') loadProfile();
     }
     document.querySelectorAll('.bottom-nav .nav-item').forEach(item => { item.addEventListener('click', () => switchTab(item.dataset.tab)); });
