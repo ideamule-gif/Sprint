@@ -223,8 +223,7 @@ function assignWorkshop(orderId, wsId) {
         showToast('✅ Заказ обновлён');
     }
 
-    async function updateStatus(id, status) { await fetch(API + '/admin/status', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ orderId:id, status }) }); refreshAll(); loadOrdersTab(); showToast(`📋 Статус #${id}: ${statusNames[status]}`); }
-    function sendToWorkshop(orderId) { const order = allOrders.find(o => o.id === orderId); if (!order) return; document.getElementById('modalContent').innerHTML = `<h3>🏭 Выберите цех</h3>${workshops.map(w => `<div class="workshop-card" onclick="confirmSend('${orderId}','${w.id}')"><strong>${w.name}</strong><br><a href="mailto:${w.email}">📧 ${w.email}</a> | <a href="tel:${w.phone}">📞 ${w.phone}</a></div>`).join('')}<button class="btn btn-outline" onclick="closeModal()">Отмена</button>`; document.getElementById('modal').classList.add('show'); }
+    async function updateStatus(id, status) { await fetch(API + '/admin/status', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ orderId:id, status }) }); refreshAll(); loadOrdersTab(); }
     async function confirmSend(orderId, wsId) { const ws = workshops.find(w => w.id === wsId), order = allOrders.find(o => o.id === orderId); if (!ws || !order) return; await updateStatus(orderId, 'processing'); order.workshop = ws.name; closeModal(); refreshAll(); loadOrdersTab(); }
 
     // ========== КЛИЕНТЫ (список, поиск, профиль, блокировка, удаление) ==========
