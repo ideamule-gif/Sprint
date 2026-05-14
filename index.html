@@ -46,16 +46,17 @@
         .footer-links { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
         .footer-links a { font-size: 11px; color: var(--gray); text-decoration: underline; }
         .back-btn { background: none; border: none; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--gray); padding: 4px 0; margin-bottom: 12px; }
-.chat-box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); height: calc(100vh - 220px); display: flex; flex-direction: column; overflow: hidden; margin-top: 8px; position: relative; }
+.chat-box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); height: calc(100vh - 180px); display: flex; flex-direction: column; overflow: hidden; margin-top: 8px; position: relative; }
 .chat-box .chat-messages { flex: 1; overflow-y: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; }
 .chat-box .chat-msg { max-width: 80%; padding: 6px 10px; border-radius: 12px; font-size: 12px; }
 .chat-box .chat-msg.client { align-self: flex-end; background: var(--black); color: #fff; }
 .chat-box .chat-msg.admin { align-self: flex-start; background: #eee; }
-.chat-box .chat-input-row { display: flex; gap: 4px; padding: 6px; border-top: 1px solid var(--border); }
+.chat-box .chat-input-row { display: flex; gap: 4px; padding: 6px 6px 10px 6px; border-top: 1px solid var(--border); }
 .chat-box .chat-input-row input { flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 16px; font-family: inherit; font-size: 13px; }
 .chat-box .chat-input-row button { padding: 8px 14px; border-radius: 16px; background: var(--black); color: #fff; border: none; font-weight: 600; cursor: pointer; }
-.scroll-down-btn { position: absolute; bottom: 60px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.2); color: #fff; border: none; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 18px; z-index: 10; backdrop-filter: blur(4px); }
+.scroll-down-btn { position: absolute; bottom: 60px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.3); color: #fff; border: none; cursor: pointer; align-items: center; justify-content: center; font-size: 18px; z-index: 10; backdrop-filter: blur(4px); }
 #tab-chat { padding: 16px; }
+
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
 .modal.show { display: flex; }
 .modal-box { background: #fff; padding: 24px; border-radius: 14px; max-width: 380px; margin: 20px; max-height: 80vh; overflow-y: auto; font-size: 13px; line-height: 1.6; }
@@ -214,8 +215,8 @@ container.innerHTML = `<button class="back-btn" onclick="orderStep=2;renderOrder
       try { const res = await fetch(API + '/order', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' }, body: JSON.stringify(order) }); const data = await res.json(); if (data.success) { if (!currentUser && email) { currentUser = { email, name, phone, tg, addr: order.addr }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); } alert('✅ Заказ #' + data.id + ' оформлен!'); orderStep = 1; renderOrderStep(); switchTab('tab-home'); } } catch (e) { alert('Ошибка сервера'); }
   }
 
-    // ========== ЧАТ ==========
-  async function loadChatPage() {
+   // ========== ЧАТ ==========
+async function loadChatPage() {
     const container = document.getElementById('chatPage');
     if (!currentUser) { container.innerHTML = '<div class="card"><p style="color:var(--gray);text-align:center;">Войдите в профиль, чтобы использовать чат.</p><button class="btn btn-primary" onclick="switchTab(\'tab-profile\')">👤 Войти</button></div>'; clearInterval(window._chatInterval); return; }
     const res = await fetch(API + '/chat/' + currentUser.id, { headers: { 'x-user-id': currentUser?.id || '' } }); const msgs = await res.json();
@@ -223,9 +224,9 @@ container.innerHTML = `<button class="back-btn" onclick="orderStep=2;renderOrder
     if (msgsBox) {
         const wasAtBottom = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight < 60;
         msgsBox.innerHTML = msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('');
-        const btn = document.querySelector('#chatPage .scroll-down-btn');
-        if (btn) btn.style.display = wasAtBottom ? 'none' : 'flex';
         if (wasAtBottom) msgsBox.scrollTop = msgsBox.scrollHeight;
+        const btn = msgsBox.parentElement?.querySelector('.scroll-down-btn');
+        if (btn) { const show = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight > 60; btn.style.display = show ? 'flex' : 'none'; }
     } else {
         container.innerHTML = `<div class="chat-box"><div class="chat-messages">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><button class="scroll-down-btn" onclick="const m=this.parentElement.querySelector('.chat-messages');m.scrollTop=m.scrollHeight;this.style.display='none';">↓</button><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter'){event.preventDefault();sendChatPage();}"><button onclick="sendChatPage()">➤</button></div></div>`;
     }
