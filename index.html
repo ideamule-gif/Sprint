@@ -542,65 +542,6 @@
             justify-content: center;
         }
 
-        /* Chat input */
-        .chat-input-row {
-            display: flex;
-            align-items: flex-end;
-            gap: 6px;
-            padding: 8px 8px 10px;
-            background: var(--white);
-            border-top: 1px solid var(--border);
-        }
-        .chat-input-row .input-wrapper {
-            flex: 1;
-            position: relative;
-            background: var(--gray-light);
-            border-radius: 20px;
-            display: flex;
-            align-items: flex-end;
-            padding: 4px 4px 4px 14px;
-        }
-        .chat-input-row textarea {
-            flex: 1;
-            border: none;
-            background: transparent;
-            font-family: inherit;
-            font-size: 13px;
-            line-height: 1.4;
-            padding: 6px 0;
-            resize: none;
-            max-height: 100px;
-            outline: none;
-            overflow-y: auto;
-        }
-        .chat-input-row textarea::placeholder { color: #999; }
-        .chat-input-row .emoji-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 4px;
-            flex-shrink: 0;
-            opacity: 0.5;
-            transition: opacity 0.2s;
-        }
-        .chat-input-row .emoji-btn:hover { opacity: 1; }
-        .chat-input-row .send-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--gradient-dark);
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-            transition: all 0.2s;
-            box-shadow: 0 3px 10px rgba(108,92,231,0.3);
-        }
         .chat-input-row .send-btn:hover { transform: scale(1.05); }
         .chat-input-row .send-btn:active { transform: scale(0.93); }
 
@@ -845,6 +786,89 @@ body {
 /* === ФИКС ПРОФИЛЯ === */
 #profileContent { position: relative; z-index: 1; }
 /* === END FIX === */
+        
+        /* === ЧАТ: СТРОКА ВВОДА (ЛАКОНИЧНЫЙ СТИЛЬ) === */
+.chat-input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 10px 12px 14px;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(0,0,0,0.04);
+}
+.chat-input-row .input-wrapper {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 20px;
+    display: flex;
+    align-items: flex-end;
+    padding: 6px 6px 6px 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.chat-input-row .input-wrapper:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(108,92,231,0.12);
+}
+.chat-input-row textarea {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 6px 0;
+    resize: none;
+    max-height: 100px;
+    outline: none;
+}
+.chat-input-row textarea::placeholder { color: #9aa0a6; }
+.chat-input-row .emoji-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 4px;
+    opacity: 0.4;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.chat-input-row .emoji-btn:hover { opacity: 1; transform: scale(1.1); }
+.chat-input-row .send-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-dark);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(108,92,231,0.3);
+}
+.chat-input-row .send-btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(108,92,231,0.4); }
+.chat-input-row .send-btn:active { transform: scale(0.95); }
+
+/* === ПРОФИЛЬ: ГАРАНТИЯ ВИДИМОСТИ === */
+#tab-profile { padding-top: 20px !important; }
+#profileContent {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+.profile-empty, .profile-error {
+    text-align: center; padding: 40px 20px;
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 12px;
+}
+.profile-error { border-left: 3px solid var(--red); }
 </style>
 </head>
 <body>
@@ -1549,228 +1573,438 @@ function generateDemoMessages() {
 }
 
 // ==========================================
-// PROFILE
+// PROFILE — ИСПРАВЛЕННЫЙ БЛОК
 // ==========================================
+
 function loadProfile() {
     const container = document.getElementById('profileContent');
+    if (!container) {
+        console.warn('⚠️ #profileContent не найден');
+        return;
+    }
+    
+    // Если пользователь не авторизован — показываем форму входа
     if (!currentUser) {
         container.innerHTML = `
             <div class="section-header">👤 Профиль</div>
-            <div id="tgWidgetContainer"></div>
-            <p style="text-align:center;margin:16px 0;color:var(--gray);font-size:13px;">или войдите по email</p>
-            <div class="card">
-                <div class="form-group"><label>Email</label><input type="email" id="authEmail"></div>
-                <div class="form-group"><label>Пароль</label><input type="password" id="authPass"></div>
+            <div class="card" style="text-align:center;padding:30px 20px;">
+                <div style="font-size:40px;margin-bottom:12px;">🔐</div>
+                <p style="color:var(--gray);margin-bottom:20px;">Войдите, чтобы видеть профиль и историю заказов</p>
+                
+                <div id="tgWidgetContainer" style="margin-bottom:20px;"></div>
+                
+                <p style="color:var(--gray);font-size:12px;margin:16px 0;">или войдите по email</p>
+                
+                <div class="form-group"><label>Email</label><input type="email" id="authEmail" placeholder="you@example.com"></div>
+                <div class="form-group"><label>Пароль</label><input type="password" id="authPass" placeholder="••••••••"></div>
+                
                 <div id="regFields" style="display:none;">
-                    <div class="form-group"><label>Имя</label><input type="text" id="regName"></div>
-                    <div class="form-group"><label>Телефон</label><input type="tel" id="regPhone"></div>
+                    <div class="form-group"><label>Имя</label><input type="text" id="regName" placeholder="Ваше имя"></div>
+                    <div class="form-group"><label>Телефон</label><input type="tel" id="regPhone" placeholder="+7 ___ ___-__-__"></div>
                 </div>
+                
                 <button class="btn btn-primary" id="authBtn" onclick="doLogin()">Войти</button>
-                <button class="btn btn-outline" onclick="toggleReg()" id="regToggle">Создать аккаунт</button>
-                <a href="#" onclick="showForgotPassword()" style="display:block;text-align:center;font-size:12px;color:var(--gray);margin-top:12px;text-decoration:none;">Забыли пароль?</a>
+                <button class="btn btn-outline" onclick="toggleReg()" id="regToggle" style="margin-top:8px;">Создать аккаунт</button>
+                <a href="#" onclick="showForgotPassword()" style="display:block;text-align:center;font-size:11px;color:var(--gray);margin-top:12px;text-decoration:none;">Забыли пароль?</a>
             </div>
         `;
-        const tgScript = document.createElement('script');
-        tgScript.async = true;
-        tgScript.src = 'https://telegram.org/js/telegram-widget.js?22';
-        tgScript.setAttribute('data-telegram-login', 'Someprintbot');
-        tgScript.setAttribute('data-size', 'medium');
-        tgScript.setAttribute('data-radius', '10');
-        tgScript.setAttribute('data-onauth', 'onTelegramAuth(user)');
-        tgScript.setAttribute('data-request-access', 'write');
-        document.getElementById('tgWidgetContainer').appendChild(tgScript);
-    } else {
-        container.innerHTML = `
-            <div class="section-header">👤 Профиль</div>
-            <div class="card" style="text-align:center;">
-                <div style="width:64px;height:64px;border-radius:50%;background:var(--gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;margin:0 auto 12px;">${(currentUser.name||'?')[0].toUpperCase()}</div>
-                <p style="font-weight:700;font-size:18px;">${currentUser.name||'Пользователь'}</p>
-                <p style="color:var(--gray);font-size:13px;margin-top:4px;">${currentUser.email||''}</p>
-                ${currentUser.phone ? `<p style="color:var(--gray);font-size:13px;">${currentUser.phone}</p>` : ''}
-            </div>
-            <button class="btn btn-outline" onclick="logout()">🚪 Выйти</button>
-            <button class="btn btn-danger" onclick="deleteAccount()">🗑 Удалить профиль</button>
-            <div class="section-header" style="margin-top:20px;">📋 История заказов</div>
-            <div id="profileOrders"></div>
-        `;
-        loadProfileOrders();
+        
+        // Инициализируем виджет Telegram
+        initTelegramWidget();
+        return;
     }
+    
+    // Пользователь авторизован — показываем профиль
+    container.innerHTML = `
+        <div class="section-header">👤 Профиль</div>
+        
+        <div class="card" style="text-align:center;">
+            <div style="width:64px;height:64px;border-radius:50%;background:var(--gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;margin:0 auto 12px;">
+                ${(currentUser.name || 'U')[0].toUpperCase()}
+            </div>
+            <p style="font-weight:700;font-size:18px;">${currentUser.name || 'Пользователь'}</p>
+            <p style="color:var(--gray);font-size:13px;margin-top:4px;">${currentUser.email || ''}</p>
+            ${currentUser.phone ? `<p style="color:var(--gray);font-size:13px;">📞 ${currentUser.phone}</p>` : ''}
+            ${currentUser.tg ? `<p style="color:var(--gray);font-size:13px;">✈️ ${currentUser.tg}</p>` : ''}
+        </div>
+        
+        <button class="btn btn-outline" onclick="logout()" style="margin-top:12px;">🚪 Выйти</button>
+        <button class="btn btn-danger" onclick="deleteAccount()" style="margin-top:8px;">🗑 Удалить профиль</button>
+        
+        <div class="section-header" style="margin-top:24px;">📋 История заказов</div>
+        <div id="profileOrders">
+            <div class="card" style="text-align:center;color:var(--gray);padding:30px;">⏳ Загрузка заказов...</div>
+        </div>
+    `;
+    
+    loadProfileOrders();
 }
 
-let isReg = false;
+// Инициализация виджета Telegram (безопасная)
+function initTelegramWidget() {
+    const tgContainer = document.getElementById('tgWidgetContainer');
+    if (!tgContainer) return;
+    
+    // Очищаем контейнер
+    tgContainer.innerHTML = '';
+    
+    // Создаём скрипт виджета
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.setAttribute('data-telegram-login', 'Someprintbot');
+    script.setAttribute('data-size', 'medium');
+    script.setAttribute('data-radius', '10');
+    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+    script.setAttribute('data-request-access', 'write');
+    
+    // Обработчик ошибки загрузки
+    script.onerror = () => {
+        tgContainer.innerHTML = '<p style="font-size:11px;color:var(--gray);">Виджет Telegram не загрузился</p>';
+    };
+    
+    tgContainer.appendChild(script);
+}
+
+// Переключение Вход / Регистрация
+let isRegMode = false;
 function toggleReg() {
-    isReg = !isReg;
+    isRegMode = !isRegMode;
     const regFields = document.getElementById('regFields');
-    if (regFields) regFields.style.display = isReg ? 'block' : 'none';
-    const btn = document.getElementById('authBtn');
-    const toggle = document.getElementById('regToggle');
-    if (btn) btn.innerText = isReg ? 'Зарегистрироваться' : 'Войти';
-    if (toggle) toggle.innerText = isReg ? 'Уже есть аккаунт' : 'Создать аккаунт';
-    if (btn) btn.onclick = isReg ? doRegister : doLogin;
+    const authBtn = document.getElementById('authBtn');
+    const regToggle = document.getElementById('regToggle');
+    
+    if (regFields) regFields.style.display = isRegMode ? 'block' : 'none';
+    if (authBtn) authBtn.innerText = isRegMode ? 'Зарегистрироваться' : 'Войти';
+    if (regToggle) regToggle.innerText = isRegMode ? 'Уже есть аккаунт' : 'Создать аккаунт';
+    if (authBtn) authBtn.onclick = isRegMode ? doRegister : doLogin;
 }
 
+// ===== ВХОД =====
 async function doLogin() {
     const email = document.getElementById('authEmail')?.value.trim();
     const pass = document.getElementById('authPass')?.value.trim();
-    if (!email || !pass) { alert('Заполните поля'); return; }
+    
+    if (!email || !pass) {
+        showAlert('Заполните email и пароль');
+        return;
+    }
+    
+    const btn = document.getElementById('authBtn');
+    const originalText = btn?.innerText || 'Войти';
+    if (btn) { btn.innerText = '⏳ Вход...'; btn.disabled = true; }
+    
     try {
+        console.log('🔐 Вход:', email);
         const res = await fetch(API + '/login', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password: pass })
         });
         const data = await res.json();
-        if (data.success) {
-            currentUser = { ...data.user, id: data.user.id || data.user._id };
+        console.log('📥 Ответ сервера:', data);
+        
+        if (data.success && data.user) {
+            currentUser = { 
+                id: data.user.id || data.user._id, 
+                email: data.user.email, 
+                name: data.user.name, 
+                phone: data.user.phone,
+                tg: data.user.tg
+            };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showAlert('✅ Вход выполнен!', 'success');
             loadProfile();
             subscribePush();
+            updateChatBadge();
         } else {
-            alert(data.error || 'Ошибка входа');
+            showAlert(data.error || 'Неверный email или пароль');
         }
-    } catch(e) { alert('Ошибка сервера'); }
+    } catch (e) {
+        console.error('❌ Ошибка входа:', e);
+        showAlert('Ошибка соединения с сервером');
+    } finally {
+        if (btn) { btn.innerText = originalText; btn.disabled = false; }
+    }
 }
 
+// ===== РЕГИСТРАЦИЯ =====
 async function doRegister() {
     const email = document.getElementById('authEmail')?.value.trim();
     const pass = document.getElementById('authPass')?.value.trim();
     const name = document.getElementById('regName')?.value.trim() || '';
     const phone = document.getElementById('regPhone')?.value.trim() || '';
-    if (!email || !pass) { alert('Заполните email и пароль'); return; }
+    
+    if (!email || !pass) {
+        showAlert('Заполните email и пароль');
+        return;
+    }
+    
+    const btn = document.getElementById('authBtn');
+    const originalText = btn?.innerText || 'Зарегистрироваться';
+    if (btn) { btn.innerText = '⏳ Регистрация...'; btn.disabled = true; }
+    
     try {
+        console.log('📝 Регистрация:', email);
         const res = await fetch(API + '/register', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password: pass, name, phone })
         });
         const data = await res.json();
-        if (data.success) {
-            currentUser = { ...data.user, id: data.user.id || data.user._id };
+        console.log('📥 Ответ сервера:', data);
+        
+        if (data.success && data.user) {
+            currentUser = { 
+                id: data.user.id || data.user._id, 
+                email: data.user.email, 
+                name: data.user.name, 
+                phone: data.user.phone 
+            };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showAlert('✅ Регистрация успешна!', 'success');
             loadProfile();
             subscribePush();
+            updateChatBadge();
         } else {
-            alert(data.error || 'Ошибка регистрации');
+            showAlert(data.error || 'Ошибка регистрации');
         }
-    } catch(e) { alert('Ошибка сервера'); }
+    } catch (e) {
+        console.error('❌ Ошибка регистрации:', e);
+        showAlert('Ошибка соединения с сервером');
+    } finally {
+        if (btn) { btn.innerText = originalText; btn.disabled = false; }
+    }
 }
 
+// ===== ВЫХОД =====
 function logout() {
     currentUser = null;
     localStorage.removeItem('currentUser');
     loadProfile();
     updateChatBadge();
+    showAlert('👋 Вы вышли из аккаунта');
 }
 
+// ===== УДАЛЕНИЕ ПРОФИЛЯ =====
 async function deleteAccount() {
-    if (!confirm('Точно удалить профиль? Все данные будут потеряны.')) return;
+    if (!confirm('⚠️ Точно удалить профиль?\nВсе данные и заказы будут потеряны безвозвратно.')) return;
+    
+    if (!currentUser?.id) {
+        showAlert('Пользователь не авторизован');
+        return;
+    }
+    
     try {
         await fetch(API + '/delete-account', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: currentUser.id })
         });
-    } catch(e) {}
+    } catch (e) {
+        console.error('Ошибка удаления:', e);
+    }
     logout();
 }
 
+// ===== ЗАГРУЗКА ЗАКАЗОВ =====
 async function loadProfileOrders() {
     const container = document.getElementById('profileOrders');
     if (!container) return;
+    
+    if (!currentUser?.id) {
+        container.innerHTML = '<div class="profile-empty">Войдите в систему, чтобы видеть заказы</div>';
+        return;
+    }
+    
+    container.innerHTML = '<div class="card" style="text-align:center;color:var(--gray);padding:30px;">⏳ Загрузка...</div>';
+    
     try {
-        const res = await fetch(API + '/orders/' + (currentUser.id || ''), { headers: { 'x-user-id': currentUser?.id || '' } });
+        console.log('📦 Загрузка заказов для:', currentUser.id);
+        const res = await fetch(API + '/orders/' + currentUser.id, {
+            headers: { 'x-user-id': currentUser.id }
+        });
+        
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
         const orders = await res.json();
-        const sn = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' };
-        if (orders.length === 0) {
-            container.innerHTML = '<div class="card" style="text-align:center;padding:30px;"><div style="font-size:36px;margin-bottom:8px;">📦</div><p style="color:var(--gray);">У вас пока нет заказов</p></div>';
+        console.log('📥 Получено заказов:', orders?.length || 0);
+        
+        const statusNames = { 
+            new: 'Новый', 
+            processing: 'В обработке', 
+            printing: 'В печати', 
+            ready: 'Готов', 
+            shipped: 'Отправлен', 
+            done: 'Доставлен' 
+        };
+        
+        if (!Array.isArray(orders) || orders.length === 0) {
+            container.innerHTML = `
+                <div class="profile-empty">
+                    <div style="font-size:36px;margin-bottom:8px;">📦</div>
+                    <p style="color:var(--gray);">У вас пока нет заказов</p>
+                    <button class="btn btn-primary" onclick="switchTab('tab-order')" style="margin-top:12px;max-width:180px;">Сделать заказ</button>
+                </div>`;
             return;
         }
-        container.innerHTML = orders.map(o => `
-            <div class="card" style="margin-bottom:8px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <strong>Заказ #${o.id}</strong>
-                    <span class="status-badge status-${o.status||'new'}">${sn[o.status]||'Новый'}</span>
-                </div>
-                <div style="margin-top:6px;font-size:13px;color:var(--gray);">${o.material} — ${o.type==='cards'?'90×50':o.width+'×'+o.height} мм × ${o.qty} шт</div>
-                <div style="margin-top:4px;font-weight:700;font-size:15px;">${o.total.toLocaleString()} ₽</div>
-            </div>
-        `).join('');
-    } catch(e) {
-        container.innerHTML = '<div class="card" style="text-align:center;padding:20px;"><p style="color:var(--gray);">Ошибка загрузки</p></div>';
+        
+        container.innerHTML = orders.map(o => {
+            const orderId = o._id || o.id || '—';
+            const status = o.status || 'new';
+            const material = o.material || '—';
+            const size = o.type === 'cards' ? '90×50' : `${o.width||'?'}×${o.height||'?'} мм`;
+            const qty = o.qty || 1;
+            const total = o.total ? Math.round(o.total).toLocaleString() : '0';
+            
+            return `
+                <div class="card" style="margin-bottom:8px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+                        <strong style="font-size:15px;">Заказ #${orderId}</strong>
+                        <span class="status-badge status-${status}">${statusNames[status] || 'Новый'}</span>
+                    </div>
+                    <div style="margin-top:6px;font-size:13px;color:var(--gray);">
+                        ${material} — ${size} × ${qty} шт
+                    </div>
+                    <div style="margin-top:4px;font-weight:700;font-size:16px;color:var(--accent);">
+                        ${total} ₽
+                    </div>
+                </div>`;
+        }).join('');
+        
+    } catch (e) {
+        console.error('❌ Ошибка загрузки заказов:', e);
+        container.innerHTML = `
+            <div class="profile-error">
+                <strong>⚠️ Не удалось загрузить заказы</strong><br>
+                <span style="font-size:12px;color:var(--gray);">${e.message || 'Неизвестная ошибка'}</span><br>
+                <button class="btn btn-outline" onclick="loadProfileOrders()" style="margin-top:10px;">🔄 Повторить</button>
+            </div>`;
     }
 }
 
+// ===== TELEGRAM AUTH =====
 function onTelegramAuth(user) {
+    console.log('✈️ Telegram auth:', user);
+    
     fetch(API + '/telegram-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user)
-    }).then(r => r.json()).then(data => {
-        if (data.success) {
-            currentUser = data.user;
+    })
+    .then(r => r.json())
+    .then(data => {
+        console.log('📥 Telegram ответ:', data);
+        if (data.success && data.user) {
+            currentUser = { 
+                id: data.user.id || data.user._id, 
+                email: data.user.email || '', 
+                name: data.user.name, 
+                phone: data.user.phone || '',
+                tg: data.user.username ? '@' + data.user.username : ''
+            };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showAlert('✅ Вход через Telegram выполнен!', 'success');
             loadProfile();
             subscribePush();
+            updateChatBadge();
+        } else {
+            showAlert(data.error || 'Ошибка входа через Telegram');
         }
-    }).catch(() => {});
+    })
+    .catch(e => {
+        console.error('❌ Ошибка Telegram auth:', e);
+        showAlert('Ошибка соединения');
+    });
 }
 
-// Password recovery
+// ===== ВОССТАНОВЛЕНИЕ ПАРОЛЯ =====
 function showForgotPassword() {
-    document.getElementById('profileContent').innerHTML = `
+    const container = document.getElementById('profileContent');
+    if (!container) return;
+    
+    container.innerHTML = `
         <button class="back-btn" onclick="loadProfile()">← Назад</button>
         <div class="section-header">🔑 Восстановление пароля</div>
         <div class="card" id="forgotForm">
             <p style="color:var(--gray);font-size:13px;margin-bottom:16px;">Введите email, на который зарегистрирован аккаунт</p>
-            <div class="form-group"><label>Email</label><input type="email" id="forgotEmail"></div>
-            <button class="btn btn-primary" onclick="sendResetCode()">Отправить код</button>
+            <div class="form-group"><label>Email</label><input type="email" id="forgotEmail" placeholder="you@example.com"></div>
+            <button class="btn btn-primary" onclick="sendResetCode()" id="resetBtn">Отправить код</button>
         </div>
     `;
 }
 
 async function sendResetCode() {
     const email = document.getElementById('forgotEmail')?.value.trim();
-    if (!email) { alert('Введите email'); return; }
+    const btn = document.getElementById('resetBtn');
+    
+    if (!email) { showAlert('Введите email'); return; }
+    if (btn) { btn.innerText = '⏳ Отправка...'; btn.disabled = true; }
+    
     try {
         const res = await fetch(API + '/forgot-password', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email })
         });
         const data = await res.json();
+        
         if (data.success) {
             document.getElementById('forgotForm').innerHTML = `
                 <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;">✅ Код отправлен</h3>
-                <p style="font-size:13px;color:var(--gray);margin-bottom:16px;">Проверьте почту ${email}</p>
-                <div class="form-group"><label>Код из письма</label><input type="text" id="resetCode"></div>
-                <div class="form-group"><label>Новый пароль</label><input type="password" id="newPass"></div>
+                <p style="font-size:13px;color:var(--gray);margin-bottom:16px;">Проверьте почту <strong>${email}</strong></p>
+                <div class="form-group"><label>Код из письма</label><input type="text" id="resetCode" placeholder="123456"></div>
+                <div class="form-group"><label>Новый пароль</label><input type="password" id="newPass" placeholder="••••••••"></div>
                 <button class="btn btn-primary" onclick="resetPassword()">Сменить пароль</button>
             `;
         } else {
-            alert(data.error || 'Ошибка');
+            showAlert(data.error || 'Ошибка');
         }
-    } catch(e) { alert('Ошибка сервера'); }
+    } catch (e) {
+        console.error('Ошибка отправки кода:', e);
+        showAlert('Ошибка соединения');
+    } finally {
+        if (btn) { btn.innerText = 'Отправить код'; btn.disabled = false; }
+    }
 }
 
 async function resetPassword() {
     const email = document.getElementById('forgotEmail')?.value.trim();
     const code = document.getElementById('resetCode')?.value.trim();
     const pass = document.getElementById('newPass')?.value.trim();
-    if (!code || !pass) { alert('Заполните все поля'); return; }
+    
+    if (!code || !pass) { showAlert('Заполните код и новый пароль'); return; }
+    
     try {
         const res = await fetch(API + '/reset-password', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, code, newPassword: pass })
         });
         const data = await res.json();
+        
         if (data.success) {
-            alert('Пароль изменён! Теперь войдите.');
+            showAlert('✅ Пароль изменён! Теперь войдите.', 'success');
             loadProfile();
         } else {
-            alert(data.error || 'Ошибка');
+            showAlert(data.error || 'Ошибка смены пароля');
         }
-    } catch(e) { alert('Ошибка сервера'); }
+    } catch (e) {
+        console.error('Ошибка сброса пароля:', e);
+        showAlert('Ошибка соединения');
+    }
+}
+
+// ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
+function showAlert(message, type = 'error') {
+    // Простой алерт, можно заменить на красивое тост-уведомление
+    if (type === 'success') {
+        alert('✅ ' + message);
+    } else {
+        alert('⚠️ ' + message);
+    }
 }
 
 // ==========================================
