@@ -122,6 +122,9 @@
 
         /* Tabs */
         .tab { display: none; padding: 16px; min-height: calc(100vh - 80px); }
+        /* Переопределение для чата на весь экран */
+#tab-chat { padding: 0 !important; min-height: 100vh; }
+#tab-chat #chatPage { height: 100vh; }
         .tab.active { display: block; animation: fadeIn 0.3s ease; }
 
         /* Cards */
@@ -409,18 +412,26 @@
         /* ========================================= */
         /* TELEGRAM-STYLE CHAT                         */
         /* ========================================= */
-        .chat-box {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            height: calc(100vh - 170px);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            margin-top: 4px;
-            position: relative;
-            border: 1px solid rgba(0,0,0,0.06);
-        }
+     /* Стало — full-page чат */
+#tab-chat .chat-box {
+    background: var(--white);
+    border-radius: 0;
+    box-shadow: none;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 150;
+    border: none;
+}
 
         .chat-header {
             display: flex;
@@ -772,6 +783,12 @@
             body { max-width: 100%; }
             .bottom-nav { max-width: 100%; }
         }
+        
+/* Скрыть нижнее меню, когда открыт чат */
+#tab-chat.active ~ .bottom-nav,
+body:has(#tab-chat.active) .bottom-nav {
+    display: none;
+}   
     </style>
 </head>
 <body>
