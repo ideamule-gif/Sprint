@@ -142,23 +142,25 @@ function renderOrders(filter) {
                 👤 <a href="#" onclick="event.preventDefault();openClientProfile('${o.userId}')">${o.name||'—'}</a> | 📞 <a href="tel:${o.phone}">${o.phone}</a> | <a href="mailto:${o.email}">📧</a><br>
                 ${o.fileUrl?`📎 <a href="${o.fileUrl}" target="_blank">Скачать макет</a>`:''}
                 <div style="display:flex;gap:6px;margin-top:6px;align-items:center;">
+                    <button class="btn btn-outline btn-sm" onclick="editOrder('${o.id}')" title="Редактировать">✏️</button>
+                    <button class="btn btn-outline btn-sm" onclick="shareOrder('${o.id}')" title="Поделиться">📤</button>
+                    <button class="btn btn-outline btn-sm" onclick="deleteOrder('${o.id}')" title="Удалить" style="color:var(--red);border-color:var(--red);">🗑</button>
+                </div>
+                <div style="display:flex;gap:6px;margin-top:4px;">
                     <select onchange="updateStatus('${o.id}',this.value)" style="flex:1;padding:6px 8px;border-radius:6px;font-family:inherit;font-size:12px;">${Object.keys(statusNames).map(s => `<option value="${s}" ${o.status===s?'selected':''}>${statusNames[s]}</option>`).join('')}</select>
                     <select onchange="assignWorkshop('${o.id}',this.value)" style="flex:1;padding:6px 8px;border-radius:6px;font-family:inherit;font-size:12px;">
                         <option value="">🏭 Цех</option>
                         ${workshops.map(w => `<option value="${w.id}" ${o.workshop===w.name?'selected':''}>${w.name}</option>`).join('')}
                     </select>
-                    <span onclick="editOrder('${o.id}')" style="cursor:pointer;font-size:16px;opacity:0.5;">✎</span>
-                    <span onclick="shareOrder('${o.id}')" style="cursor:pointer;font-size:14px;opacity:0.5;">↗</span>
-                    <span onclick="deleteOrder('${o.id}')" style="cursor:pointer;font-size:14px;opacity:0.5;">✕</span>
                 </div>
             </div>`).join('')}</div>`;
 }
     
-function deleteOrder(orderId) {
+async function deleteOrder(orderId) {
     if (!confirm('Точно удалить заказ #' + orderId + '?')) return;
-    allOrders = allOrders.filter(o => o.id !== orderId);
+    await fetch(API + '/admin/orders/' + orderId, { method: 'DELETE' });
+    refreshAll();
     loadOrdersTab();
-    showToast('🗑 Заказ удалён');
 }
 
 function shareOrder(orderId) {
@@ -194,14 +196,20 @@ function assignWorkshop(orderId, wsId) {
         document.getElementById('modal').classList.add('show');
     }
 
-    function saveEditOrder(orderId) {
-        const o = allOrders.find(x => x.id === orderId); if (!o) return;
-        o.material = document.getElementById('editOrdMat').value; o.width = parseInt(document.getElementById('editOrdW').value); o.height = parseInt(document.getElementById('editOrdH').value); o.qty = parseInt(document.getElementById('editOrdQty').value); o.total = parseInt(document.getElementById('editOrdTotal').value); o.name = document.getElementById('editOrdName').value; o.phone = document.getElementById('editOrdPhone').value;
-        closeModal();
-        loadOrdersTab();
-        showToast('✅ Заказ обновлён');
-    }
-
+function saveEditOrder(orderId) {
+    const o = allOrders.find(x => x.id === orderId); if (!o) return;
+    o.material = document.getElementById('editOrdMat').value;
+    o.width = parseInt(document.getElementById('editOrdW').value);
+    o.height = parseInt(document.getElementById('editOrdH').value);
+    o.qty = parseInt(document.getElementById('editOrdQty').value);
+    o.total = parseInt(document.getElementById('editOrdTotal').value);
+    o.name = document.getElementById('editOrdName').value;
+    o.phone = document.getElementById('editOrdPhone').value;
+    fetch(API + '/admin/orders/' + orderId, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(o) });
+    closeModal();
+    loadOrdersTab();
+}
+    
     async function updateStatus(id, status) { await fetch(API + '/admin/status', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ orderId:id, status }) }); refreshAll(); loadOrdersTab(); }
     async function confirmSend(orderId, wsId) { const ws = workshops.find(w => w.id === wsId), order = allOrders.find(o => o.id === orderId); if (!ws || !order) return; await updateStatus(orderId, 'processing'); order.workshop = ws.name; closeModal(); refreshAll(); loadOrdersTab(); }
 
@@ -212,8 +220,14 @@ function assignWorkshop(orderId, wsId) {
 
     function openClientProfile(userId) { const user = allUsers.find(u => u.id === userId); if (!user) return; document.getElementById('modalContent').innerHTML = `<h3>👤 ${user.name||'Без имени'}</h3><p><strong>ID:</strong> ${user.id}</p><p>📧 <a href="mailto:${user.email}">${user.email}</a></p><p>📞 <a href="tel:${user.phone}">${user.phone||'—'}</a></p><p>📅 Зарегистрирован: ${new Date(user.createdAt).toLocaleDateString()}</p><p>🚫 Статус: ${user.blocked ? 'Заблокирован' : 'Активен'}</p><button class="btn btn-outline btn-sm" onclick="toggleBlockUser('${userId}')">${user.blocked ? '✅ Разблокировать' : '🚫 Заблокировать'}</button><button class="btn btn-red btn-sm" onclick="deleteUser('${userId}')">🗑 Удалить клиента</button><button class="btn btn-outline" onclick="closeModal()" style="margin-top:8px;">Закрыть</button>`; document.getElementById('modal').classList.add('show'); }
     function toggleBlockUser(userId) { let user = allUsers.find(u => u.id === userId); if (!user) return; user.blocked = !user.blocked; localStorage.setItem('blocked_' + userId, user.blocked ? '1' : ''); closeModal(); loadClientsTab(); }
-    function deleteUser(userId) { if (!confirm('Точно удалить клиента?')) return; allUsers = allUsers.filter(u => u.id !== userId); closeModal(); loadClientsTab(); showToast('🗑 Клиент удалён'); }
-
+    function deleteUser(userId) {
+    if (!confirm('Точно удалить клиента?')) return;
+    fetch(API + '/delete-account', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId}) });
+    closeModal();
+    refreshAll();
+    loadClientsTab();
+}
+    
     // ========== ЧАТ ==========
     async function loadChatTab() { clearInterval(window._adminChatInterval); const container = document.getElementById('tab-chat'); const res = await fetch(API + '/admin/chats'); const chats = await res.json(); container.innerHTML = `<h2>💬 Чат</h2><div id="chatList"></div><div id="chatDetail"></div>`; document.getElementById('chatList').innerHTML = chats.length === 0 ? '<p style="color:var(--gray);">Нет сообщений</p>' : chats.map(c => `<div class="chat-list-item" onclick="openAdminChat('${c.userId}','${c.name}')"><div class="chat-preview"><div class="chat-name">${c.name}</div><div class="chat-last">${c.lastMessage||''}</div></div></div>`).join(''); }
     async function openAdminChat(userId, name) { const res = await fetch(API + '/chat/' + userId); const msgs = await res.json(); const msgsBox = document.querySelector('#chatDetail .chat-msgs'); if (msgsBox) { const wasAtBottom = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight < 60; msgsBox.innerHTML = msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join(''); const btn = document.querySelector('.scroll-down-btn'); if (btn) btn.style.display = wasAtBottom ? 'none' : 'flex'; if (wasAtBottom) msgsBox.scrollTop = msgsBox.scrollHeight; } else { document.getElementById('chatDetail').innerHTML = `<button class="btn btn-outline btn-sm" onclick="loadChatTab()" style="margin:8px 0;">← Список</button><div class="chat-full"><div class="chat-msgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><button class="scroll-down-btn" onclick="document.querySelector('.chat-msgs').scrollTop = document.querySelector('.chat-msgs').scrollHeight; this.style.display='none';">↓</button><div class="chat-input-row"><input type="text" id="adminChatInput" placeholder="Ответить..." onkeypress="if(event.key==='Enter'){event.preventDefault();sendAdminChat('${userId}');}"><button onclick="sendAdminChat('${userId}')">➤</button></div></div>`; document.getElementById('chatList').style.display = 'none'; const msgsEl = document.querySelector('.chat-msgs'); if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight; } clearInterval(window._adminChatInterval); window._adminChatInterval = setInterval(() => openAdminChat(userId, name), 3000); }
