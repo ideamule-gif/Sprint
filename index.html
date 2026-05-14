@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -796,23 +795,64 @@
 
         /* Order step animation */
         .order-step-content { animation: slideInRight 0.3s ease-out; }
+/* Responsive fixes */
+@media (max-width: 480px) {
+    body { max-width: 100%; }
+    .bottom-nav { max-width: 100%; }
+}
 
-        /* Responsive fixes */
-        @media (max-width: 480px) {
-            body { max-width: 100%; }
-            .bottom-nav { max-width: 100%; }
-        }
-        
-/* Фикс для мобильных: чат не сжимается при открытии клавиатуры */
+/* === FIX: APP-LIKE LAYOUT === */
+html, body {
+    height: 100dvh;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--bg);
+}
+
+/* Вкладки скроллятся внутри себя, не двигают страницу */
+.tab {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px;
+    padding-bottom: 90px; /* отступ под фиксированное меню */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+.tab.active { display: block; animation: fadeIn 0.3s ease; }
+
+/* Чат без отступов, растягивается на всю высоту вкладки */
+#tab-chat { padding: 0 !important; padding-bottom: 0 !important; }
+#tab-chat #chatPage { height: 100%; display: flex; flex-direction: column; }
 #tab-chat .chat-box {
-    height: calc(100dvh - 80px); /* dvh = dynamic viewport height */
+    height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+    border: none;
 }
-@supports not (height: 100dvh) {
-    #tab-chat .chat-box {
-        height: calc(100vh - 80px); /* фолбэк для старых браузеров */
-    }
+
+/* Нижнее меню зафиксировано поверх контента */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    z-index: 100;
+    flex-shrink: 0;
 }
-    </style>
+/* === END FIX === */
+</style>
 </head>
 <body>
 
@@ -1838,4 +1878,3 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); 
 </script>
 </body>
 </html>
-```
