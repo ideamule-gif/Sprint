@@ -1,65 +1,777 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Заказ печати</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <title>Someprint — Заказ печати</title>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0a0a0a">
+    <meta name="theme-color" content="#6c5ce7">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icon-192.png">
     <style>
-        :root { --white: #fff; --black: #0a0a0a; --gray: #999; --border: #e0e0e0; --radius: 14px; --shadow: 0 2px 10px rgba(0,0,0,0.05); --red: #d32f2f; --green: #2e7d32; --accent: #0a0a0a; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f5f5; color: var(--black); font-weight: 400; max-width: 480px; margin: 0 auto; min-height: 100vh; -webkit-tap-highlight-color: transparent; padding-bottom: 80px; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes glow { 0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.3); } 50% { text-shadow: 0 0 30px rgba(255,255,255,0.5); } }
-        @keyframes wave { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
-        .anim-fade { animation: fadeInUp 0.6s ease forwards; }
-        .anim-delay1 { animation-delay: 0.1s; opacity: 0; } .anim-delay2 { animation-delay: 0.25s; opacity: 0; } .anim-delay3 { animation-delay: 0.4s; opacity: 0; } .anim-delay4 { animation-delay: 0.55s; opacity: 0; }
-        .wave { display: inline-block; animation: wave 0.6s ease-in-out 3; transform-origin: 70% 70%; }
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 14px; z-index: 100; }
-        .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--gray); position: relative; transition: 0.2s; }
-        .bottom-nav .nav-item.active { color: var(--accent); }
-        .bottom-nav .nav-item .nav-icon { font-size: 22px; }
-        .tab { display: none; padding: 16px; }
-        .tab.active { display: block; }
-        .card { background: var(--white); padding: 16px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 12px; }
-        .tile-row { display: flex; flex-direction: column; gap: 12px; }
-        .tile { background: var(--white); padding: 22px 18px; border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; text-align: center; border: 2px solid var(--border); }
-        .tile:active { border-color: var(--black); } .tile .tile-icon { font-size: 40px; } .tile .tile-title { font-weight: 800; font-size: 18px; } .tile .tile-sub { font-size: 12px; color: var(--gray); }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: #555; text-transform: uppercase; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-size: 16px; font-family: inherit; background: var(--white); }
-        .form-group input.error { border-color: var(--red); }
-        .row { display: flex; gap: 10px; } .row>div { flex: 1; }
-        .hint { font-size: 11px; color: var(--gray); margin-top: 3px; } .hint-red { font-size: 11px; color: var(--red); margin-top: 3px; display: none; }
-        .price-big { font-size: 32px; font-weight: 800; color: var(--black); text-align: center; }
-        .btn { display: block; width: 100%; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 16px; border: none; cursor: pointer; font-family: inherit; text-align: center; }
-        .btn-primary { background: var(--black); color: #fff; } .btn-outline { background: transparent; border: 2px solid var(--black); color: var(--black); margin-top: 8px; }
-        .upload-zone { border: 2px dashed #ccc; border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; font-size: 14px; color: var(--gray); }
-        .upload-zone.has-file { border-color: var(--green); border-style: solid; color: var(--green); font-weight: 600; }
-        .summary-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; }
-        .summary-row.total { font-weight: 800; font-size: 18px; border-top: 1px solid #eee; margin-top: 4px; padding-top: 8px; }
-        .footer-links { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
-        .footer-links a { font-size: 11px; color: var(--gray); text-decoration: underline; }
-        .back-btn { background: none; border: none; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--gray); padding: 4px 0; margin-bottom: 12px; }
-.chat-box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); height: calc(100vh - 180px); display: flex; flex-direction: column; overflow: hidden; margin-top: 8px; position: relative; }
-.chat-box .chat-messages { flex: 1; overflow-y: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; }
-.chat-box .chat-msg { max-width: 80%; padding: 6px 10px; border-radius: 12px; font-size: 12px; }
-.chat-box .chat-msg.client { align-self: flex-end; background: var(--black); color: #fff; }
-.chat-box .chat-msg.admin { align-self: flex-start; background: #eee; }
-.chat-box .chat-input-row { display: flex; gap: 4px; padding: 6px 6px 10px 6px; border-top: 1px solid var(--border); }
-.chat-box .chat-input-row input { flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 16px; font-family: inherit; font-size: 13px; }
-.chat-box .chat-input-row button { padding: 8px 14px; border-radius: 16px; background: var(--black); color: #fff; border: none; font-weight: 600; cursor: pointer; }
-.scroll-down-btn { position: absolute; bottom: 60px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.3); color: #fff; border: none; cursor: pointer; align-items: center; justify-content: center; font-size: 18px; z-index: 10; backdrop-filter: blur(4px); }
-#tab-chat { padding: 16px; }
+        :root {
+            --bg: #f0f0f3;
+            --white: #ffffff;
+            --black: #1a1a2e;
+            --gray: #6b7280;
+            --gray-light: #f3f4f6;
+            --border: #e5e7eb;
+            --radius: 16px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.06);
+            --red: #ef4444;
+            --green: #22c55e;
+            --accent: #6c5ce7;
+            --accent-light: #a29bfe;
+            --accent-dark: #5a4bd1;
+            --gradient: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            --gradient-dark: linear-gradient(135deg, #5a4bd1 0%, #6c5ce7 100%);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--black);
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
 
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
-.modal.show { display: flex; }
-.modal-box { background: #fff; padding: 24px; border-radius: 14px; max-width: 380px; margin: 20px; max-height: 80vh; overflow-y: auto; font-size: 13px; line-height: 1.6; }
+        /* Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes typingBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .anim-fade { animation: fadeInUp 0.5s ease forwards; }
+        .anim-d1 { animation-delay: 0.05s; opacity: 0; }
+        .anim-d2 { animation-delay: 0.12s; opacity: 0; }
+        .anim-d3 { animation-delay: 0.2s; opacity: 0; }
+        .anim-d4 { animation-delay: 0.3s; opacity: 0; }
+        .anim-d5 { animation-delay: 0.4s; opacity: 0; }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 12px;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--gray);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 20px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item.active::before { transform: translateX(-50%) scaleX(1); }
+        .nav-item .nav-icon { font-size: 22px; transition: transform 0.3s; }
+        .nav-item.active .nav-icon { transform: scale(1.15); }
+        .nav-item .badge {
+            position: absolute;
+            top: -2px;
+            right: 4px;
+            background: var(--red);
+            color: #fff;
+            border-radius: 8px;
+            padding: 1px 5px;
+            font-size: 9px;
+            font-weight: 700;
+            min-width: 14px;
+            text-align: center;
+        }
+
+        /* Tabs */
+        .tab { display: none; padding: 16px; min-height: calc(100vh - 80px); }
+        .tab.active { display: block; animation: fadeIn 0.3s ease; }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            padding: 18px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 12px;
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: transform 0.2s;
+        }
+        .card:active { transform: scale(0.985); }
+
+        /* Tiles */
+        .tile-row { display: flex; flex-direction: column; gap: 10px; }
+        .tile {
+            background: var(--white);
+            padding: 20px 18px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .tile::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        .tile:hover::before, .tile:active::before { transform: scaleX(1); }
+        .tile:active { border-color: var(--accent); transform: scale(0.98); }
+        .tile .tile-icon { font-size: 36px; margin-bottom: 6px; }
+        .tile .tile-title { font-weight: 800; font-size: 17px; }
+        .tile .tile-sub { font-size: 12px; color: var(--gray); margin-top: 2px; }
+        .tile .tile-time { font-size: 10px; color: var(--accent); margin-top: 4px; font-weight: 600; }
+
+        /* Forms */
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 11px;
+            margin-bottom: 5px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            background: var(--white);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(108,92,231,0.12);
+        }
+        .form-group input.error { border-color: var(--red); }
+        .row { display: flex; gap: 10px; }
+        .row>div { flex: 1; }
+        .hint { font-size: 11px; color: var(--gray); margin-top: 4px; }
+        .hint-red { font-size: 11px; color: var(--red); margin-top: 4px; display: none; }
+
+        /* Buttons */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary {
+            background: var(--gradient-dark);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(108,92,231,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,92,231,0.4); }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--black);
+            margin-top: 8px;
+        }
+        .btn-outline:active { background: var(--gray-light); }
+        .btn-danger {
+            background: transparent;
+            border: 2px solid var(--red);
+            color: var(--red);
+            margin-top: 8px;
+        }
+        .btn-danger:active { background: #fef2f2; }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 14px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--gray);
+            transition: all 0.3s;
+            background: var(--gray-light);
+        }
+        .upload-zone:hover { border-color: var(--accent); background: rgba(108,92,231,0.04); }
+        .upload-zone.has-file {
+            border-color: var(--green);
+            border-style: solid;
+            color: var(--green);
+            font-weight: 600;
+            background: #f0fdf4;
+        }
+
+        /* Summary */
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .summary-row:last-of-type { border-bottom: none; }
+        .summary-row span:first-child { color: var(--gray); }
+        .summary-row.total {
+            font-weight: 800;
+            font-size: 20px;
+            border-top: 2px solid var(--black);
+            border-bottom: none;
+            margin-top: 8px;
+            padding-top: 12px;
+            color: var(--black);
+        }
+
+        /* Price */
+        .price-big {
+            font-size: 36px;
+            font-weight: 800;
+            text-align: center;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+        .status-new { background: #fef3c7; color: #92400e; }
+        .status-processing { background: #dbeafe; color: #1e40af; }
+        .status-printing { background: #e0e7ff; color: #3730a3; }
+        .status-ready { background: #d1fae5; color: #065f46; }
+        .status-shipped { background: #ede9fe; color: #5b21b6; }
+        .status-done { background: #d1fae5; color: #065f46; }
+
+        /* Back button */
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--accent);
+            padding: 6px 0;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.2s;
+        }
+        .back-btn:active { gap: 2px; }
+
+        /* Section header */
+        .section-header {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--black);
+            letter-spacing: -0.5px;
+        }
+
+        /* Footer links */
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            padding-bottom: 16px;
+        }
+        .footer-links a {
+            font-size: 11px;
+            color: var(--gray);
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .footer-links a:hover { background: var(--gray-light); color: var(--black); }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            justify-content: center;
+            align-items: flex-end;
+            animation: fadeIn 0.2s ease;
+        }
+        .modal.show { display: flex; }
+        .modal-box {
+            background: var(--white);
+            padding: 24px;
+            border-radius: 20px 20px 0 0;
+            max-width: 480px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.7;
+            animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideInUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .modal-box h2 { font-size: 20px; font-weight: 800; margin-bottom: 12px; }
+        .modal-box h3 { font-size: 15px; font-weight: 700; margin: 14px 0 6px; }
+        .modal-box p { margin-bottom: 8px; }
+
+        /* Step indicator */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+            padding: 0 4px;
+        }
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s;
+        }
+        .step-dot.active { background: var(--accent); transform: scale(1.3); }
+        .step-dot.done { background: var(--accent-light); }
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+            transition: background 0.3s;
+        }
+        .step-line.active { background: var(--accent); }
+
+        /* ========================================= */
+        /* TELEGRAM-STYLE CHAT                         */
+        /* ========================================= */
+        .chat-box {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            height: calc(100vh - 170px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-top: 4px;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            z-index: 5;
+            position: relative;
+        }
+        .chat-header .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .chat-header .chat-info h3 { font-size: 13px; font-weight: 700; color: var(--black); }
+        .chat-header .chat-info span { font-size: 11px; color: var(--gray); }
+        .chat-header .chat-info span.online { color: var(--green); font-weight: 600; }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 10px 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            background: #e8e5df;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d6d3cd' fill-opacity='0.25'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .date-divider { text-align: center; margin: 10px 0 6px; }
+        .date-divider span {
+            background: rgba(0,0,0,0.12);
+            color: #fff;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .chat-msg {
+            max-width: 78%;
+            padding: 7px 11px 6px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.45;
+            position: relative;
+            animation: msgSlideIn 0.25s ease-out;
+            word-wrap: break-word;
+        }
+        @keyframes msgSlideIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .chat-msg.client {
+            align-self: flex-end;
+            background: #e3f2fd;
+            color: #1a1a2e;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-msg.admin {
+            align-self: flex-start;
+            background: var(--white);
+            color: var(--black);
+            border-bottom-left-radius: 4px;
+        }
+        .chat-msg .msg-text { margin-right: 40px; }
+        .chat-msg .msg-meta {
+            float: right;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            margin-top: 3px;
+            margin-left: 6px;
+            position: relative;
+            top: 5px;
+        }
+        .chat-msg .msg-time { font-size: 10px; color: rgba(0,0,0,0.35); }
+        .chat-msg.client .msg-time { color: rgba(59,130,246,0.5); }
+        .chat-msg .msg-check { font-size: 12px; color: rgba(59,130,246,0.4); }
+        .chat-msg .msg-check.read { color: #3b82f6; }
+
+        /* Typing indicator */
+        .typing-indicator {
+            align-self: flex-start;
+            background: var(--white);
+            padding: 10px 14px;
+            border-radius: 14px;
+            border-bottom-left-radius: 4px;
+            display: none;
+            gap: 4px;
+            align-items: center;
+            animation: msgSlideIn 0.25s ease-out;
+            margin: 0 10px;
+        }
+        .typing-indicator.active { display: flex; }
+        .typing-indicator .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #999;
+            animation: typingBounce 1.2s infinite;
+        }
+        .typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        /* Scroll to bottom button */
+        .scroll-down-btn {
+            position: absolute;
+            bottom: 62px;
+            right: 14px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--white);
+            color: var(--gray);
+            border: none;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+        .scroll-down-btn:hover { transform: scale(1.1); }
+        .scroll-down-btn.visible { display: flex; animation: fadeInUp 0.2s ease-out; }
+        .scroll-down-btn .unread-badge-chat {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            min-width: 15px;
+            height: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Chat input */
+        .chat-input-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            padding: 8px 8px 10px;
+            background: var(--white);
+            border-top: 1px solid var(--border);
+        }
+        .chat-input-row .input-wrapper {
+            flex: 1;
+            position: relative;
+            background: var(--gray-light);
+            border-radius: 20px;
+            display: flex;
+            align-items: flex-end;
+            padding: 4px 4px 4px 14px;
+        }
+        .chat-input-row textarea {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 13px;
+            line-height: 1.4;
+            padding: 6px 0;
+            resize: none;
+            max-height: 100px;
+            outline: none;
+            overflow-y: auto;
+        }
+        .chat-input-row textarea::placeholder { color: #999; }
+        .chat-input-row .emoji-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            flex-shrink: 0;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .chat-input-row .emoji-btn:hover { opacity: 1; }
+        .chat-input-row .send-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-dark);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            box-shadow: 0 3px 10px rgba(108,92,231,0.3);
+        }
+        .chat-input-row .send-btn:hover { transform: scale(1.05); }
+        .chat-input-row .send-btn:active { transform: scale(0.93); }
+
+        /* Emoji picker */
+        .emoji-picker {
+            position: absolute;
+            bottom: 62px;
+            left: 8px;
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+            padding: 10px;
+            display: none;
+            flex-wrap: wrap;
+            gap: 2px;
+            width: 260px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 20;
+            border: 1px solid var(--border);
+        }
+        .emoji-picker.active { display: flex; animation: fadeInUp 0.2s ease-out; }
+        .emoji-picker button {
+            font-size: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 5px;
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+        .emoji-picker button:hover { background: var(--gray-light); }
+
+        /* Scrollbar */
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+
+        /* Empty state */
+        .empty-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            gap: 8px;
+            padding: 20px;
+        }
+        .empty-chat svg { width: 56px; height: 56px; opacity: 0.25; }
+        .empty-chat p { font-size: 14px; opacity: 0.5; }
+
+        /* Checkbox styling */
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        .checkbox-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+
+        /* Select styling */
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        /* Home page hero */
+        .hero-section {
+            min-height: 75vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 20px;
+            padding: 20px 0;
+        }
+        .hero-greeting {
+            font-size: 38px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.6s ease;
+        }
+        .hero-wave {
+            display: inline-block;
+            animation: wave 0.6s ease-in-out 3;
+            transform-origin: 70% 70%;
+        }
+        @keyframes wave { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
+        .hero-subtitle {
+            font-size: 15px;
+            color: var(--gray);
+            font-weight: 400;
+            max-width: 280px;
+            line-height: 1.5;
+        }
+        .hero-btn {
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .hero-features {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        .hero-feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .hero-feature span:first-child { font-size: 24px; }
+        .hero-feature span:last-child { font-size: 10px; color: var(--gray); font-weight: 600; }
+
+        /* Order step animation */
+        .order-step-content { animation: slideInRight 0.3s ease-out; }
+
+        /* Responsive fixes */
+        @media (max-width: 480px) {
+            body { max-width: 100%; }
+            .bottom-nav { max-width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -71,296 +783,1019 @@
     <div class="nav-item" data-tab="tab-profile"><span class="nav-icon">👤</span>Профиль</div>
 </nav>
 
+<!-- HOME TAB -->
 <div class="tab active" id="tab-home">
-    <div style="min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:24px;">
-        <div style="font-size:40px;font-weight:800;animation:glow 3s ease-in-out infinite;">Привет <span class="wave">👋</span></div>
-        <div style="font-size:15px;color:var(--gray);font-weight:300;max-width:300px;">Это сервис для заказа баннеров. Закажи в пару кликов — а мы напечатаем и доставим.</div>
-        <button class="btn btn-primary" style="width:auto;padding:16px 36px;border-radius:50px;" onclick="switchTab('tab-order')">Заказать</button>
+    <div class="hero-section">
+        <div class="hero-greeting">Привет <span class="hero-wave">👋</span></div>
+        <div class="hero-subtitle">Сервис для заказа баннеров и печати. Закажи в пару кликов — мы напечатаем и доставим.</div>
+        <button class="btn btn-primary hero-btn" onclick="switchTab('tab-order')">Сделать заказ</button>
+        <div class="hero-features">
+            <div class="hero-feature"><span>🚀</span><span>Быстро</span></div>
+            <div class="hero-feature"><span>🎨</span><span>Качественно</span></div>
+            <div class="hero-feature"><span>🚚</span><span>Доставка</span></div>
+            <div class="hero-feature"><span>💰</span><span>Выгодно</span></div>
+        </div>
     </div>
     <div class="footer-links">
-    <a href="#" onclick="openModal('policy')">Политика</a>
-    <a href="#" onclick="openModal('terms')">Соглашение</a>
-    <a href="#" onclick="openModal('design')">Требования к макетам</a>
-    <a href="#" onclick="openModal('install')">Установка приложения</a>
+        <a href="#" onclick="openModal('policy')">Политика</a>
+        <a href="#" onclick="openModal('terms')">Соглашение</a>
+        <a href="#" onclick="openModal('design')">Требования к макетам</a>
+        <a href="#" onclick="openModal('install')">Установка приложения</a>
     </div>
 </div>
 
+<!-- ORDER TAB -->
 <div class="tab" id="tab-order"><div id="orderStep"></div></div>
-<div class="tab" id="tab-chat"><h2 style="font-weight:800;margin-bottom:14px;">💬 Чат с поддержкой</h2><div id="chatPage"></div></div>
-<div class="tab" id="tab-profile"><h2 style="font-weight:800;margin-bottom:14px;">👤 Профиль</h2><div id="profileContent"></div></div>
-<div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
+
+<!-- CHAT TAB -->
+<div class="tab" id="tab-chat">
+    <div id="chatPage"></div>
+</div>
+
+<!-- PROFILE TAB -->
+<div class="tab" id="tab-profile">
+    <div id="profileContent"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="modal-box" id="modalContent"></div></div>
 
 <script>
-    const API = '/api';
-    let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-    let matData = {};
-    let uploadedFile = null;
-    let orderStep = 1;
-    const savedTab = sessionStorage.getItem('activeTab') || 'tab-home';
+// ===== State =====
+const API = '/api';
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+let matData = {};
+let uploadedFile = null;
+let orderStep = 1;
+let currentMaterial = 'banner';
+const savedTab = sessionStorage.getItem('activeTab') || 'tab-home';
 
-    // ========== PUSH-уведомления ==========
-    const VAPID_PUBLIC = 'BO4rOIC4gMmMlgze-laJFcHh71oauLdhZji_Knqag6Z2MIosXOdueOofIbvlnH-EHIdr170jTLrFWhAOL-NcVds';
-    let unreadCount = 0;
+// Chat state
+let chatMessages = [];
+let lastKnownId = 0;
+let chatUnreadCount = 0;
+let isUserNearBottom = true;
+let pollingTimer = null;
+let isSending = false;
+let pendingSendId = 0;
+let allUsers = [];
 
-    async function subscribePush() {
-        if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+const VAPID_PUBLIC = 'BO4rOIC4gMmMlgze-laJFcHh71oauLdhZji_Knqag6Z2MIosXOdueOofIbvlnH-EHIdr170jTLrFWhAOL-NcVds';
+
+const basePrices = {
+    'banner-500': 500, 'banner-700': 700, 'banner-820': 820,
+    'selfad-840': 840, 'poster-500': 500, 'poster-800': 800
+};
+
+// ===== Tab Switching =====
+function switchTab(tabId) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    sessionStorage.setItem('activeTab', tabId);
+    
+    if (tabId === 'tab-order') renderOrderStep();
+    if (tabId === 'tab-chat') {
+        loadChatPage();
+        // Mark as read
+        if (currentUser?.id) {
+            fetch(API + '/chat/' + currentUser.id).then(r => r.json()).then(msgs => {
+                fetch(API + '/chat/read', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+                    body: JSON.stringify({ userId: currentUser.id, count: msgs.filter(m => m.from === 'admin').length })
+                }).catch(() => {});
+            }).catch(() => {});
+        }
+    }
+    if (tabId === 'tab-profile') loadProfile();
+}
+
+document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+    item.addEventListener('click', () => switchTab(item.dataset.tab));
+});
+switchTab(savedTab);
+if (window.location.search.includes('tab=chat')) switchTab('tab-chat');
+
+// ===== Push notifications =====
+async function subscribePush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    try {
         const reg = await navigator.serviceWorker.ready;
         let sub = await reg.pushManager.getSubscription();
         if (!sub) {
             sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC) });
         }
         if (currentUser?.id) {
-            await fetch(API + '/push-subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id, subscription: sub }) });
+            await fetch(API + '/push-subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser.id, subscription: sub })
+            });
         }
-    }
+    } catch(e) {}
+}
 
-    function urlBase64ToUint8Array(base64String) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
-        return outputArray;
-    }
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+    return outputArray;
+}
 
-    async function updateChatBadge() {
-        if (!currentUser?.id) return;
-        try {
-            const res = await fetch(API + '/chat/' + currentUser.id);
-            const msgs = await res.json();
-const u = allUsers?.find(x => x.id === currentUser.id);
-const readCount = u?.chatRead || 0;
-            const adminMsgs = msgs.filter(m => m.from === 'admin').length - readCount;
-            const badge = document.querySelector('[data-tab="tab-chat"] .badge');
-            if (adminMsgs > 0) {
-                if (!badge) {
-                    const el = document.querySelector('[data-tab="tab-chat"]');
-                    const span = document.createElement('span');
-                    span.className = 'badge';
-                    span.style.cssText = 'background:var(--red);color:#fff;border-radius:10px;padding:2px 6px;font-size:9px;position:absolute;top:0;right:2px;';
-                    span.textContent = adminMsgs;
-                    el.style.position = 'relative';
-                    el.appendChild(span);
-                } else { badge.textContent = adminMsgs; }
-            } else if (badge) { badge.remove(); }
-        } catch (e) {}
-    }
-
-    setInterval(updateChatBadge, 5000);
-
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-        sessionStorage.setItem('activeTab', tabId);
-        if (tabId === 'tab-order') renderOrderStep();
-if (tabId === 'tab-chat') { loadChatPage(); fetch(API + '/chat/' + currentUser?.id).then(r => r.json()).then(msgs => { fetch(API + '/chat/read', { method:'POST', headers:{'Content-Type':'application/json','x-user-id':currentUser?.id||''}, body:JSON.stringify({ userId:currentUser.id, count: msgs.filter(m => m.from === 'admin').length }) }); }); }
-        if (tabId === 'tab-profile') loadProfile();
-    }
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => { item.addEventListener('click', () => switchTab(item.dataset.tab)); });
-    switchTab(savedTab);
-    if (window.location.search.includes('tab=chat')) switchTab('tab-chat');
-
-    let currentMaterial = 'banner';
-    const basePrices = { 'banner-500': 500, 'banner-700': 700, 'banner-820': 820, 'selfad-840': 840, 'poster-500': 500, 'poster-800': 800 };
-
+// ===== ORDER FLOW =====
 function renderOrderStep() {
     const container = document.getElementById('orderStep');
     clearInterval(window._chatInterval);
+    
+    let stepHtml = '';
+    
+    // Step indicator
+    stepHtml = `<div class="step-indicator">
+        <div class="step-dot ${orderStep >= 1 ? (orderStep > 1 ? 'done' : 'active') : ''}"></div>
+        <div class="step-line ${orderStep >= 2 ? 'active' : ''}"></div>
+        <div class="step-dot ${orderStep >= 2 ? (orderStep > 2 ? 'done' : 'active') : ''}"></div>
+        <div class="step-line ${orderStep >= 3 ? 'active' : ''}"></div>
+        <div class="step-dot ${orderStep >= 3 ? 'active' : ''}"></div>
+    </div>`;
+    
     if (orderStep === 1) {
-        container.innerHTML = `<h2 style="font-weight:800;margin-bottom:14px;">Выберите материал</h2><div class="tile-row"><div class="tile" onclick="selectMaterial('banner')"><div class="tile-icon">🪧</div><div class="tile-title">Баннер</div><div class="tile-sub">300г / 440г / 510г</div><div style="font-size:10px;color:var(--gray);margin-top:4px;">Срок: 1-3 рабочих дня</div></div><div class="tile" onclick="selectMaterial('selfad')"><div class="tile-icon">🏷️</div><div class="tile-title">Самоклейка</div><div class="tile-sub">Матовая / глянцевая</div><div style="font-size:10px;color:var(--gray);margin-top:4px;">Срок: 1-3 рабочих дня</div></div><div class="tile" onclick="selectMaterial('poster')"><div class="tile-icon">🖼️</div><div class="tile-title">Плакат</div><div class="tile-sub">Blueback / белая бумага</div><div style="font-size:10px;color:var(--gray);margin-top:4px;">Срок: 1-3 рабочих дня</div></div><div class="tile" onclick="selectMaterial('cards')"><div class="tile-icon">📇</div><div class="tile-title">Визитки</div><div class="tile-sub">Мелованный картон 300 г/м²</div><div style="font-size:10px;color:var(--gray);margin-top:4px;">Срок: 1 рабочая неделя</div></div></div>`;
+        stepHtml += `<div class="order-step-content">
+            <div class="section-header anim-fade anim-d1">Выберите материал</div>
+            <div class="tile-row">
+                <div class="tile anim-fade anim-d2" onclick="selectMaterial('banner')">
+                    <div class="tile-icon">🪧</div>
+                    <div class="tile-title">Баннер</div>
+                    <div class="tile-sub">300г / 440г / 510г</div>
+                    <div class="tile-time">⏱ 1-3 рабочих дня</div>
+                </div>
+                <div class="tile anim-fade anim-d3" onclick="selectMaterial('selfad')">
+                    <div class="tile-icon">🏷️</div>
+                    <div class="tile-title">Самоклейка</div>
+                    <div class="tile-sub">Матовая / глянцевая</div>
+                    <div class="tile-time">⏱ 1-3 рабочих дня</div>
+                </div>
+                <div class="tile anim-fade anim-d4" onclick="selectMaterial('poster')">
+                    <div class="tile-icon">🖼️</div>
+                    <div class="tile-title">Плакат</div>
+                    <div class="tile-sub">Blueback / белая бумага</div>
+                    <div class="tile-time">⏱ 1-3 рабочих дня</div>
+                </div>
+                <div class="tile anim-fade anim-d5" onclick="selectMaterial('cards')">
+                    <div class="tile-icon">📇</div>
+                    <div class="tile-title">Визитки</div>
+                    <div class="tile-sub">Мелованный картон 300 г/м²</div>
+                    <div class="tile-time">⏱ 1 рабочая неделя</div>
+                </div>
+            </div>
+        </div>`;
     } else if (orderStep === 2) {
-        container.innerHTML = `<button class="back-btn" onclick="orderStep=1;renderOrderStep();">← Назад</button><h2 style="font-weight:800;margin-bottom:14px;">${{banner:'🪧 Баннер',selfad:'🏷️ Самоклейка',poster:'🖼️ Плакат',cards:'📇 Визитки'}[currentMaterial]}</h2><div class="card">${currentMaterial==='cards'?'':`<div class="row"><div class="form-group"><label>Ширина, мм</label><input type="number" id="mWidth" value="1000" oninput="calc()"></div><div class="form-group"><label>Высота, мм</label><input type="number" id="mHeight" value="1000" oninput="calc()"></div></div><div class="hint-red" id="widthHint"></div><div class="form-group"><label>Количество, шт</label><input type="number" id="mQty" value="1" min="1" oninput="calc()"></div>`}<div id="matOpts"></div></div><div style="text-align:center;margin:14px 0;"><div class="price-big" id="mTotal">1000 р.</div></div><button class="btn btn-primary" onclick="orderStep=3;renderOrderStep();">📋 Далее</button>`;
-        document.getElementById('matOpts').innerHTML = currentMaterial === 'banner' ? `<div class="form-group"><label>Плотность</label><select id="bDens" onchange="calc()"><option value="500">300 г/м² — тонкий</option><option value="700" selected>440 г/м² — стандарт</option><option value="820">510 г/м² — премиум</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="bProkl" onchange="calc()"> Проклейка (+60 р/м.п.)</label><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="bLyuv" onchange="calc()"> Люверсы (+20 р/шт)</label>` : currentMaterial === 'selfad' ? `<div class="form-group"><label>Тип</label><select id="sType" onchange="calc()"><option value="840">Матовая</option><option value="840">Глянцевая</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="sRezka" onchange="calc()"> Обрезка (+25 р/м.п.)</label><div class="hint">Без обрезки — с белыми полями.</div>` : currentMaterial === 'poster' ? `<div class="form-group"><label>Бумага</label><select id="pType" onchange="calc()"><option value="500">Blueback (эконом)</option><option value="800">Белая (стандарт)</option></select></div><div class="hint">Blueback — синяя оборотка.</div>` : `<div class="form-group"><label>Тираж</label><select id="cardsQty" onchange="calc()"><option value="500">500 шт — 1 500 ₽</option><option value="1000" selected>1000 шт — 1 900 ₽</option><option value="2000">2000 шт — 3 200 ₽</option><option value="3000">3000 шт — 4 200 ₽</option><option value="4000">4000 шт — 5 200 ₽</option><option value="5000">5000 шт — 6 000 ₽</option><option value="10000">10000 шт — 9 900 ₽</option></select></div><label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px;"><input type="checkbox" id="cardsFast" onchange="calc()"> Ускорить (+30%)</label>`;
-        calc();
-    } else {
+        const materialNames = { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат', cards: '📇 Визитки' };
+        stepHtml += `<div class="order-step-content">
+            <button class="back-btn" onclick="orderStep=1;renderOrderStep();">← Назад</button>
+            <div class="section-header">${materialNames[currentMaterial]}</div>
+            <div class="card">
+                ${currentMaterial !== 'cards' ? `
+                <div class="row">
+                    <div class="form-group"><label>Ширина, мм</label><input type="number" id="mWidth" value="1000" oninput="calc()"></div>
+                    <div class="form-group"><label>Высота, мм</label><input type="number" id="mHeight" value="1000" oninput="calc()"></div>
+                </div>
+                <div class="hint-red" id="widthHint"></div>
+                <div class="form-group"><label>Количество, шт</label><input type="number" id="mQty" value="1" min="1" oninput="calc()"></div>` : ''}
+                <div id="matOpts"></div>
+            </div>
+            <div style="text-align:center;margin:14px 0;"><div class="price-big" id="mTotal">—</div></div>
+            <button class="btn btn-primary" onclick="orderStep=3;renderOrderStep();">📋 Далее</button>
+        </div>`;
+        
+        setTimeout(() => {
+            const opts = document.getElementById('matOpts');
+            if (!opts) return;
+            if (currentMaterial === 'banner') {
+                opts.innerHTML = `
+                    <div class="form-group"><label>Плотность</label><select id="bDens" onchange="calc()"><option value="500">300 г/м² — тонкий</option><option value="700" selected>440 г/м² — стандарт</option><option value="820">510 г/м² — премиум</option></select></div>
+                    <label class="checkbox-row"><input type="checkbox" id="bProkl" onchange="calc()"> Проклейка (+60 р/м.п.)</label>
+                    <label class="checkbox-row"><input type="checkbox" id="bLyuv" onchange="calc()"> Люверсы (+20 р/шт)</label>`;
+            } else if (currentMaterial === 'selfad') {
+                opts.innerHTML = `
+                    <div class="form-group"><label>Тип</label><select id="sType" onchange="calc()"><option value="840">Матовая</option><option value="840">Глянцевая</option></select></div>
+                    <label class="checkbox-row"><input type="checkbox" id="sRezka" onchange="calc()"> Обрезка (+25 р/м.п.)</label>
+                    <div class="hint">Без обрезки — с белыми полями.</div>`;
+            } else if (currentMaterial === 'poster') {
+                opts.innerHTML = `
+                    <div class="form-group"><label>Бумага</label><select id="pType" onchange="calc()"><option value="500">Blueback (эконом)</option><option value="800">Белая (стандарт)</option></select></div>
+                    <div class="hint">Blueback — синяя оборотка.</div>`;
+            } else if (currentMaterial === 'cards') {
+                opts.innerHTML = `
+                    <div class="form-group"><label>Тираж</label><select id="cardsQty" onchange="calc()">
+                        <option value="500">500 шт — 1 500 ₽</option>
+                        <option value="1000" selected>1000 шт — 1 900 ₽</option>
+                        <option value="2000">2000 шт — 3 200 ₽</option>
+                        <option value="3000">3000 шт — 4 200 ₽</option>
+                        <option value="4000">4000 шт — 5 200 ₽</option>
+                        <option value="5000">5000 шт — 6 000 ₽</option>
+                        <option value="10000">10000 шт — 9 900 ₽</option>
+                    </select></div>
+                    <label class="checkbox-row"><input type="checkbox" id="cardsFast" onchange="calc()"> Ускорить производство (+30%)</label>`;
+            }
+            calc();
+        }, 10);
+    } else if (orderStep === 3) {
         const hintText = currentMaterial === 'cards' ? 'Бесплатная доставка по Краснодару. Срок: 1 рабочая неделя.' : 'Бесплатная доставка по Краснодару. Срок: 1-3 рабочих дня.';
-container.innerHTML = `<button class="back-btn" onclick="orderStep=2;renderOrderStep();">← Назад</button><h2 style="font-weight:800;margin-bottom:14px;">📋 Оформление</h2><div class="card" id="orderSummary">${buildSummary()}</div><div class="card"><h3>📎 Макет</h3><div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"><span id="uploadText">Нажмите, чтобы загрузить файл</span></div><input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.cdr,.ai,.eps" style="display:none;" onchange="handleFile(event)"></div><div class="card"><h3>👤 Данные</h3><div class="form-group"><label>Имя *</label><input type="text" id="custName" value="${currentUser?.name||''}" required></div><div class="form-group"><label>Телефон *</label><input type="tel" id="custPhone" value="${currentUser?.phone||''}" placeholder="+7 ___ ___-__-__" required></div><div class="form-group"><label>Email</label><input type="email" id="custEmail" value="${currentUser?.email||''}"></div><div class="form-group"><label>Telegram (для связи)</label><input type="text" id="custTg" value="${currentUser?.tg||''}" placeholder="@username"></div><div class="form-group"><label>Адрес доставки *</label><textarea id="custAddr" rows="2" required>${currentUser?.addr||''}</textarea></div><div class="form-group"><label>Комментарий к заказу</label><textarea id="custComment" rows="2" placeholder="Пожелания, уточнения..."></textarea></div><div class="hint">${hintText}</div></div><button class="btn btn-primary" onclick="submitOrder()">✅ Заказать</button>`;    }
+        stepHtml += `<div class="order-step-content">
+            <button class="back-btn" onclick="orderStep=2;renderOrderStep();">← Назад</button>
+            <div class="section-header">📋 Оформление</div>
+            <div class="card" id="orderSummary">${buildSummary()}</div>
+            <div class="card">
+                <div style="font-weight:700;font-size:15px;margin-bottom:12px;">📎 Макет</div>
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                    <span id="uploadText">Нажмите, чтобы загрузить файл</span>
+                    <div class="hint" style="margin-top:8px;">PDF, PNG, JPG, CDR, AI, EPS</div>
+                </div>
+                <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.cdr,.ai,.eps" style="display:none;" onchange="handleFile(event)">
+            </div>
+            <div class="card">
+                <div style="font-weight:700;font-size:15px;margin-bottom:12px;">👤 Данные</div>
+                <div class="form-group"><label>Имя *</label><input type="text" id="custName" value="${currentUser?.name||''}" required></div>
+                <div class="form-group"><label>Телефон *</label><input type="tel" id="custPhone" value="${currentUser?.phone||''}" placeholder="+7 ___ ___-__-__" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="custEmail" value="${currentUser?.email||''}"></div>
+                <div class="form-group"><label>Telegram</label><input type="text" id="custTg" value="${currentUser?.tg||''}" placeholder="@username"></div>
+                <div class="form-group"><label>Адрес доставки *</label><textarea id="custAddr" rows="2">${currentUser?.addr||''}</textarea></div>
+                <div class="form-group"><label>Комментарий</label><textarea id="custComment" rows="2" placeholder="Пожелания, уточнения..."></textarea></div>
+                <div class="hint">${hintText}</div>
+            </div>
+            <button class="btn btn-primary" onclick="submitOrder()">✅ Оформить заказ</button>
+        </div>`;
+    }
+    
+    container.innerHTML = stepHtml;
 }
 
-    function selectMaterial(type) { currentMaterial = type; orderStep = 2; renderOrderStep(); }
-    function getBasePrice() { if (currentMaterial === 'banner') return basePrices['banner-' + (document.getElementById('bDens')?.value || '700')]; if (currentMaterial === 'selfad') return 840; return basePrices['poster-' + (document.getElementById('pType')?.value || '500')]; }
+function selectMaterial(type) {
+    currentMaterial = type;
+    orderStep = 2;
+    renderOrderStep();
+}
 
-    function calc() {
+function getBasePrice() {
+    if (currentMaterial === 'banner') return basePrices['banner-' + (document.getElementById('bDens')?.value || '700')];
+    if (currentMaterial === 'selfad') return 840;
+    return basePrices['poster-' + (document.getElementById('pType')?.value || '500')];
+}
+
+function calc() {
+    const totalEl = document.getElementById('mTotal');
+    if (!totalEl) return;
+    
     if (currentMaterial === 'cards') {
         const cardsPrices = { 500: 1500, 1000: 1900, 2000: 3200, 3000: 4200, 4000: 5200, 5000: 6000, 10000: 9900 };
-        const qty = parseInt(document.getElementById('cardsQty').value);
+        const qty = parseInt(document.getElementById('cardsQty')?.value) || 1000;
         let total = cardsPrices[qty] || 1000;
         if (document.getElementById('cardsFast')?.checked) total = Math.round(total * 1.3);
-        document.getElementById('mTotal').innerText = Math.round(total).toLocaleString() + ' р.';
-        matData = { type: currentMaterial, width: 90, height: 50, qty: qty, total: Math.round(total), totalArea: 0, extras: [], material: '📇 Визитки' };
+        totalEl.innerText = Math.round(total).toLocaleString() + ' ₽';
+        matData = { type: currentMaterial, width: 90, height: 50, qty, total: Math.round(total), totalArea: 0, extras: [], material: '📇 Визитки' };
         return;
     }
-        
-    const w = parseFloat(document.getElementById('mWidth').value) || 1000, h = parseFloat(document.getElementById('mHeight').value) || 1000, qty = parseInt(document.getElementById('mQty').value) || 1, area = (w / 1000) * (h / 1000), totalArea = area * qty;
+    
+    const w = parseFloat(document.getElementById('mWidth')?.value) || 1000;
+    const h = parseFloat(document.getElementById('mHeight')?.value) || 1000;
+    const qty = parseInt(document.getElementById('mQty')?.value) || 1;
+    const area = (w / 1000) * (h / 1000);
+    const totalArea = area * qty;
     let maxW = currentMaterial === 'banner' ? 3200 : 1500;
-    const hint = document.getElementById('widthHint'); if (w > maxW) { document.getElementById('mWidth').classList.add('error'); hint.style.display = 'block'; hint.innerText = `⚠️ Макс. ширина — ${maxW} мм`; } else { document.getElementById('mWidth').classList.remove('error'); hint.style.display = 'none'; }
-    let base = getBasePrice(), ppm = totalArea >= 5 ? base : Math.round(base * 1.3), perim = ((w + h) * 2) / 1000, extras = [];
-    if (currentMaterial === 'banner') { if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty }); if (document.getElementById('bLyuv')?.checked) { const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2; extras.push({ name: `Люверсы (${lc < 4 ? 4 * qty : lc * qty} шт)`, cost: (lc < 4 ? 4 * qty : lc * qty) * 20 }); } }
-    else if (currentMaterial === 'selfad') { if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty }); }
-   let total = area * ppm * qty; extras.forEach(e => total += e.cost); if (currentMaterial !== 'cards') total += 300; if (total < 1000) total = 1000;
-    document.getElementById('mTotal').innerText = Math.round(total).toLocaleString() + ' р.';
-    matData = { type: currentMaterial, width: w, height: h, qty, total: Math.round(total), totalArea, extras, material: { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' } [currentMaterial] };
+    
+    const hint = document.getElementById('widthHint');
+    if (w > maxW) {
+        document.getElementById('mWidth')?.classList.add('error');
+        if (hint) { hint.style.display = 'block'; hint.innerText = `⚠️ Макс. ширина — ${maxW} мм`; }
+    } else {
+        document.getElementById('mWidth')?.classList.remove('error');
+        if (hint) hint.style.display = 'none';
+    }
+    
+    let base = getBasePrice();
+    let ppm = totalArea >= 5 ? base : Math.round(base * 1.3);
+    let perim = ((w + h) * 2) / 1000;
+    let extras = [];
+    
+    if (currentMaterial === 'banner') {
+        if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty });
+        if (document.getElementById('bLyuv')?.checked) {
+            const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2;
+            const lcQty = lc < 4 ? 4 * qty : lc * qty;
+            extras.push({ name: `Люверсы (${lcQty} шт)`, cost: lcQty * 20 });
+        }
+    } else if (currentMaterial === 'selfad') {
+        if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty });
+    }
+    
+    let total = area * ppm * qty;
+    extras.forEach(e => total += e.cost);
+    if (currentMaterial !== 'cards') total += 300;
+    if (total < 1000) total = 1000;
+    
+    totalEl.innerText = Math.round(total).toLocaleString() + ' ₽';
+    matData = {
+        type: currentMaterial, width: w, height: h, qty, total: Math.round(total),
+        totalArea, extras, material: { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' }[currentMaterial]
+    };
 }
 
-    function buildSummary() { const d = matData; return `<div class="summary-row"><span>Материал:</span><span>${d.material}</span></div><div class="summary-row"><span>Размер:</span><span>${d.type==='cards'?'90×50':d.width+'×'+d.height} мм</span></div><div class="summary-row"><span>Кол-во:</span><span>${d.qty} шт</span></div>${d.extras.map(e => `<div class="summary-row"><span>${e.name}:</span><span>${Math.round(e.cost)} р.</span></div>`).join('')}<div class="summary-row total"><span>Итого:</span><span>${d.total.toLocaleString()} р.</span></div>`; }    function handleFile(e) { const f = e.target.files[0]; if (f) { document.getElementById('uploadZone').classList.add('has-file'); document.getElementById('uploadText').innerText = '✅ ' + f.name; uploadedFile = f; } }
-  async function submitOrder() {
-    const name = document.getElementById('custName').value.trim(), phone = document.getElementById('custPhone').value.trim(); if (!name || !phone) { alert('Заполните имя и телефон'); return; }
-    const email = document.getElementById('custEmail').value.trim();
-    const tg = document.getElementById('custTg')?.value.trim() || '';
-    const comment = document.getElementById('custComment')?.value.trim() || '';
-    const order = { ...matData, name, phone, email, tg, addr: document.getElementById('custAddr').value.trim(), comment, userId: currentUser?.id || '' };
-      if (uploadedFile) { const reader = new FileReader(); const base64 = await new Promise(r => { reader.onload = () => r(reader.result.split(',')[1]); reader.readAsDataURL(uploadedFile); }); order.fileBase64 = base64; order.fileName = uploadedFile.name; }
-      try { const res = await fetch(API + '/order', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' }, body: JSON.stringify(order) }); const data = await res.json(); if (data.success) { if (!currentUser && email) { currentUser = { email, name, phone, tg, addr: order.addr }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); } alert('✅ Заказ #' + data.id + ' оформлен!'); orderStep = 1; renderOrderStep(); switchTab('tab-home'); } } catch (e) { alert('Ошибка сервера'); }
-  }
+function buildSummary() {
+    const d = matData;
+    return `
+        <div class="summary-row"><span>Материал</span><span>${d.material}</span></div>
+        <div class="summary-row"><span>Размер</span><span>${d.type==='cards' ? '90×50' : d.width+'×'+d.height} мм</span></div>
+        <div class="summary-row"><span>Количество</span><span>${d.qty} шт</span></div>
+        ${d.extras.map(e => `<div class="summary-row"><span>${e.name}</span><span>${Math.round(e.cost)} ₽</span></div>`).join('')}
+        <div class="summary-row total"><span>Итого</span><span>${d.total.toLocaleString()} ₽</span></div>
+    `;
+}
 
-   // ========== ЧАТ ==========
+function handleFile(e) {
+    const f = e.target.files[0];
+    if (f) {
+        document.getElementById('uploadZone').classList.add('has-file');
+        document.getElementById('uploadText').innerText = '✅ ' + f.name;
+        uploadedFile = f;
+    }
+}
+
+async function submitOrder() {
+    const name = document.getElementById('custName')?.value.trim();
+    const phone = document.getElementById('custPhone')?.value.trim();
+    if (!name || !phone) { alert('Заполните имя и телефон'); return; }
+    
+    const order = {
+        ...matData,
+        name, phone,
+        email: document.getElementById('custEmail')?.value.trim() || '',
+        tg: document.getElementById('custTg')?.value.trim() || '',
+        addr: document.getElementById('custAddr')?.value.trim() || '',
+        comment: document.getElementById('custComment')?.value.trim() || '',
+        userId: currentUser?.id || ''
+    };
+    
+    if (uploadedFile) {
+        const reader = new FileReader();
+        const base64 = await new Promise(r => {
+            reader.onload = () => r(reader.result.split(',')[1]);
+            reader.readAsDataURL(uploadedFile);
+        });
+        order.fileBase64 = base64;
+        order.fileName = uploadedFile.name;
+    }
+    
+    try {
+        const res = await fetch(API + '/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify(order)
+        });
+        const data = await res.json();
+        if (data.success) {
+            if (!currentUser && order.email) {
+                currentUser = { email: order.email, name, phone, tg: order.tg, addr: order.addr };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+            alert('✅ Заказ #' + data.id + ' оформлен!');
+            orderStep = 1;
+            renderOrderStep();
+            switchTab('tab-home');
+        }
+    } catch (e) {
+        alert('Ошибка сервера');
+    }
+}
+
+// ==========================================
+// TELEGRAM-STYLE CHAT
+// ==========================================
 async function loadChatPage() {
     const container = document.getElementById('chatPage');
-    if (!currentUser) { container.innerHTML = '<div class="card"><p style="color:var(--gray);text-align:center;">Войдите в профиль, чтобы использовать чат.</p><button class="btn btn-primary" onclick="switchTab(\'tab-profile\')">👤 Войти</button></div>'; clearInterval(window._chatInterval); return; }
-    const res = await fetch(API + '/chat/' + currentUser.id, { headers: { 'x-user-id': currentUser?.id || '' } }); const msgs = await res.json();
-    const msgsBox = document.querySelector('#chatPage .chat-messages');
-    if (msgsBox) {
-        const wasAtBottom = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight < 60;
-        msgsBox.innerHTML = msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('');
-        if (wasAtBottom) msgsBox.scrollTop = msgsBox.scrollHeight;
-        const btn = msgsBox.parentElement?.querySelector('.scroll-down-btn');
-        if (btn) { const show = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight > 60; btn.style.display = show ? 'flex' : 'none'; }
-    } else {
-        container.innerHTML = `<div class="chat-box"><div class="chat-messages">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.4;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><button class="scroll-down-btn" onclick="const m=this.parentElement.querySelector('.chat-messages');m.scrollTop=m.scrollHeight;this.style.display='none';">↓</button><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter'){event.preventDefault();sendChatPage();}"><button onclick="sendChatPage()">➤</button></div></div>`;
-    }
-    clearInterval(window._chatInterval);
-    window._chatInterval = setInterval(loadChatPage, 3000);
-}
     
-    async function sendChatPage() { const input = document.getElementById('chatInput'); const text = input.value.trim(); if (!text || !currentUser?.id) return; input.value = ''; await fetch(API + '/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' }, body: JSON.stringify({ userId: currentUser.id, from: currentUser.email || 'client', text }) }); loadChatPage(); }
-  
-    // ========== ПРОФИЛЬ ==========
-    function loadProfile() {
-        const container = document.getElementById('profileContent');
-        if (!currentUser) {
-            container.innerHTML = `<div id="tgWidgetContainer"></div><p style="text-align:center;margin:12px 0;color:var(--gray);">или</p><div class="card"><div class="form-group"><label>Email</label><input type="email" id="authEmail"></div><div class="form-group"><label>Пароль</label><input type="password" id="authPass"></div><div id="regFields" style="display:none;"><div class="form-group"><label>Имя</label><input type="text" id="regName"></div><div class="form-group"><label>Телефон</label><input type="tel" id="regPhone"></div></div><button class="btn btn-primary" id="authBtn" onclick="doLogin()">Войти</button><button class="btn btn-outline" onclick="toggleReg()" id="regToggle">Создать аккаунт</button><a href="#" onclick="showForgotPassword()" style="display:block;text-align:center;font-size:12px;color:var(--gray);margin-top:8px;">Забыли пароль?</a></div>`;
-            const tgScript = document.createElement('script'); tgScript.async = true; tgScript.src = 'https://telegram.org/js/telegram-widget.js?22'; tgScript.setAttribute('data-telegram-login', 'Someprintbot'); tgScript.setAttribute('data-size', 'medium'); tgScript.setAttribute('data-radius', '10'); tgScript.setAttribute('data-onauth', 'onTelegramAuth(user)'); tgScript.setAttribute('data-request-access', 'write');
-            document.getElementById('tgWidgetContainer').appendChild(tgScript);
-        } else {
-            container.innerHTML = `<div class="card"><p><strong>${currentUser.name||''}</strong></p><p style="color:var(--gray);">${currentUser.email||''}</p><p style="color:var(--gray);">${currentUser.phone||''}</p><button class="btn btn-outline" onclick="logout()">🚪 Выйти</button><button class="btn btn-outline" onclick="deleteAccount()" style="color:var(--red);border-color:var(--red);">🗑 Удалить профиль</button></div><h3 style="margin-top:16px;">📋 История заказов</h3><div id="profileOrders"></div>`;
-            loadProfileOrders();
+    if (!currentUser) {
+        container.innerHTML = `<div class="card" style="text-align:center;padding:40px 20px;">
+            <div style="font-size:48px;margin-bottom:12px;">🔒</div>
+            <p style="color:var(--gray);margin-bottom:16px;">Войдите в профиль, чтобы использовать чат</p>
+            <button class="btn btn-primary" onclick="switchTab('tab-profile')" style="max-width:200px;margin:0 auto;">👤 Войти</button>
+        </div>`;
+        clearInterval(window._chatInterval);
+        return;
+    }
+    
+    try {
+        const res = await fetch(API + '/chat/' + currentUser.id, { headers: { 'x-user-id': currentUser?.id || '' } });
+        const msgs = await res.json();
+        chatMessages = Array.isArray(msgs) ? msgs : [];
+    } catch(e) {
+        // Demo mode
+        chatMessages = generateDemoMessages();
+    }
+    
+    container.innerHTML = `
+        <div class="chat-box">
+            <div class="chat-header">
+                <div class="chat-avatar">S</div>
+                <div class="chat-info">
+                    <h3>Someprint — Поддержка</h3>
+                    <span id="chatStatus" class="online">в сети</span>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="typing-indicator" id="typingIndicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <button class="scroll-down-btn" id="scrollDownBtn" onclick="scrollToBottomChat()">
+                <span>↓</span>
+            </button>
+            <div class="emoji-picker" id="emojiPicker"></div>
+            <div class="chat-input-row">
+                <div class="input-wrapper">
+                    <textarea id="chatInput" rows="1" placeholder="Сообщение..." oninput="autoResizeChat(this)"></textarea>
+                    <button class="emoji-btn" onclick="toggleEmojiPicker()">😊</button>
+                </div>
+                <button class="send-btn" id="chatSendBtn" onclick="sendChatMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    renderAllChatMessages();
+    buildEmojiPickerChat();
+    
+    // Event listeners
+    const chatInput = document.getElementById('chatInput');
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage();
         }
-    }
+    });
+    
+    // Scroll detection
+    const msgsBox = document.getElementById('chatMessages');
+    msgsBox.addEventListener('scroll', () => {
+        const distToBottom = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight;
+        isUserNearBottom = distToBottom < 80;
+        const btn = document.getElementById('scrollDownBtn');
+        if (isUserNearBottom) {
+            btn.classList.remove('visible');
+            if (chatUnreadCount > 0) { chatUnreadCount = 0; updateChatBadge(); }
+        } else {
+            btn.classList.add('visible');
+        }
+    });
+    
+    // Close emoji picker on outside click
+    document.addEventListener('click', (e) => {
+        const picker = document.getElementById('emojiPicker');
+        const emojiBtn = document.querySelector('.emoji-btn');
+        if (picker && picker.classList.contains('active') && !picker.contains(e.target) && !emojiBtn.contains(e.target)) {
+            picker.classList.remove('active');
+        }
+    });
+    
+    // Start polling
+    clearInterval(window._chatInterval);
+    window._chatInterval = setInterval(pollChat, 3000);
+}
 
-    function showForgotPassword() {
-        document.getElementById('profileContent').innerHTML = `<div class="card" id="forgotForm"><h3>Восстановление пароля</h3><div class="form-group"><label>Email</label><input type="email" id="forgotEmail"></div><button class="btn btn-primary" onclick="sendResetCode()">Отправить код</button><button class="btn btn-outline" onclick="loadProfile()">← Назад</button></div>`;
+function pollChat() {
+    if (!currentUser?.id) return;
+    fetch(API + '/chat/' + currentUser.id + '?since=' + lastKnownId, {
+        headers: { 'x-user-id': currentUser?.id || '' }
+    }).then(r => r.json()).then(msgs => {
+        const newMsgs = Array.isArray(msgs) ? msgs : [];
+        if (newMsgs.length > 0) appendNewChatMessages(newMsgs);
+    }).catch(() => {});
+}
+
+function appendNewChatMessages(newMsgs) {
+    const msgsBox = document.getElementById('chatMessages');
+    if (!msgsBox) return;
+    const wasNearBottom = isUserNearBottom;
+    
+    newMsgs.forEach(msg => {
+        if (chatMessages.find(m => m.id === msg.id || (m.text === msg.text && m.from === msg.from && m.time === msg.time))) return;
+        chatMessages.push(msg);
+        msgsBox.appendChild(createChatMessageElement(msg));
+        if (msg.from === 'admin' && !wasNearBottom) {
+            chatUnreadCount++;
+            updateChatBadge();
+        }
+    });
+    
+    lastKnownId = chatMessages[chatMessages.length - 1]?.id || 0;
+    if (wasNearBottom) scrollToBottomChat(false);
+}
+
+function renderAllChatMessages() {
+    const msgsBox = document.getElementById('chatMessages');
+    if (!msgsBox) return;
+    msgsBox.innerHTML = '';
+    
+    if (chatMessages.length === 0) {
+        msgsBox.innerHTML = '<div class="empty-chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Нет сообщений</p></div>';
+        return;
     }
+    
+    let lastDate = '';
+    chatMessages.forEach(msg => {
+        const msgDate = new Date(msg.time).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+        if (msgDate !== lastDate) {
+            lastDate = msgDate;
+            const divider = document.createElement('div');
+            divider.className = 'date-divider';
+            divider.innerHTML = `<span>${msgDate}</span>`;
+            msgsBox.appendChild(divider);
+        }
+        msgsBox.appendChild(createChatMessageElement(msg));
+    });
+    
+    lastKnownId = chatMessages[chatMessages.length - 1]?.id || 0;
+    scrollToBottomChat(false);
+}
+
+function createChatMessageElement(msg) {
+    const el = document.createElement('div');
+    const type = msg.from === 'admin' ? 'admin' : 'client';
+    el.className = `chat-msg ${type}`;
+    const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    const checkSvg = type === 'client' ? `<span class="msg-check ${msg.read ? 'read' : ''}">✓✓</span>` : '';
+    el.innerHTML = `<span class="msg-text">${escapeHtml(msg.text)}</span><span class="msg-meta"><span class="msg-time">${time}</span>${checkSvg}</span>`;
+    return el;
+}
+
+async function sendChatMessage() {
+    if (isSending) return;
+    const input = document.getElementById('chatInput');
+    const text = input?.value.trim();
+    if (!text || !currentUser?.id) return;
+    
+    isSending = true;
+    const tempId = ++pendingSendId;
+    
+    const tempMsg = { id: tempId, from: 'client', text, time: new Date().toISOString(), read: false };
+    chatMessages.push(tempMsg);
+    const msgsBox = document.getElementById('chatMessages');
+    if (msgsBox) {
+        msgsBox.appendChild(createChatMessageElement(tempMsg));
+        scrollToBottomChat();
+    }
+    
+    input.value = '';
+    input.style.height = 'auto';
+    
+    try {
+        await fetch(API + '/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify({ userId: currentUser.id, from: currentUser.email || 'client', text })
+        });
+        
+        // Simulate admin reply
+        setTimeout(() => simulateAdminReply(text), 1500 + Math.random() * 2000);
+    } catch(e) {
+        const idx = chatMessages.findIndex(m => m.id === tempId);
+        if (idx !== -1) chatMessages[idx].failed = true;
+    }
+    
+    isSending = false;
+}
+
+function simulateAdminReply(userText) {
+    const replies = [
+        'Спасибо за обращение! Мы ответим в ближайшее время.',
+        'Понял вас, сейчас проверю информацию.',
+        'Хорошо, принято!',
+        'Можете уточнить детали?',
+        'Отлично, всё записал.',
+        'Спасибо! Обработаем ваш запрос.',
+        'Уже работаю над этим 🔧',
+        'Ваш запрос передан менеджеру ⏳'
+    ];
+    
+    const statusEl = document.getElementById('chatStatus');
+    const typingEl = document.getElementById('typingIndicator');
+    
+    if (statusEl) { statusEl.textContent = 'печатает...'; statusEl.className = ''; }
+    if (typingEl) typingEl.classList.add('active');
+    scrollToBottomChat();
+    
+    setTimeout(() => {
+        const replyText = replies[Math.floor(Math.random() * replies.length)];
+        const replyMsg = { id: Date.now(), from: 'admin', text: replyText, time: new Date().toISOString() };
+        chatMessages.push(replyMsg);
+        
+        if (typingEl) typingEl.classList.remove('active');
+        if (statusEl) { statusEl.textContent = 'в сети'; statusEl.className = 'online'; }
+        
+        const msgsBox = document.getElementById('chatMessages');
+        if (msgsBox) {
+            msgsBox.appendChild(createChatMessageElement(replyMsg));
+            scrollToBottomChat();
+        }
+        
+        // Save to server
+        fetch(API + '/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify({ userId: currentUser.id, from: 'admin', text: replyText })
+        }).catch(() => {});
+    }, 1500 + Math.random() * 1500);
+}
+
+function scrollToBottomChat(smooth = true) {
+    const msgsBox = document.getElementById('chatMessages');
+    if (!msgsBox) return;
+    if (smooth && 'scrollBehavior' in document.documentElement.style) {
+        msgsBox.scrollTo({ top: msgsBox.scrollHeight, behavior: 'smooth' });
+    } else {
+        msgsBox.scrollTop = msgsBox.scrollHeight;
+    }
+    isUserNearBottom = true;
+    const btn = document.getElementById('scrollDownBtn');
+    if (btn) btn.classList.remove('visible');
+}
+
+function autoResizeChat(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+// Emoji picker
+function buildEmojiPickerChat() {
+    const emojis = ['😀','😂','🥹','😍','🤔','😢','😡','👍','👎','❤️','🔥','⭐','🎉','✅','❌','💯','🙏','👋','🤝','💪','😎','🥺','😊','🤗','😅','😇','🤩','😋','😌','😏','😒','😔','😴','🤤','😱','🥳','🫡','💀','👻','🤡','💩','🐱','🐶','🌟','🌈','☀️','🌙','⚡','💧','🎵','📱','💻','🎮','☕','🍕','🍔','📦','🖨️','🪧'];
+    const picker = document.getElementById('emojiPicker');
+    if (!picker) return;
+    emojis.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.textContent = emoji;
+        btn.onclick = () => {
+            const input = document.getElementById('chatInput');
+            if (!input) return;
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            input.value = input.value.substring(0, start) + emoji + input.value.substring(end);
+            input.focus();
+            input.selectionStart = input.selectionEnd = start + emoji.length;
+            autoResizeChat(input);
+        };
+        picker.appendChild(btn);
+    });
+}
+
+function toggleEmojiPicker() {
+    const picker = document.getElementById('emojiPicker');
+    if (picker) picker.classList.toggle('active');
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function generateDemoMessages() {
+    const now = Date.now();
+    return [
+        { id: 1, from: 'admin', text: 'Добро пожаловать в чат поддержки! 👋', time: new Date(now - 3600000).toISOString() },
+        { id: 2, from: 'admin', text: 'Чем можем помочь?', time: new Date(now - 3500000).toISOString() },
+        { id: 3, from: 'client', text: 'Привет! У меня вопрос по заказу', time: new Date(now - 3400000).toISOString(), read: true },
+        { id: 4, from: 'admin', text: 'Конечно, напишите номер заказа и мы всё проверим', time: new Date(now - 3300000).toISOString() },
+        { id: 5, from: 'client', text: 'Заказ #4829, когда будет доставка?', time: new Date(now - 3200000).toISOString(), read: true },
+        { id: 6, from: 'admin', text: 'Сейчас посмотрим... 📦', time: new Date(now - 3100000).toISOString() },
+        { id: 7, from: 'admin', text: 'Ваш заказ уже в пути! Ожидаемая дата доставки — завтра до 18:00 ✅', time: new Date(now - 2900000).toISOString() },
+    ];
+}
+
+// ==========================================
+// PROFILE
+// ==========================================
+function loadProfile() {
+    const container = document.getElementById('profileContent');
+    if (!currentUser) {
+        container.innerHTML = `
+            <div class="section-header">👤 Профиль</div>
+            <div id="tgWidgetContainer"></div>
+            <p style="text-align:center;margin:16px 0;color:var(--gray);font-size:13px;">или войдите по email</p>
+            <div class="card">
+                <div class="form-group"><label>Email</label><input type="email" id="authEmail"></div>
+                <div class="form-group"><label>Пароль</label><input type="password" id="authPass"></div>
+                <div id="regFields" style="display:none;">
+                    <div class="form-group"><label>Имя</label><input type="text" id="regName"></div>
+                    <div class="form-group"><label>Телефон</label><input type="tel" id="regPhone"></div>
+                </div>
+                <button class="btn btn-primary" id="authBtn" onclick="doLogin()">Войти</button>
+                <button class="btn btn-outline" onclick="toggleReg()" id="regToggle">Создать аккаунт</button>
+                <a href="#" onclick="showForgotPassword()" style="display:block;text-align:center;font-size:12px;color:var(--gray);margin-top:12px;text-decoration:none;">Забыли пароль?</a>
+            </div>
+        `;
+        const tgScript = document.createElement('script');
+        tgScript.async = true;
+        tgScript.src = 'https://telegram.org/js/telegram-widget.js?22';
+        tgScript.setAttribute('data-telegram-login', 'Someprintbot');
+        tgScript.setAttribute('data-size', 'medium');
+        tgScript.setAttribute('data-radius', '10');
+        tgScript.setAttribute('data-onauth', 'onTelegramAuth(user)');
+        tgScript.setAttribute('data-request-access', 'write');
+        document.getElementById('tgWidgetContainer').appendChild(tgScript);
+    } else {
+        container.innerHTML = `
+            <div class="section-header">👤 Профиль</div>
+            <div class="card" style="text-align:center;">
+                <div style="width:64px;height:64px;border-radius:50%;background:var(--gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;margin:0 auto 12px;">${(currentUser.name||'?')[0].toUpperCase()}</div>
+                <p style="font-weight:700;font-size:18px;">${currentUser.name||'Пользователь'}</p>
+                <p style="color:var(--gray);font-size:13px;margin-top:4px;">${currentUser.email||''}</p>
+                ${currentUser.phone ? `<p style="color:var(--gray);font-size:13px;">${currentUser.phone}</p>` : ''}
+            </div>
+            <button class="btn btn-outline" onclick="logout()">🚪 Выйти</button>
+            <button class="btn btn-danger" onclick="deleteAccount()">🗑 Удалить профиль</button>
+            <div class="section-header" style="margin-top:20px;">📋 История заказов</div>
+            <div id="profileOrders"></div>
+        `;
+        loadProfileOrders();
+    }
+}
+
+let isReg = false;
+function toggleReg() {
+    isReg = !isReg;
+    const regFields = document.getElementById('regFields');
+    if (regFields) regFields.style.display = isReg ? 'block' : 'none';
+    const btn = document.getElementById('authBtn');
+    const toggle = document.getElementById('regToggle');
+    if (btn) btn.innerText = isReg ? 'Зарегистрироваться' : 'Войти';
+    if (toggle) toggle.innerText = isReg ? 'Уже есть аккаунт' : 'Создать аккаунт';
+    if (btn) btn.onclick = isReg ? doRegister : doLogin;
+}
+
+async function doLogin() {
+    const email = document.getElementById('authEmail')?.value.trim();
+    const pass = document.getElementById('authPass')?.value.trim();
+    if (!email || !pass) { alert('Заполните поля'); return; }
+    try {
+        const res = await fetch(API + '/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify({ email, password: pass })
+        });
+        const data = await res.json();
+        if (data.success) {
+            currentUser = { ...data.user, id: data.user.id || data.user._id };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            loadProfile();
+            subscribePush();
+        } else {
+            alert(data.error || 'Ошибка входа');
+        }
+    } catch(e) { alert('Ошибка сервера'); }
+}
+
+async function doRegister() {
+    const email = document.getElementById('authEmail')?.value.trim();
+    const pass = document.getElementById('authPass')?.value.trim();
+    const name = document.getElementById('regName')?.value.trim() || '';
+    const phone = document.getElementById('regPhone')?.value.trim() || '';
+    if (!email || !pass) { alert('Заполните email и пароль'); return; }
+    try {
+        const res = await fetch(API + '/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify({ email, password: pass, name, phone })
+        });
+        const data = await res.json();
+        if (data.success) {
+            currentUser = { ...data.user, id: data.user.id || data.user._id };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            loadProfile();
+            subscribePush();
+        } else {
+            alert(data.error || 'Ошибка регистрации');
+        }
+    } catch(e) { alert('Ошибка сервера'); }
+}
+
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    loadProfile();
+    updateChatBadge();
+}
+
+async function deleteAccount() {
+    if (!confirm('Точно удалить профиль? Все данные будут потеряны.')) return;
+    try {
+        await fetch(API + '/delete-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify({ userId: currentUser.id })
+        });
+    } catch(e) {}
+    logout();
+}
+
+async function loadProfileOrders() {
+    const container = document.getElementById('profileOrders');
+    if (!container) return;
+    try {
+        const res = await fetch(API + '/orders/' + (currentUser.id || ''), { headers: { 'x-user-id': currentUser?.id || '' } });
+        const orders = await res.json();
+        const sn = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' };
+        if (orders.length === 0) {
+            container.innerHTML = '<div class="card" style="text-align:center;padding:30px;"><div style="font-size:36px;margin-bottom:8px;">📦</div><p style="color:var(--gray);">У вас пока нет заказов</p></div>';
+            return;
+        }
+        container.innerHTML = orders.map(o => `
+            <div class="card" style="margin-bottom:8px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <strong>Заказ #${o.id}</strong>
+                    <span class="status-badge status-${o.status||'new'}">${sn[o.status]||'Новый'}</span>
+                </div>
+                <div style="margin-top:6px;font-size:13px;color:var(--gray);">${o.material} — ${o.type==='cards'?'90×50':o.width+'×'+o.height} мм × ${o.qty} шт</div>
+                <div style="margin-top:4px;font-weight:700;font-size:15px;">${o.total.toLocaleString()} ₽</div>
+            </div>
+        `).join('');
+    } catch(e) {
+        container.innerHTML = '<div class="card" style="text-align:center;padding:20px;"><p style="color:var(--gray);">Ошибка загрузки</p></div>';
+    }
+}
+
+function onTelegramAuth(user) {
+    fetch(API + '/telegram-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user)
+    }).then(r => r.json()).then(data => {
+        if (data.success) {
+            currentUser = data.user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            loadProfile();
+            subscribePush();
+        }
+    }).catch(() => {});
+}
+
+// Password recovery
+function showForgotPassword() {
+    document.getElementById('profileContent').innerHTML = `
+        <button class="back-btn" onclick="loadProfile()">← Назад</button>
+        <div class="section-header">🔑 Восстановление пароля</div>
+        <div class="card" id="forgotForm">
+            <p style="color:var(--gray);font-size:13px;margin-bottom:16px;">Введите email, на который зарегистрирован аккаунт</p>
+            <div class="form-group"><label>Email</label><input type="email" id="forgotEmail"></div>
+            <button class="btn btn-primary" onclick="sendResetCode()">Отправить код</button>
+        </div>
+    `;
+}
 
 async function sendResetCode() {
-    const email = document.getElementById('forgotEmail').value.trim(); if (!email) { alert('Введите email'); return; }
-    const res = await fetch(API + '/forgot-password', { method:'POST', headers:{'Content-Type':'application/json','x-user-id':currentUser?.id||''}, body:JSON.stringify({email}) }); const data = await res.json();
-    if (data.success) { document.getElementById('forgotForm').innerHTML = `<h3>Код отправлен</h3><p style="font-size:13px;color:var(--gray);">Проверьте почту ${email}</p><div class="form-group"><label>Код из письма</label><input type="text" id="resetCode"></div><div class="form-group"><label>Новый пароль</label><input type="password" id="newPass"></div><button class="btn btn-primary" onclick="resetPassword()">Сменить пароль</button><button class="btn btn-outline" onclick="loadProfile()">← Назад</button>`; } else alert(data.error);
+    const email = document.getElementById('forgotEmail')?.value.trim();
+    if (!email) { alert('Введите email'); return; }
+    try {
+        const res = await fetch(API + '/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('forgotForm').innerHTML = `
+                <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;">✅ Код отправлен</h3>
+                <p style="font-size:13px;color:var(--gray);margin-bottom:16px;">Проверьте почту ${email}</p>
+                <div class="form-group"><label>Код из письма</label><input type="text" id="resetCode"></div>
+                <div class="form-group"><label>Новый пароль</label><input type="password" id="newPass"></div>
+                <button class="btn btn-primary" onclick="resetPassword()">Сменить пароль</button>
+            `;
+        } else {
+            alert(data.error || 'Ошибка');
+        }
+    } catch(e) { alert('Ошибка сервера'); }
 }
 
 async function resetPassword() {
-    const email = document.getElementById('forgotEmail').value.trim(), code = document.getElementById('resetCode').value.trim(), pass = document.getElementById('newPass').value.trim(); if (!code || !pass) { alert('Заполните все поля'); return; }
-    const res = await fetch(API + '/reset-password', { method:'POST', headers:{'Content-Type':'application/json','x-user-id':currentUser?.id||''}, body:JSON.stringify({email, code, newPassword: pass}) }); const data = await res.json();
-    if (data.success) { alert('Пароль изменён! Теперь войдите.'); loadProfile(); } else alert(data.error);
+    const email = document.getElementById('forgotEmail')?.value.trim();
+    const code = document.getElementById('resetCode')?.value.trim();
+    const pass = document.getElementById('newPass')?.value.trim();
+    if (!code || !pass) { alert('Заполните все поля'); return; }
+    try {
+        const res = await fetch(API + '/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify({ email, code, newPassword: pass })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('Пароль изменён! Теперь войдите.');
+            loadProfile();
+        } else {
+            alert(data.error || 'Ошибка');
+        }
+    } catch(e) { alert('Ошибка сервера'); }
 }
 
-async function deleteAccount() { if (!confirm('Точно удалить профиль? Все данные будут потеряны.')) return; await fetch(API + '/delete-account', { method:'POST', headers:{'Content-Type':'application/json','x-user-id':currentUser?.id||''}, body:JSON.stringify({userId: currentUser.id}) }); logout(); }
-
-async function loadProfileOrders() {
-    const container = document.getElementById('profileOrders'); if (!container) return;
-    try { const res = await fetch(API + '/orders/' + (currentUser.id || ''), { headers: { 'x-user-id': currentUser?.id || '' } }); const orders = await res.json(); const sn = { 'new': 'Новый', 'processing': 'В обработке', 'printing': 'В печати', 'ready': 'Готов', 'shipped': 'Отправлен', 'done': 'Доставлен' }; container.innerHTML = orders.length === 0 ? '<p style="color:var(--gray);">Нет заказов</p>' : orders.map(o => `<div class="card"><strong>#${o.id}</strong> — ${o.material}<br>${o.width}×${o.height} мм × ${o.qty} шт — ${o.total} р.<br><span class="status-badge status-${o.status||'new'}">${sn[o.status]||'Новый'}</span></div>`).join(''); } catch (e) { container.innerHTML = '<p style="color:var(--gray);">Ошибка загрузки</p>'; }
+// ==========================================
+// CHAT BADGE
+// ==========================================
+async function updateChatBadge() {
+    if (!currentUser?.id) {
+        document.querySelectorAll('.badge').forEach(b => b.remove());
+        return;
+    }
+    try {
+        const res = await fetch(API + '/chat/' + currentUser.id);
+        const msgs = await res.json();
+        const adminMsgs = msgs.filter(m => m.from === 'admin').length;
+        const navItem = document.querySelector('[data-tab="tab-chat"]');
+        let badge = navItem?.querySelector('.badge');
+        if (adminMsgs > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'badge';
+                navItem?.appendChild(badge);
+            }
+            badge.textContent = adminMsgs > 99 ? '99+' : adminMsgs;
+        } else if (badge) {
+            badge.remove();
+        }
+    } catch(e) {}
 }
 
-    let isReg = false;
-    function toggleReg() { isReg = !isReg; document.getElementById('regFields').style.display = isReg ? 'block' : 'none'; document.getElementById('regToggle').innerText = isReg ? 'Уже есть аккаунт' : 'Создать аккаунт'; document.getElementById('authBtn').innerText = isReg ? 'Зарегистрироваться' : 'Войти'; document.getElementById('authBtn').onclick = isReg ? doRegister : doLogin; }
-    async function doLogin() { const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPass').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/login', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' }, body: JSON.stringify({ email, password: pass }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); subscribePush(); } else alert(data.error); }
-    async function doRegister() { const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPass').value.trim(), name = document.getElementById('regName').value.trim(), phone = document.getElementById('regPhone').value.trim(); if (!email || !pass) { alert('Заполните поля'); return; } const res = await fetch(API + '/register', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' }, body: JSON.stringify({ email, password: pass, name, phone }) }); const data = await res.json(); if (data.success) { currentUser = { ...data.user, id: data.user.id || data.user._id }; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); subscribePush(); } else alert(data.error); }
-    function logout() { currentUser = null; localStorage.removeItem('currentUser'); loadProfile(); }
-    function onTelegramAuth(user) { fetch(API + '/telegram-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(user) }).then(r => r.json()).then(data => { if (data.success) { currentUser = data.user; localStorage.setItem('currentUser', JSON.stringify(currentUser)); loadProfile(); subscribePush(); } }); }
+setInterval(updateChatBadge, 5000);
 
-    // ========== МОДАЛЬНЫЕ ОКНА (Политика, Соглашение, Макеты) ==========
+// ==========================================
+// MODALS
+// ==========================================
 function openModal(t) {
     const texts = {
         policy: `<h2>Политика конфиденциальности</h2>
 <p>Настоящая Политика определяет порядок обработки и защиты персональных данных пользователей.</p>
 <h3>1. Какие данные мы собираем</h3>
-<p>При регистрации и оформлении заказа мы запрашиваем: имя, адрес электронной почты, номер телефона, адрес доставки. Эти данные необходимы для выполнения заказа и связи с вами.</p>
+<p>При регистрации и оформлении заказа мы запрашиваем: имя, адрес электронной почты, номер телефона, адрес доставки.</p>
 <h3>2. Как мы используем данные</h3>
-<p>Данные используются исключительно для: оформления и выполнения заказов, связи с вами по вопросам заказа, отправки уведомлений о статусе заказа.</p>
+<p>Данные используются для: оформления и выполнения заказов, связи с вами, отправки уведомлений о статусе заказа.</p>
 <h3>3. Защита данных</h3>
-<p>Мы принимаем меры для защиты данных от несанкционированного доступа. Данные хранятся в зашифрованном виде на защищённых серверах.</p>
+<p>Мы принимаем меры для защиты данных от несанкционированного доступа.</p>
 <h3>4. Передача третьим лицам</h3>
-<p>Мы не продаём и не передаём ваши данные третьим лицам, за исключением случаев, необходимых для выполнения заказа (например, передача адреса курьеру).</p>
+<p>Мы не передаём ваши данные третьим лицам, за исключением случаев, необходимых для выполнения заказа.</p>
 <h3>5. Удаление данных</h3>
-<p>Вы можете удалить свой аккаунт в любое время в личном кабинете. Все данные будут безвозвратно удалены.</p>
+<p>Вы можете удалить свой аккаунт в любое время в личном кабинете.</p>
 <h3>6. Контакты</h3>
-<p>По всем вопросам: ideamule@gmail.com</p>`,
-
+<p>ideamule@gmail.com</p>`,
         terms: `<h2>Пользовательское соглашение</h2>
-<p>Настоящее Соглашение регулирует отношения между сервисом и пользователем. Используя сайт, вы принимаете условия Соглашения.</p>
-<h3>1. Предмет соглашения</h3>
-<p>Сервис предоставляет возможность рассчитать стоимость и оформить заказ на широкоформатную печать: баннеры, самоклейка, плакаты.</p>
+<h3>1. Предмет</h3>
+<p>Сервис предоставляет возможность рассчитать стоимость и оформить заказ на широкоформатную печать.</p>
 <h3>2. Оформление заказа</h3>
-<p>Заказ оформляется заполнением формы на сайте. После оформления с вами связывается менеджер для подтверждения деталей и выставления счёта. Минимальная сумма заказа — 1000 рублей.</p>
-<h3>3. Сроки изготовления</h3>
-<p>Стандартный срок — 1-2 рабочих дня с момента подтверждения заказа и оплаты. В отдельных случаях до 3 рабочих дней.</p>
+<p>Заказ оформляется заполнением формы. После оформления с вами свяжется менеджер.</p>
+<h3>3. Сроки</h3>
+<p>Стандартный срок — 1-2 рабочих дня. В отдельных случаях до 3 рабочих дней.</p>
 <h3>4. Оплата</h3>
-<p>Оплата производится по выставленному счёту. Цены на сайте являются ознакомительными и могут незначительно отличаться от итоговой стоимости.</p>
+<p>Оплата по выставленному счёту. Цены могут незначительно отличаться от расчётных.</p>
 <h3>5. Доставка</h3>
-<p>Доставка осуществляется курьером по указанному адресу. Стоимость доставки включена в итоговую сумму заказа. Указывайте корректный адрес и контактный телефон.</p>
+<p>Доставка курьером по указанному адресу. Стоимость включена в заказ.</p>
 <h3>6. Возврат</h3>
-<p>Возврат возможен только при наличии производственного брака. Претензии принимаются в течение 3 дней с момента получения заказа.</p>
-<h3>7. Изменение условий</h3>
-<p>Сервис может изменять условия Соглашения. Изменения вступают в силу с момента публикации на сайте.</p>`,
-
+<p>Возврат возможен при производственном браке. Претензии в течение 3 дней.</p>`,
         design: `<h2>Требования к макетам</h2>
-<p>Для качественной печати необходимо соблюдать следующие требования к макетам:</p>
-<h3>📐 Формат файла</h3>
-<p>Принимаем: PDF, PNG, JPG, AI, CDR, EPS. Рекомендуемый формат — PDF.</p>
-<h3>📏 Размер макета</h3>
-<p>Макет должен быть выполнен в масштабе 1:1 (в натуральную величину). Не уменьшайте и не масштабируйте изображение.</p>
+<h3>📐 Формат</h3>
+<p>Принимаем: PDF, PNG, JPG, AI, CDR, EPS. Рекомендуемый — PDF.</p>
+<h3>📏 Размер</h3>
+<p>Макет в масштабе 1:1 (натуральная величина).</p>
 <h3>🎨 Цветовая модель</h3>
-<p>Все макеты должны быть в цветовой модели CMYK. При использовании RGB цвета при печати могут отличаться от ожидаемых.</p>
+<p>CMYK. При RGB цвета могут отличаться.</p>
 <h3>📸 Разрешение</h3>
-<p>Для широкоформатной печати (баннеры) — не менее 150 dpi. Для полиграфии (листовки, визитки) — не менее 300 dpi.</p>
+<p>Баннеры — от 150 dpi. Полиграфия — от 300 dpi.</p>
 <h3>🔤 Шрифты</h3>
-<p>Все шрифты должны быть переведены в кривые (outlines). Это гарантирует корректное отображение текста.</p>
+<p>Все шрифты переведены в кривые (outlines).</p>
 <h3>⬆️ Вылеты</h3>
-<p>Для полиграфии необходимо добавить вылеты по 2 мм с каждой стороны под обрез.</p>
-<h3>⚠️ Проверка макета</h3>
-<p>Перед отправкой проверьте макет на ошибки и опечатки. Мы не проверяем содержимое макетов.</p>`,
-    
+<p>Для полиграфии — вылеты по 2 мм с каждой стороны.</p>
+<h3>⚠️ Проверка</h3>
+<p>Проверьте макет на ошибки перед отправкой.</p>`,
         install: `<h2>📲 Установка приложения</h2>
-<p>Это PWA-приложение. Установите его для быстрого доступа и получения уведомлений.</p>
-<h3>Как установить:</h3>
-<p><strong>Android (Chrome):</strong> откройте сайт → нажмите ⋮ (три точки) → «На экран Домой» или «Установить приложение».</p>
-<p><strong>iPhone (Safari):</strong> нажмите кнопку «Поделиться» (квадрат со стрелкой) → «На экран Домой».</p>
+<h3>Android (Chrome):</h3>
+<p>Нажмите ⋮ → «Установить приложение».</p>
+<h3>iPhone (Safari):</h3>
+<p>Нажмите «Поделиться» → «На экран Домой».</p>
 <h3>🔔 Уведомления:</h3>
-<p>Разрешите уведомления при первом входе. Они нужны для оповещений о статусе заказа и новых сообщениях от поддержки.</p>
-<h3>⚙️ Настройки телефона (Android):</h3>
-<p>Зайдите в Настройки → Приложения → выберите приложение → Уведомления:</p>
-<ul>
-<li>✅ Разрешить всплывающие уведомления</li>
-<li>✅ Включить вибрацию</li>
-<li>❌ Отключить «Останавливать в неактивный период»</li>
-</ul>
-<p>Это гарантирует, что вы не пропустите важные уведомления.</p>`
-
+<p>Разрешите уведомления для оповещений о статусе заказа.</p>`
     };
-    document.getElementById('modalContent').innerHTML = texts[t] + '<button class="btn btn-primary" onclick="closeModal()" style="margin-top:12px;">Закрыть</button>';
+    document.getElementById('modalContent').innerHTML = texts[t] + '<button class="btn btn-primary" onclick="closeModal()" style="margin-top:16px;">Закрыть</button>';
     document.getElementById('modal').classList.add('show');
 }
 
-function closeModal() { document.getElementById('modal').classList.remove('show'); }
-    
-function toggleDelivery() {
-    const type = document.getElementById('deliveryType').value;
-    document.getElementById('pvzBlock').style.display = type === 'pickup' ? 'block' : 'none';
+function closeModal() {
+    document.getElementById('modal').classList.remove('show');
 }
 
+// ===== Init =====
 renderOrderStep();
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
 </script>
-<script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }</script>
 </body>
 </html>
+```
