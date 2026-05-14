@@ -206,5 +206,11 @@ app.get('/api/admin/chats', async (req, res) => {
     res.json(result);
 });
 
+// ========== УДАЛЕНИЕ ЗАКАЗА ==========
+app.delete('/api/admin/orders/:orderId', async (req, res) => {
+    await db.collection('orders').deleteOne({ _id: req.params.orderId });
+    res.json({ success: true });
+});
+
 app.use('/uploads', express.static(uploadsDir));
 app.listen(PORT, () => console.log('Server running on port', PORT));
