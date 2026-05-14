@@ -229,5 +229,12 @@ app.delete('/api/admin/chat/:userId', async (req, res) => {
     res.json({ success: true });
 });
 
+// ========== ЦЕХА (СЕРВЕР) ==========
+const workshopsFile = path.join(__dirname, 'workshops.json');
+if (!fs.existsSync(workshopsFile)) fs.writeFileSync(workshopsFile, JSON.stringify([{ id:'admiral', name:'Типография Адмирал', email:'aprint23@mail.ru', phone:'+79286609776', address:'ул. Стасова, 178/1' }]));
+
+app.get('/api/workshops', (req, res) => res.json(JSON.parse(fs.readFileSync(workshopsFile, 'utf8'))));
+app.post('/api/workshops', (req, res) => { fs.writeFileSync(workshopsFile, JSON.stringify(req.body)); res.json({ success: true }); });
+
 app.use('/uploads', express.static(uploadsDir));
 app.listen(PORT, () => console.log('Server running on port', PORT));
