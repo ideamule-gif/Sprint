@@ -130,8 +130,9 @@
         try {
             const res = await fetch(API + '/chat/' + currentUser.id);
             const msgs = await res.json();
-           const readCount = parseInt(localStorage.getItem('chatRead_' + currentUser.id) || '0');
-           const adminMsgs = msgs.filter(m => m.from === 'admin').length - readCount;
+const u = allUsers?.find(x => x.id === currentUser.id);
+const readCount = u?.chatRead || 0;
+            const adminMsgs = msgs.filter(m => m.from === 'admin').length - readCount;
             const badge = document.querySelector('[data-tab="tab-chat"] .badge');
             if (adminMsgs > 0) {
                 if (!badge) {
@@ -156,7 +157,7 @@
         document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
         sessionStorage.setItem('activeTab', tabId);
         if (tabId === 'tab-order') renderOrderStep();
-       if (tabId === 'tab-chat') { loadChatPage(); fetch(API + '/chat/' + currentUser?.id).then(r => r.json()).then(msgs => { localStorage.setItem('chatRead_' + currentUser.id, msgs.filter(m => m.from === 'admin').length); updateChatBadge(); }); }
+if (tabId === 'tab-chat') { loadChatPage(); fetch(API + '/chat/' + currentUser?.id).then(r => r.json()).then(msgs => { fetch(API + '/chat/read', { method:'POST', headers:{'Content-Type':'application/json','x-user-id':currentUser?.id||''}, body:JSON.stringify({ userId:currentUser.id, count: msgs.filter(m => m.from === 'admin').length }) }); }); }
         if (tabId === 'tab-profile') loadProfile();
     }
     document.querySelectorAll('.bottom-nav .nav-item').forEach(item => { item.addEventListener('click', () => switchTab(item.dataset.tab)); });
