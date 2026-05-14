@@ -129,10 +129,20 @@ app.post('/api/order', async (req, res) => {
         fs.writeFileSync(filePath, buffer);
         order.fileUrl = `/uploads/${order._id}_${order.fileName}`;
     }
-    delete order.fileBase64;
+       delete order.fileBase64;
     await orders.insertOne(order);
     const extrasText = order.extras?.length > 0 ? order.extras.map(e => `${e.name}: ${Math.round(e.cost)} р.`).join(', ') : 'Нет';
-    sendTelegram(ADMIN_CHAT_ID, `🔵 НОВЫЙ ЗАКАЗ #${order._id}\n\n📦 ${order.material}\n📐 ${order.width}×${order.height} мм\n🔢 ${order.qty} шт\n🔧 ${extrasText}\n🚕 Доставка: 300 р.\n💰 Сумма: ${order.total} р.\n\n👤 ${order.name}\n📞 ${order.phone}\n📍 ${order.addr||'—'}${order.fileUrl?'\n\n📎 '+order.fileUrl:''}`);
+    
+    // Авто-сообщение клиенту
+    await db.collection('chat').insertOne({
+        userId: order.userId,
+        from: 'admin',
+        text: `✅ Заказ #${order._id} оформлен!\n\n📦 ${order.material}\n📐 ${order.width}×${order.height} мм\n🔢 ${order.qty} шт\n🔧 ${extrasText}\n💰 Итого: ${order.total} р.\n🚕 Доставка: бесплатно по Краснодару\n\nПроверьте данные. Если всё верно — ожидайте ссылку на оплату.\n\nСтатус заказа можно отслеживать в Профиле → История заказов.`,
+        time: new Date()
+    });
+    
+    // Уведомление админу
+    sendTelegram(ADMIN_CHAT_ID, `🔵 НОВЫЙ ЗАКАЗ #${order._id}\n\n📦 ${order.material}\n📐 ${order.width}×${order.height} мм\n🔢 ${order.qty} шт\n🔧 ${extrasText}\n💰 Сумма: ${order.total} р.\n\n👤 ${order.name}\n📞 ${order.phone}\n📍 ${order.addr||'—'}${order.fileUrl?'\n\n📎 '+order.fileUrl:''}`);
     res.json({ success: true, id: order._id });
 });
 
