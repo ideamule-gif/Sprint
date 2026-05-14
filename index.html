@@ -51,7 +51,7 @@
         .chat-msg { max-width: 80%; padding: 8px 12px; border-radius: 14px; font-size: 13px; }
         .chat-msg.client { align-self: flex-end; background: var(--black); color: #fff; }
         .chat-msg.admin { align-self: flex-start; background: #eee; }
-        .chat-input-row { display: flex; gap: 8px; padding: 8px; border-top: 1px solid var(--border); background: var(--white); margin-bottom: 80px; }
+.chat-input-row { display: flex; gap: 8px; padding: 8px; border-top: 1px solid var(--border); background: var(--white); margin-bottom: 70px; }
         .chat-input-row input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 20px; font-family: inherit; }
         .chat-input-row button { padding: 10px 16px; border-radius: 20px; background: var(--black); color: #fff; border: none; font-weight: 600; cursor: pointer; }
         .status-badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
@@ -218,7 +218,7 @@ container.innerHTML = `<button class="back-btn" onclick="orderStep=2;renderOrder
   }
 
     // ========== ЧАТ ==========
-   async function loadChatPage() {
+  async function loadChatPage() {
     const container = document.getElementById('chatPage');
     if (!currentUser) { container.innerHTML = '<div class="card"><p style="color:var(--gray);text-align:center;">Войдите в профиль, чтобы использовать чат.</p><button class="btn btn-primary" onclick="switchTab(\'tab-profile\')">👤 Войти</button></div>'; clearInterval(window._chatInterval); return; }
     const msgsBox = document.getElementById('chatMsgs');
@@ -227,7 +227,7 @@ container.innerHTML = `<button class="back-btn" onclick="orderStep=2;renderOrder
     if (msgsBox) {
         msgsBox.innerHTML = msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('');
         if (wasAtBottom) msgsBox.scrollTop = msgsBox.scrollHeight;
-        const btn = msgsBox.parentElement.querySelector('.scroll-down-btn');
+        const btn = msgsBox.parentElement?.querySelector('.scroll-down-btn');
         if (btn) btn.style.display = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight > 60 ? 'flex' : 'none';
     } else {
         container.innerHTML = `<div class="chat-box"><div class="chat-messages" id="chatMsgs">${msgs.map(m => `<div class="chat-msg ${m.from==='admin'?'admin':'client'}">${m.text}<br><small style="opacity:0.5;">${new Date(m.time).toLocaleTimeString()}</small></div>`).join('')}</div><button class="scroll-down-btn" onclick="const m=document.getElementById('chatMsgs');m.scrollTop=m.scrollHeight;this.style.display='none';">⌄</button><div class="chat-input-row"><input type="text" id="chatInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter'){event.preventDefault();sendChatPage();}"><button onclick="sendChatPage()">➤</button></div></div>`;
