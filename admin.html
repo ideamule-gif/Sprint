@@ -100,22 +100,23 @@
     let workshops = JSON.parse(localStorage.getItem('workshops') || JSON.stringify([{ id:'admiral', name:'Типография Адмирал', email:'aprint23@mail.ru', phone:'+79286609776', address:'ул. Стасова, 178/1' }]));
     const statusNames = { 'new':'Новый','processing':'В обработке','printing':'В печати','ready':'Готов','shipped':'Отправлен','done':'Доставлен' };
 
-    // ========== СЕССИЯ (не выкидывает при обновлении) ==========
+       // ========== СЕССИЯ (не выкидывает при обновлении) ==========
     if (sessionStorage.getItem('adminAuth') === '1') {
         document.getElementById('loginBlock').style.display = 'none';
         document.getElementById('appBlock').style.display = 'block';
         refreshAll();
-        switchTab('tab-dash');
+        const savedTab = sessionStorage.getItem('adminTab') || 'tab-dash';
+        switchTab(savedTab);
     }
 
     // ========== ЗВУК И ТОСТ ==========
     function playSound() { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 800; const g = ctx.createGain(); g.gain.value = 0.1; o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.15); } catch (e) {} }
     function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); playSound(); }
 
-    // ========== НАВИГАЦИЯ ПО ВКЛАДКАМ ==========
-    function switchTab(id) { document.querySelectorAll('#appBlock .tab').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active')); document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if (id === 'tab-dash') loadDashboard(); if (id === 'tab-orders') loadOrdersTab(); if (id === 'tab-clients') loadClientsTab(); if (id === 'tab-chat') loadChatTab(); if (id === 'tab-workshops') loadWorkshopsTab(); }
+       // ========== НАВИГАЦИЯ ПО ВКЛАДКАМ ==========
+    function switchTab(id) { document.querySelectorAll('#appBlock .tab').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active')); document.querySelector(`[data-tab="${id}"]`).classList.add('active'); sessionStorage.setItem('adminTab', id); if (id === 'tab-dash') loadDashboard(); if (id === 'tab-orders') loadOrdersTab(); if (id === 'tab-clients') loadClientsTab(); if (id === 'tab-chat') loadChatTab(); if (id === 'tab-workshops') loadWorkshopsTab(); }
     document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.addEventListener('click', () => switchTab(i.dataset.tab)));
-
+  
     // ========== ВХОД ==========
     function login() { if (document.getElementById('adminPass').value === PASS) { sessionStorage.setItem('adminAuth', '1'); document.getElementById('loginBlock').style.display = 'none'; document.getElementById('appBlock').style.display = 'block'; refreshAll(); switchTab('tab-dash'); requestPushPermission(); } else alert('Неверный пароль'); }
 
