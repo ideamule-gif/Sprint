@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Someprint — Заказ печати</title>
+    <title>Заказ баннеров</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#6c5ce7">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -57,67 +57,6 @@
         .anim-d3 { animation-delay: 0.2s; opacity: 0; }
         .anim-d4 { animation-delay: 0.3s; opacity: 0; }
         .anim-d5 { animation-delay: 0.4s; opacity: 0; }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 480px;
-            background: rgba(255,255,255,0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(0,0,0,0.06);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0 12px;
-            z-index: 100;
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: 600;
-            color: var(--gray);
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 4px 12px;
-            border-radius: 12px;
-        }
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%) scaleX(0);
-            width: 20px;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 2px;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .nav-item.active { color: var(--accent); }
-        .nav-item.active::before { transform: translateX(-50%) scaleX(1); }
-        .nav-item .nav-icon { font-size: 22px; transition: transform 0.3s; }
-        .nav-item.active .nav-icon { transform: scale(1.15); }
-        .nav-item .badge {
-            position: absolute;
-            top: -2px;
-            right: 4px;
-            background: var(--red);
-            color: #fff;
-            border-radius: 8px;
-            padding: 1px 5px;
-            font-size: 9px;
-            font-weight: 700;
-            min-width: 14px;
-            text-align: center;
-        }
 
         /* Tabs */
         .tab { display: none; padding: 16px; min-height: calc(100vh - 80px); }
@@ -793,8 +732,9 @@
         .hero-feature span:first-child { font-size: 24px; }
         .hero-feature span:last-child { font-size: 10px; color: var(--gray); font-weight: 600; }
 
-        /* Order step animation */
-        .order-step-content { animation: slideInRight 0.3s ease-out; }
+     /* Order step animation */
+.order-step-content { animation: slideInRight 0.3s ease-out; }
+
 /* Responsive fixes */
 @media (max-width: 480px) {
     body { max-width: 100%; }
@@ -823,7 +763,7 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 16px;
-    padding-bottom: 90px; /* отступ под фиксированное меню */
+    padding-bottom: max(100px, env(safe-area-inset-bottom) + 20px);
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
 }
@@ -838,19 +778,72 @@ body {
     box-shadow: none;
     margin: 0;
     border: none;
+    /* Фикс: поле ввода не прячется за плавающую панель */
+    padding-bottom: max(85px, env(safe-area-inset-bottom) + 15px);
 }
 
-/* Нижнее меню зафиксировано поверх контента */
+/* === НОВАЯ ПАНЕЛЬ (GLASSMORPHISM) === */
 .bottom-nav {
     position: fixed;
-    bottom: 0;
+    bottom: max(16px, env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%);
-    width: 100%;
-    max-width: 480px;
+    width: calc(100% - 24px);
+    max-width: 420px;
+    height: 62px;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255,255,255,0.6) inset;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 6px;
     z-index: 100;
     flex-shrink: 0;
 }
+
+.nav-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray);
+    padding: 6px 12px;
+    border-radius: 14px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-item .nav-icon { font-size: 22px; transition: transform 0.25s; }
+
+.nav-item.active {
+    background: rgba(108, 92, 231, 0.12);
+    color: var(--accent);
+}
+.nav-item.active .nav-icon { transform: scale(1.15); }
+
+/* Убираем старую полоску сверху */
+.nav-item::before { display: none; }
+
+/* Бейдж уведомлений */
+.nav-item .badge {
+    position: absolute;
+    top: 4px; right: 8px;
+    background: var(--red); color: #fff;
+    border-radius: 10px; padding: 1px 5px;
+    font-size: 9px; font-weight: 700;
+    min-width: 14px; text-align: center;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+/* === ФИКС ПРОФИЛЯ === */
+#profileContent { position: relative; z-index: 1; }
 /* === END FIX === */
 </style>
 </head>
@@ -1281,7 +1274,7 @@ async function loadChatPage() {
             <div class="chat-header">
                 <div class="chat-avatar">S</div>
                 <div class="chat-info">
-                    <h3>Someprint — Поддержка</h3>
+                    <h3>Поддержка</h3>
                     <span id="chatStatus" class="online">в сети</span>
                 </div>
             </div>
