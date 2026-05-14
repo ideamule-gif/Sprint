@@ -212,5 +212,11 @@ app.delete('/api/admin/orders/:orderId', async (req, res) => {
     res.json({ success: true });
 });
 
+// ========== ОЧИСТКА ЧАТА ==========
+app.delete('/api/admin/chat/:userId', async (req, res) => {
+    await db.collection('chat').deleteMany({ userId: req.params.userId });
+    res.json({ success: true });
+});
+
 app.use('/uploads', express.static(uploadsDir));
 app.listen(PORT, () => console.log('Server running on port', PORT));
