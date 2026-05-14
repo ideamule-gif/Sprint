@@ -122,10 +122,18 @@
 
         /* Tabs */
         .tab { display: none; padding: 16px; min-height: calc(100vh - 80px); }
-        /* Переопределение для чата на весь экран */
-#tab-chat { padding: 0 !important; min-height: 100vh; }
-#tab-chat #chatPage { height: 100vh; }
-        .tab.active { display: block; animation: fadeIn 0.3s ease; }
+      /* Чат без отступов, но с правильной высотой */
+#tab-chat { 
+    padding: 0 !important; 
+    min-height: 100vh; 
+    display: flex;
+    flex-direction: column;
+}
+#tab-chat #chatPage { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column;
+}
 
         /* Cards */
         .card {
@@ -413,24 +421,22 @@
         /* TELEGRAM-STYLE CHAT                         */
         /* ========================================= */
      /* Стало — full-page чат */
+/* Чат на всю ширину, с учётом нижнего меню */
 #tab-chat .chat-box {
     background: var(--white);
-    border-radius: 0;
+    border-radius: 0;              /* убираем скругления для полноширинного вида */
     box-shadow: none;
-    height: 100vh;
-    width: 100vw;
+    height: calc(100vh - 80px);    /* 80px = высота .bottom-nav + отступы */
+    width: 100%;
+    max-width: 100%;               /* сбрасываем ограничение 480px у body */
     display: flex;
     flex-direction: column;
     overflow: hidden;
     margin: 0;
     padding: 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 150;
+    position: relative;            /* оставляем relative, не fixed */
     border: none;
+    box-sizing: border-box;
 }
 
         .chat-header {
@@ -460,16 +466,29 @@
         .chat-header .chat-info span { font-size: 11px; color: var(--gray); }
         .chat-header .chat-info span.online { color: var(--green); font-weight: 600; }
 
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 10px 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            background: #e8e5df;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d6d3cd' fill-opacity='0.25'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
+    .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 10px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    background: #e8e5df;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d6d3cd' fill-opacity='0.25'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Тёмная тема — переопределяем фон */
+@media (prefers-color-scheme: dark) {
+    .chat-messages {
+        background: #1a1a2e;
+        background-image: none;
+    }
+    /* Также затемняем сообщения админа в тёмной теме */
+    .chat-msg.admin {
+        background: #2a2a4a;
+        color: #f0f0f3;
+    }
+}
 
         .date-divider { text-align: center; margin: 10px 0 6px; }
         .date-divider span {
@@ -784,11 +803,15 @@
             .bottom-nav { max-width: 100%; }
         }
         
-/* Скрыть нижнее меню, когда открыт чат */
-#tab-chat.active ~ .bottom-nav,
-body:has(#tab-chat.active) .bottom-nav {
-    display: none;
-}   
+/* Фикс для мобильных: чат не сжимается при открытии клавиатуры */
+#tab-chat .chat-box {
+    height: calc(100dvh - 80px); /* dvh = dynamic viewport height */
+}
+@supports not (height: 100dvh) {
+    #tab-chat .chat-box {
+        height: calc(100vh - 80px); /* фолбэк для старых браузеров */
+    }
+}
     </style>
 </head>
 <body>
