@@ -46,12 +46,12 @@
         .footer-links { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
         .footer-links a { font-size: 11px; color: var(--gray); text-decoration: underline; }
         .back-btn { background: none; border: none; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--gray); padding: 4px 0; margin-bottom: 12px; }
-        .chat-box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); height: calc(100vh - 200px); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .chat-box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; position: relative; flex: 1; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
         .chat-msg { max-width: 80%; padding: 8px 12px; border-radius: 14px; font-size: 13px; }
         .chat-msg.client { align-self: flex-end; background: var(--black); color: #fff; }
         .chat-msg.admin { align-self: flex-start; background: #eee; }
-        .chat-input-row { display: flex; gap: 8px; padding: 8px; border-top: 1px solid var(--border); }
+        .chat-input-row { display: flex; gap: 8px; padding: 8px; border-top: 1px solid var(--border); background: var(--white); position: sticky; bottom: 0; }
         .chat-input-row input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 20px; font-family: inherit; }
         .chat-input-row button { padding: 10px 16px; border-radius: 20px; background: var(--black); color: #fff; border: none; font-weight: 600; cursor: pointer; }
         .status-badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
@@ -61,6 +61,7 @@
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
     .modal.show { display: flex; }
     .modal-box { background: #fff; padding: 24px; border-radius: 14px; max-width: 380px; margin: 20px; max-height: 80vh; overflow-y: auto; font-size: 13px; line-height: 1.6; }
+    #tab-chat.active { display: flex; flex-direction: column; height: calc(100vh - 160px); }
     </style>
 </head>
 <body>
