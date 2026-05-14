@@ -236,5 +236,13 @@ if (!fs.existsSync(workshopsFile)) fs.writeFileSync(workshopsFile, JSON.stringif
 app.get('/api/workshops', (req, res) => res.json(JSON.parse(fs.readFileSync(workshopsFile, 'utf8'))));
 app.post('/api/workshops', (req, res) => { fs.writeFileSync(workshopsFile, JSON.stringify(req.body)); res.json({ success: true }); });
 
+// ========== ПРОЧИТАННЫЕ СООБЩЕНИЯ ==========
+app.post('/api/chat/read', async (req, res) => {
+    const { userId, count } = req.body;
+    if (!userId) return res.json({ success: false });
+    await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: { chatRead: count } });
+    res.json({ success: true });
+});
+
 app.use('/uploads', express.static(uploadsDir));
 app.listen(PORT, () => console.log('Server running on port', PORT));
