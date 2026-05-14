@@ -1,1 +1,44 @@
-{"name":"Админ-панель","short_name":"Админ","start_url":"/admin.html","display":"standalone","background_color":"#0a0a0a","theme_color":"#0a0a0a","icons":[{"src":"/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"/icon-512.png","sizes":"512x512","type":"image/png"}]}
+{
+  "id": "/admin",
+  "name": "Landpa Admin — Панель управления",
+  "short_name": "Landpa Admin",
+  "description": "Админ-панель для управления заказами, чатами и пользователями сервиса Landpa",
+  "start_url": "/admin.html?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "ru",
+  "background_color": "#F5F5F5",
+  "theme_color": "#0066FF",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Заказы",
+      "short_name": "Заказы",
+      "description": "Открыть список заказов",
+      "url": "/admin.html?page=orders",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Чаты",
+      "short_name": "Чаты",
+      "description": "Открыть чаты с клиентами",
+      "url": "/admin.html?page=chats",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
