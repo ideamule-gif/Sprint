@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const webpush = require('web-push');
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +18,9 @@ connectDB();
 
 app.use(async (req, res, next) => {
     if (!db) { try { await client.connect(); db = client.db('sprint'); } catch (e) { return res.status(500).json({ error: 'DB unavailable' }); } }
+    if (req.headers['x-user-id']) {
+        try { await db.collection('users').updateOne({ _id: new ObjectId(req.headers['x-user-id']) }, { $set: { lastSeen: new Date() } }); } catch (e) {}
+    }
     next();
 });
 
