@@ -97,7 +97,9 @@
     const API = '/api';
     const PASS = 'kprint2024';
     let allOrders = [], allUsers = [];
-    let workshops = JSON.parse(localStorage.getItem('workshops') || JSON.stringify([{ id:'admiral', name:'Типография Адмирал', email:'aprint23@mail.ru', phone:'+79286609776', address:'ул. Стасова, 178/1' }]));
+let workshops = [];
+async function loadWorkshops() { try { workshops = await (await fetch(API + '/workshops')).json(); } catch (e) { workshops = [{ id:'admiral', name:'Типография Адмирал', email:'aprint23@mail.ru', phone:'+79286609776', address:'ул. Стасова, 178/1' }]; } }
+async function saveWorkshops() { await fetch(API + '/workshops', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(workshops) }); }
     const statusNames = { 'new':'Новый','processing':'В обработке','printing':'В печати','ready':'Готов','shipped':'Отправлен','done':'Доставлен' };
 
        // ========== СЕССИЯ (не выкидывает при обновлении) ==========
@@ -121,7 +123,7 @@
     function login() { if (document.getElementById('adminPass').value === PASS) { sessionStorage.setItem('adminAuth', '1'); document.getElementById('loginBlock').style.display = 'none'; document.getElementById('appBlock').style.display = 'block'; refreshAll(); switchTab('tab-dash'); requestPushPermission(); } else alert('Неверный пароль'); }
 
     // ========== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ==========
-    async function refreshAll() { try { allOrders = await (await fetch(API + '/admin/orders')).json(); allUsers = await (await fetch(API + '/users')).json(); } catch (e) {} }
+async function refreshAll() { try { allOrders = await (await fetch(API + '/admin/orders')).json(); allUsers = await (await fetch(API + '/users')).json(); await loadWorkshops(); } catch (e) {} }
 
     // ========== ГЛАВНАЯ (ДАШБОРД) ==========
     function loadDashboard() { const n = allOrders.filter(o => o.status === 'new').length, p = allOrders.filter(o => ['processing','printing'].includes(o.status)).length, r = allOrders.filter(o => ['ready','shipped','done'].includes(o.status)).length; document.getElementById('tab-dash').innerHTML = `<h2>📊 Панель</h2><div class="stat-row"><div class="stat-box"><div class="num">${n}</div><div class="lbl">Новых</div></div><div class="stat-box"><div class="num">${p}</div><div class="lbl">В работе</div></div><div class="stat-box"><div class="num">${r}</div><div class="lbl">Готовых</div></div></div><div class="stat-row"><div class="stat-box"><div class="num">${allUsers.length}</div><div class="lbl">Клиентов</div></div><div class="stat-box"><div class="num">${workshops.length}</div><div class="lbl">Цехов</div></div></div>`; }
