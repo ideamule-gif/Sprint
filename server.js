@@ -170,7 +170,11 @@ app.post('/api/admin/status', async (req, res) => {
     if (order.userId) {
         const user = await db.collection('users').findOne({ _id: new (require('mongodb').ObjectId)(order.userId) }).catch(() => null);
         if (user?.telegramId) sendTelegram(user.telegramId, `📋 Ваш заказ #${orderId}\nСтатус: ${statusNames[status] || status}\nМатериал: ${order.material}`);
-        if (user?.pushSub) webpush.sendNotification(user.pushSub, JSON.stringify({ title: 'Статус заказа', body: `Заказ #${orderId}: ${statusNames[status] || status}`, url: '/' })).catch(() => {});
+        if (user?.pushSubs?.length > 0) {
+    user.pushSubs.forEach(sub => {
+        webpush.sendNotification(sub, JSON.stringify({ title: 'Статус заказа', body: `Заказ #${orderId}: ${statusNames[status] || status}`, url: '/' })).catch(() => {});
+    });
+}
     }
     res.json({ success: true });
 });
@@ -179,7 +183,7 @@ app.post('/api/admin/status', async (req, res) => {
 app.post('/api/push-subscribe', async (req, res) => {
     const { userId, subscription } = req.body;
     if (!userId || !subscription) return res.json({ success: false });
-    try { await db.collection('users').updateOne({ _id: new (require('mongodb').ObjectId)(userId) }, { $set: { pushSub: subscription } }); res.json({ success: true }); } catch (e) { res.json({ success: false }); }
+    try { await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $addToSet: { pushSubs: subscription } }); res.json({ success: true }); } catch (e) { res.json({ success: false }); }
 });
 
 // ========== ВСЕ ПОЛЬЗОВАТЕЛИ ==========
@@ -198,7 +202,11 @@ app.post('/api/chat', async (req, res) => {
     if (msg.from === 'admin' && msg.userId) {
         const user = await db.collection('users').findOne({ _id: new (require('mongodb').ObjectId)(msg.userId) }).catch(() => null);
         if (user?.telegramId) sendTelegram(user.telegramId, `💬 Поддержка:\n${msg.text}`);
-        if (user?.pushSub) webpush.sendNotification(user.pushSub, JSON.stringify({ title: 'Новое сообщение', body: msg.text, url: '/' })).catch(() => {});
+        if (user?.pushSubs?.length > 0) {
+    user.pushSubs.forEach(sub => {
+        webpush.sendNotification(sub, JSON.stringify({ title: 'Новое сообщение', body: msg.text, url: '/' })).catch(() => {});
+    });
+}
     }
     res.json({ success: true });
 });
