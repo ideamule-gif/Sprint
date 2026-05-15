@@ -6,6 +6,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const webpush = require('web-push');
 
 const app = express();
+const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://ideamule_db_user:BUFRqKh9raaJ8vyA@sprint.nygqpkm.mongodb.net/?appName=Sprint';
 const client = new MongoClient(MONGO_URI, { serverApi: ServerApiVersion.v1 });
@@ -42,6 +43,7 @@ app.use(async (req, res, next) => {
 
 app.use(express.static(__dirname));
 app.use(express.json({ limit: '50mb' }));
+app.use(cors());
 
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
