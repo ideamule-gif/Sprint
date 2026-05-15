@@ -1696,50 +1696,21 @@ window.checkLogin = function() {
     }
 };
 
-// Главная функция запуска
-function initAdmin() {
-    console.log('🚀 Landpa Admin загружается...');
-    
-    // Вешаем события на кнопку входа
-    const loginBtn = document.getElementById('loginBtn');
-    const passInput = document.getElementById('adminPass');
-    
-    if (loginBtn) {
-        loginBtn.onclick = null;
-        loginBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.checkLogin();
-        });
-    }
-    
-    if (passInput) {
-        passInput.onkeydown = null;
-        passInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                window.checkLogin();
-            }
-        });
-    }
-    
-    // Проверяем сессию
-    checkAuth();
-    
-    // Запускаем фон, если вошли
-    if (sessionStorage.getItem('adminAuth') === 'true') {
-        loadDashboard();
-        bgCheckUnread();
-        bgPolling = setInterval(bgCheckUnread, 15000);
-        console.log('✅ Админка готова');
-    }
+// Проверяем сессию при загрузке
+checkAuth();
+
+// Запускаем фон, если вошли
+if (sessionStorage.getItem('adminAuth') === 'true') {
+    loadDashboard();
+    bgCheckUnread();
+    bgPolling = setInterval(bgCheckUnread, 15000);
 }
 
-// Запуск после загрузки страницы
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAdmin);
-} else {
-    initAdmin();
-}
+// Очистка при закрытии
+window.addEventListener('beforeunload', () => {
+    if (bgPolling) clearInterval(bgPolling);
+    if (chatPolling) clearInterval(chatPolling);
+});
 
 // Очистка при закрытии
 window.addEventListener('beforeunload', () => {
