@@ -779,9 +779,9 @@ let currentChatUser = null
         <h2>Вход в Admin</h2>
         <p>Панель управления Landpa</p>
         <div style="position: relative; margin-bottom: 12px;">
-            <input type="password" id="adminPass" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')checkLogin()" style="margin-bottom: 0; padding-right: 44px;">
-            <button class="eye-toggle" onclick="togglePass()" id="eyeBtn" type="button">👁️</button>
-        </div>
+           <input type="password" id="adminPass" placeholder="Введите пароль" style="margin-bottom: 0; padding-right: 44px;">
+           <button class="btn btn-primary" id="loginBtn" style="margin-top: 12px;">Войти</button>
+    </div>
         <button class="btn btn-primary" onclick="checkLogin()" style="margin-top: 12px;">Войти</button>
         <p id="loginError" style="color:var(--error); font-size:12px; margin-top:10px; display:none;">Неверный пароль</p>
     </div>
@@ -1680,16 +1680,72 @@ async function bgCheckUnread() {
     } catch(e) {}
 }
 
-// INIT
-checkAuth();
-function initApp() { 
-    loadDashboard(); 
-    // Start background unread check
-    bgCheckUnread();
-    bgPolling = setInterval(bgCheckUnread, 15000);
+// ==========================================
+// ✅ НАДЁЖНАЯ ИНИЦИАЛИЗАЦИЯ
+// ==========================================
+
+// Глобальная функция входа (чтобы работала отовсюду)
+window.checkLogin = function() {
+    const pass = document.getElementById('adminPass')?.value;
+    console.log('🔑 Проверка пароля:', pass);
+    
+    if (pass === 'kprint2024') {
+        sessionStorage.setItem('adminAuth', 'true');
+        console.log('✅ Пароль верный');
+        checkAuth();
+    } else {
+        const err = document.getElementById('loginError');
+        if (err) err.style.display = 'block';
+        console.log('❌ Неверный пароль');
+    }
+};
+
+// Главная функция запуска
+function initAdmin() {
+    console.log('🚀 Landpa Admin загружается...');
+    
+    // Вешаем события на кнопку входа
+    const loginBtn = document.getElementById('loginBtn');
+    const passInput = document.getElementById('adminPass');
+    
+    if (loginBtn) {
+        loginBtn.onclick = null;
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.checkLogin();
+        });
+    }
+    
+    if (passInput) {
+        passInput.onkeydown = null;
+        passInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                window.checkLogin();
+            }
+        });
+    }
+    
+    // Проверяем сессию
+    checkAuth();
+    
+    // Запускаем фон, если вошли
+    if (sessionStorage.getItem('adminAuth') === 'true') {
+        loadDashboard();
+        bgCheckUnread();
+        bgPolling = setInterval(bgCheckUnread, 15000);
+        console.log('✅ Админка готова');
+    }
 }
 
-// Cleanup on page unload
+// Запуск после загрузки страницы
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdmin);
+} else {
+    initAdmin();
+}
+
+// Очистка при закрытии
 window.addEventListener('beforeunload', () => {
     if (bgPolling) clearInterval(bgPolling);
     if (chatPolling) clearInterval(chatPolling);
