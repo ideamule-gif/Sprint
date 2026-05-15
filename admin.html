@@ -1040,48 +1040,129 @@ function playMsgSound() {
     } catch(e) {}
 }
 
-// DASHBOARD
+// DASHBOARD — безопасная версия без template literals
 async function loadDashboard() {
     try {
-        const [orders, users, workshops] = await Promise.all([
-            fetch(API+'/admin/orders').then(r=>r.json()),
-            fetch(API+'/users').then(r=>r.json()),
-            fetch(API+'/workshops').then(r=>r.json())
+        const API = ''; // Если у вас другой базовый URL — поправьте здесь
+        
+        const [ordersRes, usersRes, workshopsRes] = await Promise.all([
+            fetch(API + '/api/admin/orders'),
+            fetch(API + '/api/users'),
+            fetch(API + '/api/workshops')
         ]);
+        
+        const orders = await ordersRes.json();
+        const users = await usersRes.json();
+        const workshops = await workshopsRes.json();
+        
+        // Статистика
         const today = new Date().toISOString().split('T')[0];
-        const todayOrders = orders.filter(o => o.createdAt?.startsWith(today));
+        const todayOrders = (orders || []).filter(o => o.createdAt?.startsWith(today));
         
-        document.getElementById('statOrders').textContent = todayOrders.length;
-        document.getElementById('statRevenue').textContent = todayOrders.reduce((s,o)=>s+(o.total||0),0).toLocaleString('ru-RU') + ' ₽';
-        document.getElementById('statUsers').textContent = users.length;
-        document.getElementById('statWorkshops').textContent = workshops.length;
+        const elOrders = document.getElementById('statOrders');
+        const elRevenue = document.getElementById('statRevenue');
+        const elUsers = document.getElementById('statUsers');
+        const elWorkshops = document.getElementById('statWorkshops');
         
+        if (elOrders) elOrders.textContent = todayOrders.length;
+        if (elRevenue) {
+            const rev = todayOrders.reduce((s, o) => s + (Number(o.total) || 0), 0);
+            elRevenue.textContent = rev.toLocaleString('ru-RU') + ' ₽';
+        }
+        if (elUsers) elUsers.textContent = (users || []).length;
+        if (elWorkshops) elWorkshops.textContent = (workshops || []).length;
+        
+        // Список последних заказов — БЕЗ innerHTML, через DOM
         const list = document.getElementById('dashOrdersList');
-        const recent = orders.slice(0, 5);
+        if (!list) return;
+        
+        list.innerHTML = ''; // Очистить
+        
+        const recent = (orders || []).slice(0, 5);
         if (recent.length === 0) {
             list.innerHTML = '<div class="empty-state"><div class="icon">📦</div><p>Нет заказов</p></div>';
             return;
         }
-list.innerHTML = recent.map(o => {
-    const orderId = o._id || o.id;
-    const total = Number(o.total || 0).toLocaleString('ru-RU');
-    const status = o.status || 'new';
-    const statusName = getStatusName(status);
-    
-    return `
-    <div class="list-card-row" data-order-id="${orderId}">
-        <div class="list-card-info">
-            <div class="list-card-title">#${orderId} · ${o.name || 'Клиент'}</div>
-            <div class="list-card-sub">${o.material || '—'}</div>
-        </div>
-        <div class="list-card-meta">
-            <div class="list-card-amount">${total} ₽</div>
-            <div style="margin-top:4px;">
-                <span class="status-badge status-${status}">${statusName}</span>
-            </div>
-        </div>
-    </div>`;
-}).join('');
+        
+        recent.forEach(o => {
+            const orderId = o._id || o.id || '—';
+            const name = o.name || 'Клиент';
+            const material = o.material || '—';
+            const total = Number(o.total || 0).toLocaleString('ru-RU');
+            const status = o.status || 'new';
+            
+            // Создаём карточку через DOM (никаких шаблонных строк!)
+            const card = document.createElement('div');
+            card.className = 'list-card-row';
+            card.dataset.orderId = orderId;
+            card.style.cursor = 'pointer';
+            
+            // info
+            const info = document.createElement('div');
+            info.className = 'list-card-info';
+            
+            const title = document.createElement('div');
+            title.className = 'list-card-title';
+            title.textContent = `#${orderId} · ${name}`;
+            
+            const sub = document.createElement('div');
+            sub.className = 'list-card-sub';
+            sub.textContent = material;
+            
+            info.appendChild(title);
+            info.appendChild(sub);
+            
+            // meta
+            const meta = document.createElement('div');
+            meta.className = 'list-card-meta';
+            
+            const amount = document.createElement('div');
+            amount.className = 'list-card-amount';
+            amount.textContent = `${total} ₽`;
+            
+            const badgeWrap = document.createElement('div');
+            badgeWrap.style.marginTop = '4px';
+            
+            const badge = document.createElement('span');
+            badge.className = 'status-badge status-' + status;
+            badge.textContent = getStatusName(status);
+            
+            badgeWrap.appendChild(badge);
+            meta.appendChild(amount);
+            meta.appendChild(badgeWrap);
+            
+            card.appendChild(info);
+            card.appendChild(meta);
+            list.appendChild(card);
+        });
+        
+        // Делегирование клика
+        list.onclick = (e) => {
+            const card = e.target.closest('.list-card-row');
+            if (card && typeof openOrderModal === 'function') {
+                openOrderModal(card.dataset.orderId);
+            }
+        };
+        
+    } catch (e) {
+        console.error('loadDashboard error:', e);
+        const list = document.getElementById('dashOrdersList');
+        if (list) list.innerHTML = '<div class="error-msg">Ошибка загрузки</div>';
+    }
+}
+
+// 🔹 Вспомогательная функция (если ещё не объявлена)
+function getStatusName(status) {
+    const map = {
+        new: 'Новый',
+        processing: 'В обработке',
+        printing: 'В печати',
+        ready: 'Готов',
+        shipped: 'Отправлен',
+        done: 'Доставлен'
+    };
+    return map[status] || status || '—';
+}
 
 // 🔹 Делегирование кликов (вместо onclick в HTML)
 list.onclick = (e) => {
