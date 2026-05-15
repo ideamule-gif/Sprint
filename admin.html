@@ -44,9 +44,11 @@
         .login-box { background: var(--white); padding: 28px 24px; border-radius: 20px; box-shadow: var(--shadow-md); width: 100%; max-width: 320px; text-align: center; animation: fadeInUp 0.4s ease; }
         .login-box h2 { font-family: var(--font-display); margin-bottom: 8px; font-size: 20px; }
         .login-box p { color: var(--gray-500); font-size: 13px; margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 14px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 12px; font-size: 15px; outline: none; font-family: var(--font-sans); transition: border-color 0.2s, box-shadow 0.2s; }
-        .login-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,102,255,0.1); }
-        .login-box .eye-toggle { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 18px; cursor: pointer; opacity: 0.5; }
+        .input-wrap { position: relative; }
+        .input-wrap input { width: 100%; padding: 14px 44px 14px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 0; font-size: 15px; outline: none; font-family: var(--font-sans); transition: border-color 0.2s, box-shadow 0.2s; }
+        .input-wrap input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,102,255,0.1); }
+        .eye-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 18px; cursor: pointer; opacity: 0.5; padding: 4px; }
+        .eye-toggle:active { opacity: 0.8; }
 
         /* Admin Content Fix */
         #adminContent { flex: 1; display: none; flex-direction: column; overflow: hidden; }
@@ -108,13 +110,11 @@
         
         /* Chat Active - slides in from right */
         .chat-active-view { 
-            position: absolute; inset: 0; display: flex; flex-direction: column; 
+            position: absolute; inset: 0; display: none; flex-direction: column; 
             background: #E8E5DF; z-index: 20;
-            animation: slideInRight 0.3s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .chat-active-view.hiding {
-            animation: slideOutRight 0.25s ease forwards;
-        }
+        .chat-active-view.showing { animation: slideInRight 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+        .chat-active-view.hiding { animation: slideOutRight 0.25s ease forwards; }
         
         .chat-header { 
             display: flex; align-items: center; gap: 10px; padding: 12px 14px; 
@@ -135,7 +135,7 @@
         .chat-header-info { flex: 1; min-width: 0; }
         .chat-header-name { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-header-status { font-size: 11px; color: var(--gray-500); display: flex; align-items: center; gap: 5px; }
-        .chat-header-status.online-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+        .chat-header-status .online-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
         
         .chat-messages { 
             flex: 1; overflow-y: auto; padding: 12px; 
@@ -293,478 +293,18 @@
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- DASHBOARD -->
-<div class="tab active" id="tab-dashboard">
-    <div class="section-header">📊 Дашборд</div>
-    <div class="stats-grid">
-        <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-value" id="statOrders">—</div><div class="stat-label">Заказов сегодня</div></div>
-        <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value" id="statRevenue">—</div><div class="stat-label">Выручка</div></div>
-        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value" id="statUsers">—</div><div class="stat-label">Клиентов</div></div>
-        <div class="stat-card"><div class="stat-icon">🏭</div><div class="stat-value" id="statWorkshops">—</div><div class="stat-label">Цехов</div></div>
-    </div>
-    <div class="list-card">
-        <div style="padding:14px 16px; font-weight:700; font-family:var(--font-display); border-bottom:1px solid var(--gray-100);">🔔 Последние заказы</div>
-        <div id="dashOrdersList"></div>
-    </div>
-</div>
-
-<!-- ORDERS -->
-<div class="tab" id="tab-orders">
-    <div class="section-header">📦 Заказы</div>
-    <div class="filter-bar">
-        <select class="filter-select" id="orderFilter" onchange="loadOrders()">
-            <option value="">Все статусы</option>
-            <option value="new">🆕 Новые</option>
-            <option value="processing">⚙️ В работе</option>
-            <option value="printing">🖨️ Печать</option>
-            <option value="ready">✅ Готов</option>
-            <option value="shipped">🚚 Отправлен</option>
-            <option value="done">🎉 Доставлен</option>
-        </select>
-    </div>
-    <div id="ordersList"></div>
-</div>
-
-<!-- CLIENTS -->
-<div class="tab" id="tab-clients">
-    <div class="section-header">👥 Клиенты</div>
-    <div class="filter-bar">
-        <input type="text" class="filter-select" id="clientSearch" placeholder="🔍 Поиск по имени или email..." oninput="loadClients()">
-    </div>
-    <div id="clientsList"></div>
-    <button class="btn btn-primary" style="margin-top:12px;" onclick="openClientModal()">+ Добавить клиента</button>
-</div>
-
-<!-- CHATS (Full Screen) -->
-<div class="tab" id="tab-chats">
-    <div class="chat-container">
-        <!-- Chat List -->
-        <div id="chatListView" class="chat-list-view">
-            <div class="chat-list-header">
-                <div>
-                    💬 Диалоги
-                    <div class="subtitle" id="chatListSubtitle">Все активные переписки</div>
-                </div>
-                <button class="btn btn-sm btn-outline" onclick="markAllRead()" style="width:auto; padding: 6px 12px; font-size: 11px;">Прочитать все</button>
-            </div>
-            <div class="chat-list-scroll" id="chatUsersList">
-                <div class="empty-state"><div class="icon">💬</div><p>Нет активных диалогов</p></div>
-            </div>
-        </div>
-        
-        <!-- Active Chat (Full Screen overlay) -->
-        <div id="chatActiveView" class="chat-active-view" style="display: none;">
-            <div class="chat-header">
-                <button class="back-btn" onclick="closeActiveChat()">←</button>
-                <div class="chat-avatar" id="chatAvatar">U</div>
-                <div class="chat-header-info">
-                    <div class="chat-header-name" id="chatUserName">Клиент</div>
-                    <div class="chat-header-status" id="chatUserStatus">
-                        <span class="online-dot"></span> онлайн
-                    </div>
-                </div>
-                <button class="btn btn-sm btn-outline" onclick="refreshChat()" style="width:auto; padding: 6px 10px; font-size: 11px;">🔄</button>
-            </div>
-            <div class="chat-messages" id="adminChatMessages">
-                <div class="empty-state" id="chatEmptyState"><div class="icon">💬</div><p>Начните диалог</p></div>
-            </div>
-            <div class="chat-input-row">
-                <textarea id="adminChatInput" rows="1" placeholder="Напишите сообщение..." oninput="autoResizeInput(this)" onkeydown="handleChatKey(event)"></textarea>
-                <button class="send-btn" id="sendBtn" onclick="sendAdminMsg()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- WORKSHOPS -->
-<div class="tab" id="tab-workshops">
-    <div class="section-header">🏭 Цеха</div>
-    <div id="workshopsList"></div>
-    <button class="btn btn-primary" style="margin-top:12px;" onclick="openWorkshopModal()">+ Добавить цех</button>
-</div>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-    <div class="nav-item active" data-tab="tab-dashboard"><span class="icon">📊</span>Дашборд</div>
-    <div class="nav-item" data-tab="tab-orders"><span class="icon">📦</span>Заказы</div>
-    <div class="nav-item" data-tab="tab-clients"><span class="icon">👥</span>Клиенты</div>
-    <div class="nav-item" data-tab="tab-chats"><span class="icon">💬</span>Чаты<div class="badge" id="chatBadge" style="display:none;">0</div></div>
-    <div class="nav-item" data-tab="tab-workshops"><span class="icon">🏭</span>Цеха</div>
-</nav>
-
-</div>
-
-<!-- MODALS -->
-
-<!-- Order Modal -->
-<div class="modal" id="orderModal" onclick="if(event.target===this)closeModal('orderModal')">
-    <div class="modal-box">
-        <h3>Заказ #<span id="modalOrderId"></span></h3>
-        <div id="modalOrderBody" style="margin-bottom:20px; font-size:14px; line-height:1.6;"></div>
-        <div class="form-group">
-            <label>🏭 Назначить цех</label>
-            <select id="orderWorkshopSelect"><option value="">Не выбран</option></select>
-        </div>
-        <div class="form-group">
-            <label>📌 Статус</label>
-            <select id="orderStatusSelect">
-                <option value="new">🆕 Новый</option><option value="processing">⚙️ В обработке</option>
-                <option value="printing">🖨️ В печати</option><option value="ready">✅ Готов</option>
-                <option value="shipped">🚚 Отправлен</option><option value="done">🎉 Доставлен</option>
-            </select>
-        </div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn btn-primary" onclick="saveOrderChanges()">💾 Сохранить</button>
-            <button class="btn btn-danger" onclick="deleteOrder()">🗑️</button>
-        </div>
-        <button class="btn btn-outline" style="margin-top:10px;" onclick="closeModal('orderModal')">Закрыть</button>
-    </div>
-</div>
-
-<!-- Client Modal -->
-<div class="modal" id="clientModal" onclick="if(event.target===this)closeModal('clientModal')">
-    <div class="modal-box">
-        <h3 id="clientModalTitle">Добавить клиента</h3>
-        <div class="form-group"><label>Email *</label><input type="email" id="clEmail" placeholder="client@example.com"></div>
-        <div class="form-group"><label>Пароль</label><input type="text" id="clPass" placeholder="Оставьте пустым для текущего"></div>
-        <div class="form-group"><label>Имя</label><input type="text" id="clName" placeholder="Иван Иванов"></div>
-        <div class="form-group"><label>Телефон</label><input type="tel" id="clPhone" placeholder="+7 900 123-45-67"></div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn btn-primary" onclick="saveClient()">💾 Сохранить</button>
-            <button class="btn btn-danger" id="clDeleteBtn" style="display:none;" onclick="deleteClient()">🗑️</button>
-        </div>
-        <button class="btn btn-outline" style="margin-top:10px;" onclick="closeModal('clientModal')">Закрыть</button>
-    </div>
-</div>
-
-<!-- Workshop Modal -->
-<div class="modal" id="workshopModal" onclick="if(event.target===this)closeModal('workshopModal')">
-    <div class="modal-box">
-        <h3 id="wsModalTitle">Добавить цех</h3>
-        <div class="form-group"><label>Название *</label><input type="text" id="wsName" placeholder="Типография Адмирал"></div>
-        <div class="form-group"><label>Email</label><input type="email" id="wsEmail" placeholder="info@workshop.ru"></div>
-        <div class="form-group"><label>Телефон</label><input type="tel" id="wsPhone" placeholder="+7 900 123-45-67"></div>
-        <div class="form-group"><label>Адрес</label><textarea id="wsAddress" rows="2" placeholder="г. Краснодар, ул. Примерная, 1"></textarea></div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn btn-primary" onclick="saveWorkshop()">💾 Сохранить</button>
-            <button class="btn btn-danger" id="wsDeleteBtn" style="display:none;" onclick="deleteWorkshop()">🗑️</button>
-        </div>
-        <button class="btn btn-outline" style="margin-top:10px;" onclick="closeModal('workshopModal')">Закрыть</button>
-    </div>
-</div>
-
-<script>
-const API = '/api';
-let currentChatUser = null
-```html
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Landpa Admin</title>
-    <meta name="theme-color" content="#0066FF">
-    <link rel="manifest" href="/manifest-admin.json">
-    <link rel="apple-touch-icon" href="/icon-192.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary: #0066FF; --primary-dark: #0052CC; --accent: #00E5FF;
-            --black: #0A0A0A; --white: #FFFFFF; --gray-50: #F5F5F5; --gray-100: #E5E5E5;
-            --gray-200: #D4D4D4; --gray-300: #A3A3A3; --gray-400: #737373; --gray-500: #525252;
-            --error: #FF3366; --success: #00CC88;
-            --radius-md: 12px; --radius-lg: 16px;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
-            --font-sans: 'Inter', sans-serif; --font-display: 'Manrope', var(--font-sans);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100%; overflow: hidden; position: fixed; width: 100%; }
-        body { font-family: var(--font-sans); background: var(--gray-50); color: var(--black); max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
-        @keyframes slideOutRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes dotBounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-
-        .tab { display: none; flex: 1; overflow-y: auto; padding: 20px 16px; padding-bottom: 100px; -webkit-overflow-scrolling: touch; }
-        .tab.active { display: block; animation: fadeIn 0.25s ease; }
-
-        /* Login Screen */
-        #loginScreen {
-            position: fixed; inset: 0; background: var(--gray-50); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
-        }
-        .login-box { background: var(--white); padding: 28px 24px; border-radius: 20px; box-shadow: var(--shadow-md); width: 100%; max-width: 320px; text-align: center; animation: fadeInUp 0.4s ease; }
-        .login-box h2 { font-family: var(--font-display); margin-bottom: 8px; font-size: 20px; }
-        .login-box p { color: var(--gray-500); font-size: 13px; margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 14px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 12px; font-size: 15px; outline: none; font-family: var(--font-sans); transition: border-color 0.2s, box-shadow 0.2s; }
-        .login-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,102,255,0.1); }
-        .login-box .eye-toggle { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 18px; cursor: pointer; opacity: 0.5; }
-
-        /* Admin Content Fix */
-        #adminContent { flex: 1; flex-direction: column; overflow: hidden; }
-
-        /* UI Elements */
-        .section-header { font-size: 22px; font-weight: 800; margin-bottom: 16px; font-family: var(--font-display); color: var(--black); }
-        
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-        .stat-card { background: var(--white); padding: 16px 12px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); text-align: center; border: 1px solid rgba(0,0,0,0.03); }
-        .stat-icon { font-size: 22px; margin-bottom: 6px; }
-        .stat-value { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
-        .stat-label { font-size: 10px; color: var(--gray-500); margin-top: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
-
-        /* Lists & Tables */
-        .list-card { background: var(--white); border-radius: var(--radius-lg); margin-bottom: 8px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); transition: transform 0.15s, box-shadow 0.15s; }
-        .list-card:active { transform: scale(0.99); background: var(--gray-50); }
-        .list-card-row { padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .list-card-info { flex: 1; min-width: 0; }
-        .list-card-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .list-card-sub { font-size: 12px; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .list-card-meta { text-align: right; flex-shrink: 0; min-width: 70px; }
-        .list-card-amount { font-weight: 700; font-size: 15px; font-family: var(--font-display); }
-        .list-card-date { font-size: 10px; color: var(--gray-500); margin-top: 2px; }
-
-        .status-badge { padding: 4px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; display: inline-block; text-transform: uppercase; letter-spacing: 0.3px; }
-        .status-new { background: #FFF4E5; color: #B45309; }
-        .status-processing { background: #DBEAFE; color: #1E40AF; }
-        .status-printing { background: #E0E7FF; color: #3730A3; }
-        .status-ready { background: #D1FAE5; color: #065F46; }
-        .status-shipped { background: #EDE9FE; color: #5B21B6; }
-        .status-done { background: #D1FAE5; color: #065F46; }
-
-        /* Buttons */
-        .btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 14px; border-radius: var(--radius-md); font-weight: 600; font-size: 14px; border: none; cursor: pointer; width: 100%; font-family: var(--font-display); transition: 0.2s; }
-        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: var(--white); box-shadow: 0 4px 12px rgba(0,102,255,0.25); }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-primary:disabled { opacity: 0.6; pointer-events: none; }
-        .btn-outline { background: transparent; border: 2px solid var(--gray-200); color: var(--black); }
-        .btn-outline:active { background: var(--gray-50); }
-        .btn-danger { background: transparent; border: 2px solid var(--error); color: var(--error); }
-        .btn-danger:active { background: #FFF0F3; }
-        .btn-sm { padding: 8px 12px; font-size: 12px; width: auto; }
-
-        /* Filters */
-        .filter-bar { display: flex; gap: 8px; margin-bottom: 12px; }
-        .filter-select { flex: 1; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; background: var(--white); outline: none; font-family: var(--font-sans); }
-        .filter-select:focus { border-color: var(--primary); }
-
-        /* ========== CHAT FULL SCREEN ========== */
-        #tab-chats { padding: 0 !important; overflow: hidden; background: var(--white); }
-        .chat-container { height: 100%; display: flex; flex-direction: column; background: var(--white); position: relative; overflow: hidden; }
-        
-        /* Chat List */
-        .chat-list-view { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .chat-list-header { padding: 18px 16px 14px; font-weight: 700; font-family: var(--font-display); font-size: 20px; border-bottom: 1px solid var(--gray-100); position: sticky; top: 0; background: var(--white); z-index: 5; display: flex; align-items: center; justify-content: space-between; }
-        .chat-list-header .subtitle { font-size: 12px; color: var(--gray-500); font-weight: 500; }
-        .chat-list-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-        
-        /* Chat Active - slides in from right */
-        .chat-active-view { 
-            position: absolute; inset: 0; display: flex; flex-direction: column; 
-            background: #E8E5DF; z-index: 20;
-            animation: slideInRight 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .chat-active-view.hiding {
-            animation: slideOutRight 0.25s ease forwards;
-        }
-        
-        .chat-header { 
-            display: flex; align-items: center; gap: 10px; padding: 12px 14px; 
-            background: var(--white); border-bottom: 1px solid var(--gray-100);
-            z-index: 10; flex-shrink: 0;
-        }
-        .back-btn { 
-            background: none; border: none; font-size: 24px; cursor: pointer; padding: 6px 4px; 
-            color: var(--primary); display: flex; align-items: center; border-radius: 8px; transition: background 0.15s; 
-        }
-        .back-btn:active { background: var(--gray-50); }
-        .chat-avatar { 
-            width: 40px; height: 40px; border-radius: 50%; 
-            background: linear-gradient(135deg, var(--primary), var(--accent)); 
-            color: white; display: flex; align-items: center; justify-content: center; 
-            font-weight: 700; flex-shrink: 0; font-size: 16px;
-        }
-        .chat-header-info { flex: 1; min-width: 0; }
-        .chat-header-name { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-header-status { font-size: 11px; color: var(--gray-500); display: flex; align-items: center; gap: 5px; }
-        .chat-header-status.online-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
-        
-        .chat-messages { 
-            flex: 1; overflow-y: auto; padding: 12px; 
-            background: #E8E5DF; 
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d6d3cd' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            display: flex; flex-direction: column; gap: 4px;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .chat-msg { 
-            max-width: 82%; padding: 10px 14px; border-radius: 16px; font-size: 14px; 
-            line-height: 1.45; animation: fadeInUp 0.2s ease; word-wrap: break-word; 
-        }
-        .chat-msg.client { 
-            align-self: flex-start; background: var(--white); color: var(--black); 
-            border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); 
-        }
-        .chat-msg.admin { 
-            align-self: flex-end; background: #D6E8FF; color: var(--black); 
-            border-bottom-right-radius: 4px; box-shadow: 0 1px 2px rgba(0,102,255,0.08); 
-        }
-        .chat-msg .time { font-size: 9px; color: rgba(0,0,0,0.35); margin-top: 4px; display: block; text-align: right; }
-        .chat-msg.admin .time { color: rgba(0,102,255,0.4); }
-        
-        .chat-date-sep {
-            text-align: center; margin: 8px 0; font-size: 11px; color: var(--gray-400); font-weight: 600;
-        }
-        .chat-date-sep span {
-            background: rgba(0,0,0,0.08); padding: 3px 10px; border-radius: 10px; backdrop-filter: blur(4px);
-        }
-        
-        /* Typing indicator */
-        .typing-indicator {
-            align-self: flex-start; background: var(--white); padding: 10px 16px; border-radius: 16px;
-            border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-            display: flex; gap: 4px; align-items: center;
-        }
-        .typing-indicator .dot {
-            width: 6px; height: 6px; border-radius: 50%; background: var(--gray-300);
-            animation: dotBounce 1.2s infinite;
-        }
-        .typing-indicator .dot:nth-child(2) { animation-delay: 0.15s; }
-        .typing-indicator .dot:nth-child(3) { animation-delay: 0.3s; }
-
-        .chat-input-row { 
-            display: flex; gap: 8px; padding: 10px 12px; padding-bottom: max(12px, env(safe-area-inset-bottom));
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); 
-            border-top: 1px solid var(--gray-100); flex-shrink: 0;
-        }
-        .chat-input-row textarea { 
-            flex: 1; border: 1px solid var(--gray-200); border-radius: 20px; padding: 10px 14px; 
-            font-family: var(--font-sans); font-size: 14px; resize: none; outline: none; max-height: 80px;
-            line-height: 1.4; transition: border-color 0.2s;
-        }
-        .chat-input-row textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,102,255,0.08); }
-        .send-btn { 
-            width: 42px; height: 42px; border-radius: 50%; background: var(--primary); color: white; 
-            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; 
-            flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,102,255,0.3); transition: transform 0.15s, opacity 0.15s;
-        }
-        .send-btn:active { transform: scale(0.9); }
-        .send-btn.sending { opacity: 0.6; pointer-events: none; }
-
-        /* Chat list items */
-        .chat-user-item { 
-            padding: 14px 16px; border-bottom: 1px solid var(--gray-100); 
-            cursor: pointer; display: flex; gap: 12px; align-items: center; 
-            transition: background 0.15s;
-        }
-        .chat-user-item:hover, .chat-user-item:active { background: var(--gray-50); }
-        .chat-user-info { flex: 1; min-width: 0; }
-        .chat-user-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
-        .chat-user-name .unread-badge { 
-            background: var(--error); color: white; font-size: 9px; padding: 1px 5px; 
-            border-radius: 8px; font-weight: 700;
-        }
-        .chat-user-last { font-size: 12px; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-user-time { font-size: 10px; color: var(--gray-400); flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
-        .chat-user-unread { 
-            background: var(--error); color: white; font-size: 10px; font-weight: 700; 
-            width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; 
-            justify-content: center; flex-shrink: 0;
-        }
-
-        /* Bottom Nav */
-        .bottom-nav { 
-            position: fixed; bottom: max(12px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); 
-            width: calc(100% - 24px); max-width: 420px; height: 62px; 
-            background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
-            border-radius: 18px; border: 1px solid rgba(255,255,255,0.6); 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; align-items: center; 
-            justify-content: space-around; padding: 0 6px; z-index: 100; 
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 9px; font-weight: 600; color: var(--gray-500); padding: 6px 8px; border-radius: 12px; transition: 0.2s; position: relative; cursor: pointer; }
-        .nav-item .icon { font-size: 20px; transition: transform 0.2s; }
-        .nav-item.active { background: rgba(0,102,255,0.1); color: var(--primary); }
-        .nav-item.active .icon { transform: scale(1.1); }
-        .nav-item .badge { position: absolute; top: -2px; right: 2px; background: var(--error); color: white; font-size: 9px; padding: 1px 5px; border-radius: 8px; min-width: 16px; text-align: center; font-weight: 700; animation: pulse 2s infinite; }
-
-        /* Modal */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
-        .modal.show { display: flex; animation: fadeIn 0.2s ease; }
-        .modal-box { background: var(--white); width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 24px 20px 32px; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .modal-box h3 { font-family: var(--font-display); font-size: 20px; margin-bottom: 20px; text-align: center; }
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--gray-500); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 13px 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 14px; outline: none; font-family: var(--font-sans); transition: border-color 0.2s, box-shadow 0.2s; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,102,255,0.08); }
-        
-        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 20px; color: var(--gray-500); }
-        .empty-state .icon { font-size: 40px; margin-bottom: 10px; opacity: 0.25; }
-        .empty-state p { font-size: 14px; font-weight: 500; }
-
-        /* Workshop Item */
-        .workshop-item { padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.15s; }
-        .workshop-item:hover, .workshop-item:active { background: var(--gray-50); }
-        .workshop-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(0,102,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-        .workshop-info { flex: 1; }
-        .workshop-name { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
-        .workshop-detail { font-size: 12px; color: var(--gray-500); }
-
-        /* Toast */
-        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-        .toast { 
-            background: var(--black); color: var(--white); padding: 12px 20px; border-radius: 12px; 
-            font-size: 13px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: fadeInUp 0.3s ease; pointer-events: auto; max-width: 300px; text-align: center;
-        }
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--error); }
-
-        /* Loading shimmer */
-        .loading-shimmer {
-            background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-50) 50%, var(--gray-100) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 8px;
-            height: 14px;
-            margin-bottom: 8px;
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            body { max-width: 100%; }
-            .bottom-nav { width: calc(100% - 24px); }
-        }
-
-        /* Scrollbar styling */
-        .chat-messages::-webkit-scrollbar, .chat-list-scroll::-webkit-scrollbar { width: 4px; }
-        .chat-messages::-webkit-scrollbar-thumb, .chat-list-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
-    </style>
-</head>
-<body>
-
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
-
-<!-- AUTH SCREEN -->
+<!-- LOGIN SCREEN -->
 <div id="loginScreen">
     <div class="login-box">
         <div style="font-size: 40px; margin-bottom: 12px;">🔐</div>
         <h2>Вход в Admin</h2>
         <p>Панель управления Landpa</p>
-        <div style="position: relative; margin-bottom: 12px;">
-           <input type="password" id="adminPass" placeholder="Введите пароль" style="margin-bottom: 0; padding-right: 44px;">
-           <button class="btn btn-primary" id="loginBtn" style="margin-top: 12px;">Войти</button>
-    </div>
-        <button class="btn btn-primary" onclick="checkLogin()" style="margin-top: 12px;">Войти</button>
-        <p id="loginError" style="color:var(--error); font-size:12px; margin-top:10px; display:none;">Неверный пароль</p>
+        <div class="input-wrap" style="margin-bottom: 16px;">
+            <input type="password" id="adminPass" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')doLogin()">
+            <button class="eye-toggle" id="eyeBtn" onclick="togglePass()">👁️</button>
+        </div>
+        <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Войти</button>
+        <p id="loginError" style="color:var(--error); font-size:12px; margin-top:12px; display:none;">Неверный пароль</p>
     </div>
 </div>
 
@@ -831,7 +371,7 @@ let currentChatUser = null
         </div>
         
         <!-- Active Chat (Full Screen overlay) -->
-        <div id="chatActiveView" class="chat-active-view" style="display: none;">
+        <div id="chatActiveView" class="chat-active-view">
             <div class="chat-header">
                 <button class="back-btn" onclick="closeActiveChat()">←</button>
                 <div class="chat-avatar" id="chatAvatar">U</div>
@@ -934,7 +474,9 @@ let currentChatUser = null
 </div>
 
 <script>
-const API = '/api';
+const API_BASE = '';
+const API = API_BASE + '/api';
+
 let currentChatUser = null;
 let chatPolling = null;
 let editingWorkshopId = null;
@@ -943,57 +485,71 @@ let currentOrderId = null;
 let unreadCount = 0;
 let allChatsData = [];
 let chatSoundEnabled = true;
+let bgPolling = null;
 
+// ========== AUTH ==========
 function checkAuth() {
     if (sessionStorage.getItem('adminAuth') === 'true') {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('adminContent').classList.add('show');
         loadDashboard();
-        if (!window._bgPolling) {
-            window._bgPolling = setInterval(bgCheckUnread, 15000);
+        if (!bgPolling) {
+            bgPolling = setInterval(bgCheckUnread, 15000);
+            bgCheckUnread();
         }
     }
 }
-function checkLogin() {
+
+function doLogin() {
     const pass = document.getElementById('adminPass').value;
     if (pass === 'kprint2024') {
         sessionStorage.setItem('adminAuth', 'true');
+        document.getElementById('loginError').style.display = 'none';
         checkAuth();
     } else {
-        document.getElementById('loginError').style.display = 'block';
+        const errEl = document.getElementById('loginError');
+        errEl.style.display = 'block';
         document.getElementById('adminPass').value = '';
+        document.getElementById('adminPass').focus();
     }
 }
+
 function togglePass() {
     const inp = document.getElementById('adminPass');
-    inp.type = inp.type === 'password' ? 'text' : 'password';
-    document.getElementById('eyeBtn').textContent = inp.type === 'password' ? '👁️' : '🙈';
+    if (inp.type === 'password') {
+        inp.type = 'text';
+        document.getElementById('eyeBtn').textContent = '🙈';
+    } else {
+        inp.type = 'password';
+        document.getElementById('eyeBtn').textContent = '👁️';
+    }
 }
 
-// TOAST
-function showToast(msg, type = '') {
+// ========== TOAST ==========
+function showToast(msg, type) {
     const c = document.getElementById('toastContainer');
     const t = document.createElement('div');
-    t.className = 'toast ' + type;
+    t.className = 'toast ' + (type || '');
     t.textContent = msg;
     c.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 2500);
+    setTimeout(function() {
+        t.style.opacity = '0';
+        t.style.transition = 'opacity 0.3s';
+        setTimeout(function() { if (t.parentNode) t.remove(); }, 300);
+    }, 2500);
 }
 
-// NAV
-document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
-        // Close active chat if switching away
-        const targetTab = item.dataset.tab;
+// ========== NAV ==========
+document.querySelectorAll('.nav-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+        var targetTab = item.dataset.tab;
         if (targetTab !== 'tab-chats' && currentChatUser) {
             closeActiveChat();
         }
-        
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+        document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
         document.getElementById(targetTab).classList.add('active');
         item.classList.add('active');
-        
         if (targetTab === 'tab-dashboard') loadDashboard();
         if (targetTab === 'tab-orders') loadOrders();
         if (targetTab === 'tab-clients') loadClients();
@@ -1002,33 +558,32 @@ document.querySelectorAll('.nav-item').forEach(item => {
     });
 });
 
-// HELPERS
-function getStatusName(s) { 
-    const m = {new:'Новый',processing:'В обработке',printing:'Печать',ready:'Готов',shipped:'Отправлен',done:'Доставлен'};
-    return m[s] || 'Новый'; 
+// ========== HELPERS ==========
+function getStatusLabel(s) {
+    var m = {new:'Новый',processing:'В обработке',printing:'Печать',ready:'Готов',shipped:'Отправлен',done:'Доставлен'};
+    return m[s] || 'Новый';
 }
-function escapeHtml(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+function escapeHtml(t) { var d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 function formatDate(d) { return d ? new Date(d).toLocaleDateString('ru-RU', {day:'numeric',month:'short'}) : '—'; }
 function formatTime(d) { return d ? new Date(d).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'}) : ''; }
-function formatDateTime(d) { 
+function formatDateTime(d) {
     if (!d) return '';
-    const date = new Date(d);
-    const today = new Date();
+    var date = new Date(d);
+    var today = new Date();
     if (date.toDateString() === today.toDateString()) return 'Сегодня, ' + formatTime(d);
-    const yesterday = new Date(today);
+    var yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     if (date.toDateString() === yesterday.toDateString()) return 'Вчера, ' + formatTime(d);
     return date.toLocaleDateString('ru-RU', {day:'numeric', month:'short'}) + ', ' + formatTime(d);
 }
 
-// Sound notification
 function playMsgSound() {
     if (!chatSoundEnabled) return;
     try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
+        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.frequency.value = 800;
@@ -1040,164 +595,132 @@ function playMsgSound() {
     } catch(e) {}
 }
 
-// DASHBOARD — безопасная версия без template literals
+// ========== DASHBOARD ==========
 async function loadDashboard() {
     try {
-        const API = ''; // Если у вас другой базовый URL — поправьте здесь
-        
-        const [ordersRes, usersRes, workshopsRes] = await Promise.all([
-            fetch(API + '/api/admin/orders'),
-            fetch(API + '/api/users'),
-            fetch(API + '/api/workshops')
+        var results = await Promise.all([
+            fetch(API + '/admin/orders').then(function(r){return r.json();}),
+            fetch(API + '/users').then(function(r){return r.json();}),
+            fetch(API + '/workshops').then(function(r){return r.json();})
         ]);
-        
-        const orders = await ordersRes.json();
-        const users = await usersRes.json();
-        const workshops = await workshopsRes.json();
-        
-        // Статистика
-        const today = new Date().toISOString().split('T')[0];
-        const todayOrders = (orders || []).filter(o => o.createdAt?.startsWith(today));
-        
-        const elOrders = document.getElementById('statOrders');
-        const elRevenue = document.getElementById('statRevenue');
-        const elUsers = document.getElementById('statUsers');
-        const elWorkshops = document.getElementById('statWorkshops');
-        
+        var orders = results[0] || [];
+        var users = results[1] || [];
+        var workshops = results[2] || [];
+
+        var today = new Date().toISOString().split('T')[0];
+        var todayOrders = orders.filter(function(o) { return o.createdAt && o.createdAt.startsWith(today); });
+
+        var elOrders = document.getElementById('statOrders');
+        var elRevenue = document.getElementById('statRevenue');
+        var elUsers = document.getElementById('statUsers');
+        var elWorkshops = document.getElementById('statWorkshops');
+
         if (elOrders) elOrders.textContent = todayOrders.length;
         if (elRevenue) {
-            const rev = todayOrders.reduce((s, o) => s + (Number(o.total) || 0), 0);
+            var rev = todayOrders.reduce(function(s, o) { return s + (Number(o.total) || 0); }, 0);
             elRevenue.textContent = rev.toLocaleString('ru-RU') + ' ₽';
         }
-        if (elUsers) elUsers.textContent = (users || []).length;
-        if (elWorkshops) elWorkshops.textContent = (workshops || []).length;
-        
-        // Список последних заказов — БЕЗ innerHTML, через DOM
-        const list = document.getElementById('dashOrdersList');
+        if (elUsers) elUsers.textContent = users.length;
+        if (elWorkshops) elWorkshops.textContent = workshops.length;
+
+        var list = document.getElementById('dashOrdersList');
         if (!list) return;
-        
-        list.innerHTML = ''; // Очистить
-        
-        const recent = (orders || []).slice(0, 5);
+        list.innerHTML = '';
+
+        var recent = orders.slice(0, 5);
         if (recent.length === 0) {
             list.innerHTML = '<div class="empty-state"><div class="icon">📦</div><p>Нет заказов</p></div>';
             return;
         }
-        
-        recent.forEach(o => {
-            const orderId = o._id || o.id || '—';
-            const name = o.name || 'Клиент';
-            const material = o.material || '—';
-            const total = Number(o.total || 0).toLocaleString('ru-RU');
-            const status = o.status || 'new';
-            
-            // Создаём карточку через DOM (никаких шаблонных строк!)
-            const card = document.createElement('div');
+
+        recent.forEach(function(o) {
+            var orderId = o._id || o.id || '—';
+            var name = o.name || 'Клиент';
+            var material = o.material || '—';
+            var total = Number(o.total || 0).toLocaleString('ru-RU');
+            var status = o.status || 'new';
+
+            var card = document.createElement('div');
             card.className = 'list-card-row';
             card.dataset.orderId = orderId;
             card.style.cursor = 'pointer';
-            
-            // info
-            const info = document.createElement('div');
+
+            var info = document.createElement('div');
             info.className = 'list-card-info';
-            
-            const title = document.createElement('div');
+            var title = document.createElement('div');
             title.className = 'list-card-title';
-            title.textContent = `#${orderId} · ${name}`;
-            
-            const sub = document.createElement('div');
+            title.textContent = '#' + orderId + ' · ' + name;
+            var sub = document.createElement('div');
             sub.className = 'list-card-sub';
             sub.textContent = material;
-            
             info.appendChild(title);
             info.appendChild(sub);
-            
-            // meta
-            const meta = document.createElement('div');
+
+            var meta = document.createElement('div');
             meta.className = 'list-card-meta';
-            
-            const amount = document.createElement('div');
+            var amount = document.createElement('div');
             amount.className = 'list-card-amount';
-            amount.textContent = `${total} ₽`;
-            
-            const badgeWrap = document.createElement('div');
+            amount.textContent = total + ' ₽';
+            var badgeWrap = document.createElement('div');
             badgeWrap.style.marginTop = '4px';
-            
-            const badge = document.createElement('span');
+            var badge = document.createElement('span');
             badge.className = 'status-badge status-' + status;
-            badge.textContent = getStatusName(status);
-            
+            badge.textContent = getStatusLabel(status);
             badgeWrap.appendChild(badge);
             meta.appendChild(amount);
             meta.appendChild(badgeWrap);
-            
+
             card.appendChild(info);
             card.appendChild(meta);
             list.appendChild(card);
         });
-        
-        // Делегирование клика
-        list.onclick = (e) => {
-            const card = e.target.closest('.list-card-row');
-            if (card && typeof openOrderModal === 'function') {
+
+        list.onclick = function(e) {
+            var card = e.target.closest('.list-card-row');
+            if (card) {
                 openOrderModal(card.dataset.orderId);
             }
         };
-        
-    } catch (e) {
+    } catch(e) {
         console.error('loadDashboard error:', e);
-        const list = document.getElementById('dashOrdersList');
-        if (list) list.innerHTML = '<div class="error-msg">Ошибка загрузки</div>';
+        var list = document.getElementById('dashOrdersList');
+        if (list) list.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Ошибка загрузки</p></div>';
     }
 }
 
-// 🔹 Вспомогательная функция (если ещё не объявлена)
-function getStatusName(status) {
-    const map = {
-        new: 'Новый',
-        processing: 'В обработке',
-        printing: 'В печати',
-        ready: 'Готов',
-        shipped: 'Отправлен',
-        done: 'Доставлен'
-    };
-    return map[status] || status || '—';
-}
-
-// 🔹 Делегирование кликов (вместо onclick в HTML)
-list.onclick = (e) => {
-    const card = e.target.closest('.list-card-row');
-    if (card && typeof openOrderModal === 'function') {
-        openOrderModal(card.dataset.orderId);
-    }
-};
-    
-// ORDERS
+// ========== ORDERS ==========
 async function loadOrders() {
     try {
-        let orders = await fetch(API+'/admin/orders').then(r=>r.json());
-        const filter = document.getElementById('orderFilter').value;
-        if (filter) orders = orders.filter(o => o.status === filter);
-        
-        const list = document.getElementById('ordersList');
-        if (orders.length === 0) {
+        var orders = await fetch(API + '/admin/orders').then(function(r){return r.json();});
+        var filter = document.getElementById('orderFilter').value;
+        if (filter) orders = orders.filter(function(o) { return o.status === filter; });
+
+        var list = document.getElementById('ordersList');
+        if (!orders || orders.length === 0) {
             list.innerHTML = '<div class="empty-state"><div class="icon">📦</div><p>Заказов не найдено</p></div>';
             return;
         }
-        list.innerHTML = orders.map(o => `
-            <div class="list-card" onclick="openOrderModal('${o._id||o.id}')">
-                <div class="list-card-row">
-                    <div class="list-card-info">
-                        <div class="list-card-title">#${o._id||o.id} · ${o.name||'Клиент'}</div>
-                        <div class="list-card-sub">${o.material||'—'} · ${o.type==='cards'?'90×50':(o.width||'?')+'×'+(o.height||'?')} мм · ${o.qty||1} шт</div>
-                    </div>
-                    <div class="list-card-meta">
-                        <div class="list-card-amount">${(o.total||0).toLocaleString('ru-RU')} ₽</div>
-                        <div style="margin-top:4px;"><span class="status-badge status-${o.status||'new'}">${getStatusName(o.status)}</span></div>
-                        <div class="list-card-date">${formatDate(o.createdAt)}</div>
-                    </div>
-                </div>
-            </div>`).join('');
+
+        list.innerHTML = orders.map(function(o) {
+            var oid = o._id || o.id || '';
+            var dims = o.type === 'cards' ? '90×50' : (o.width || '?') + '×' + (o.height || '?') + ' мм';
+            return '<div class="list-card" data-oid="' + escapeHtml(oid) + '">' +
+                '<div class="list-card-row">' +
+                '<div class="list-card-info">' +
+                '<div class="list-card-title">#' + escapeHtml(oid) + ' · ' + escapeHtml(o.name || 'Клиент') + '</div>' +
+                '<div class="list-card-sub">' + escapeHtml(o.material || '—') + ' · ' + escapeHtml(dims) + ' · ' + (o.qty || 1) + ' шт</div>' +
+                '</div>' +
+                '<div class="list-card-meta">' +
+                '<div class="list-card-amount">' + (Number(o.total) || 0).toLocaleString('ru-RU') + ' ₽</div>' +
+                '<div style="margin-top:4px;"><span class="status-badge status-' + (o.status || 'new') + '">' + getStatusLabel(o.status) + '</span></div>' +
+                '<div class="list-card-date">' + formatDate(o.createdAt) + '</div>' +
+                '</div></div></div>';
+        }).join('');
+
+        list.onclick = function(e) {
+            var card = e.target.closest('.list-card');
+            if (card) openOrderModal(card.dataset.oid);
+        };
     } catch(e) {
         document.getElementById('ordersList').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Ошибка загрузки</p></div>';
     }
@@ -1208,98 +731,124 @@ async function openOrderModal(id) {
     document.getElementById('modalOrderId').textContent = id;
     document.getElementById('modalOrderBody').innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-500);"><div class="loading-shimmer" style="margin-bottom:12px;"></div><div class="loading-shimmer"></div></div>';
     document.getElementById('orderModal').classList.add('show');
-    
+
     try {
-        const ws = await fetch(API+'/workshops').then(r=>r.json());
-        document.getElementById('orderWorkshopSelect').innerHTML = '<option value="">Не выбран</option>' + ws.map(w=>`<option value="${w.id}">${w.name}</option>`).join('');
+        var ws = await fetch(API + '/workshops').then(function(r){return r.json();});
+        var opts = '<option value="">Не выбран</option>' + ws.map(function(w){ return '<option value="' + w.id + '">' + escapeHtml(w.name) + '</option>'; }).join('');
+        document.getElementById('orderWorkshopSelect').innerHTML = opts;
     } catch(e) {}
-    
+
     try {
-        const orders = await fetch(API+'/admin/orders').then(r=>r.json());
-        const o = orders.find(x => (x._id||x.id) === id);
+        var orders = await fetch(API + '/admin/orders').then(function(r){return r.json();});
+        var o = null;
+        for (var i = 0; i < orders.length; i++) {
+            if ((orders[i]._id || orders[i].id) === id) { o = orders[i]; break; }
+        }
         if (!o) return;
         document.getElementById('orderStatusSelect').value = o.status || 'new';
         document.getElementById('orderWorkshopSelect').value = o.workshopId || '';
-        
-        document.getElementById('modalOrderBody').innerHTML = `
-            <div style="background:var(--gray-50);padding:14px;border-radius:12px;margin-bottom:16px;">
-                <div style="margin-bottom:8px;"><strong>👤 Клиент:</strong> ${escapeHtml(o.name||'—')} <span style="color:var(--gray-500);">(${o.phone||'—'})</span></div>
-                <div style="margin-bottom:8px;"><strong>📧 Email:</strong> ${escapeHtml(o.email||'—')}</div>
-                <div style="margin-bottom:8px;"><strong>📍 Адрес:</strong> ${escapeHtml(o.addr||'—')}</div>
-                ${o.tg ? `<div style="margin-bottom:8px;"><strong>✈️ Telegram:</strong> ${escapeHtml(o.tg)}</div>` : ''}
-                ${o.comment ? `<div style="margin-bottom:8px;"><strong>💬 Комментарий:</strong> ${escapeHtml(o.comment)}</div>` : ''}
-                <hr style="border:none;border-top:1px solid var(--gray-200);margin:10px 0;">
-                <div><strong>📦 Материал:</strong> ${escapeHtml(o.material||'—')} | ${o.type==='cards'?'90×50':(o.width||'?')+'×'+(o.height||'?')} мм</div>
-                <div style="margin-top:6px;"><strong>🔢 Количество:</strong> ${o.qty||1} шт</div>
-                <div style="margin-top:6px;"><strong>💰 Сумма:</strong> ${(o.total||0).toLocaleString('ru-RU')} ₽</div>
-                ${o.fileUrl ? `<div style="margin-top:10px;"><a href="${escapeHtml(o.fileUrl)}" target="_blank" style="color:var(--primary);font-weight:600;text-decoration:none;">📎 Скачать макет</a></div>` : '<div style="margin-top:6px;color:var(--gray-500);">📎 Макет не загружен</div>'}
-            </div>
-        `;
+
+        var dims = o.type === 'cards' ? '90×50' : (o.width || '?') + '×' + (o.height || '?') + ' мм';
+        document.getElementById('modalOrderBody').innerHTML =
+            '<div style="background:var(--gray-50);padding:14px;border-radius:12px;margin-bottom:16px;">' +
+            '<div style="margin-bottom:8px;"><strong>👤 Клиент:</strong> ' + escapeHtml(o.name || '—') + ' <span style="color:var(--gray-500);">(' + escapeHtml(o.phone || '—') + ')</span></div>' +
+            '<div style="margin-bottom:8px;"><strong>📧 Email:</strong> ' + escapeHtml(o.email || '—') + '</div>' +
+            '<div style="margin-bottom:8px;"><strong>📍 Адрес:</strong> ' + escapeHtml(o.addr || '—') + '</div>' +
+            (o.tg ? '<div style="margin-bottom:8px;"><strong>✈️ Telegram:</strong> ' + escapeHtml(o.tg) + '</div>' : '') +
+            (o.comment ? '<div style="margin-bottom:8px;"><strong>💬 Комментарий:</strong> ' + escapeHtml(o.comment) + '</div>' : '') +
+            '<hr style="border:none;border-top:1px solid var(--gray-200);margin:10px 0;">' +
+            '<div><strong>📦 Материал:</strong> ' + escapeHtml(o.material || '—') + ' | ' + escapeHtml(dims) + '</div>' +
+            '<div style="margin-top:6px;"><strong>🔢 Количество:</strong> ' + (o.qty || 1) + ' шт</div>' +
+            '<div style="margin-top:6px;"><strong>💰 Сумма:</strong> ' + (Number(o.total) || 0).toLocaleString('ru-RU') + ' ₽</div>' +
+            (o.fileUrl ? '<div style="margin-top:10px;"><a href="' + escapeHtml(o.fileUrl) + '" target="_blank" style="color:var(--primary);font-weight:600;text-decoration:none;">📎 Скачать макет</a></div>' : '<div style="margin-top:6px;color:var(--gray-500);">📎 Макет не загружен</div>') +
+            '</div>';
     } catch(e) {
         document.getElementById('modalOrderBody').innerHTML = '<p style="color:var(--error);text-align:center;">Ошибка загрузки заказа</p>';
     }
 }
 
 async function saveOrderChanges() {
-    const status = document.getElementById('orderStatusSelect').value;
-    const workshopId = document.getElementById('orderWorkshopSelect').value;
-    
+    var status = document.getElementById('orderStatusSelect').value;
+    var workshopId = document.getElementById('orderWorkshopSelect').value;
     try {
-        await fetch(API+'/admin/status', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ orderId: currentOrderId, status }) });
+        await fetch(API + '/admin/status', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ orderId: currentOrderId, status: status })
+        });
         if (workshopId) {
-            await fetch(API+'/admin/order-workshop', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ orderId: currentOrderId, workshopId }) }).catch(()=>{});
+            await fetch(API + '/admin/order-workshop', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ orderId: currentOrderId, workshopId: workshopId })
+            }).catch(function(){});
         }
         closeModal('orderModal');
         showToast('✅ Заказ обновлён', 'success');
-        loadOrders(); loadDashboard();
-    } catch(e) { 
+        loadOrders();
+        loadDashboard();
+    } catch(e) {
         showToast('❌ Ошибка сохранения', 'error');
     }
 }
 
 async function deleteOrder() {
-    if (!confirm('⚠️ Удалить заказ #'+currentOrderId+'?\nЭто действие нельзя отменить.')) return;
+    if (!confirm('⚠️ Удалить заказ #' + currentOrderId + '?\nЭто действие нельзя отменить.')) return;
     try {
-        await fetch(API+'/admin/orders/'+currentOrderId, { method:'DELETE' });
-        closeModal('orderModal'); 
+        await fetch(API + '/admin/orders/' + currentOrderId, { method: 'DELETE' });
+        closeModal('orderModal');
         showToast('🗑️ Заказ удалён');
-        loadOrders(); loadDashboard();
-    } catch(e) { showToast('❌ Ошибка удаления', 'error'); }
+        loadOrders();
+        loadDashboard();
+    } catch(e) {
+        showToast('❌ Ошибка удаления', 'error');
+    }
 }
 
-// CLIENTS
+// ========== CLIENTS ==========
 async function loadClients() {
     try {
-        let users = await fetch(API+'/users').then(r=>r.json());
-        const search = document.getElementById('clientSearch')?.value.toLowerCase();
-        if (search) users = users.filter(u => (u.name||'').toLowerCase().includes(search) || (u.email||'').toLowerCase().includes(search));
-        
-        const list = document.getElementById('clientsList');
+        var users = await fetch(API + '/users').then(function(r){return r.json();});
+        var search = document.getElementById('clientSearch') ? document.getElementById('clientSearch').value.toLowerCase() : '';
+        if (search) {
+            users = users.filter(function(u) {
+                return (u.name || '').toLowerCase().indexOf(search) !== -1 || (u.email || '').toLowerCase().indexOf(search) !== -1;
+            });
+        }
+
+        var list = document.getElementById('clientsList');
         if (users.length === 0) {
             list.innerHTML = '<div class="empty-state"><div class="icon">👥</div><p>Клиентов не найдено</p></div>';
             return;
         }
-        list.innerHTML = users.map(u => `
-            <div class="list-card" onclick="openClientModal('${u._id||u.id}')">
-                <div class="list-card-row">
-                    <div class="chat-avatar" style="width:42px;height:42px;font-size:16px;">${(u.name||u.email||'?')[0].toUpperCase()}</div>
-                    <div class="list-card-info">
-                        <div class="list-card-title">${escapeHtml(u.name||'—')}</div>
-                        <div class="list-card-sub">${escapeHtml(u.email||'—')} · ${escapeHtml(u.phone||'—')}</div>
-                    </div>
-                    <div class="list-card-meta">
-                        <div class="list-card-date">${formatDate(u.createdAt)}</div>
-                        ${u.telegramId ? '<div style="margin-top:4px;font-size:10px;">✈️ TG</div>' : ''}
-                    </div>
-                </div>
-            </div>`).join('');
+
+        list.innerHTML = users.map(function(u) {
+            var uid = u._id || u.id || '';
+            var initial = (u.name || u.email || '?')[0].toUpperCase();
+            return '<div class="list-card" data-cid="' + escapeHtml(uid) + '">' +
+                '<div class="list-card-row">' +
+                '<div class="chat-avatar" style="width:42px;height:42px;font-size:16px;">' + initial + '</div>' +
+                '<div class="list-card-info">' +
+                '<div class="list-card-title">' + escapeHtml(u.name || '—') + '</div>' +
+                '<div class="list-card-sub">' + escapeHtml(u.email || '—') + ' · ' + escapeHtml(u.phone || '—') + '</div>' +
+                '</div>' +
+                '<div class="list-card-meta">' +
+                '<div class="list-card-date">' + formatDate(u.createdAt) + '</div>' +
+                (u.telegramId ? '<div style="margin-top:4px;font-size:10px;">✈️ TG</div>' : '') +
+                '</div></div></div>';
+        }).join('');
+
+        list.onclick = function(e) {
+            var card = e.target.closest('.list-card');
+            if (card) openClientModal(card.dataset.cid);
+        };
     } catch(e) {
         document.getElementById('clientsList').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Ошибка загрузки</p></div>';
     }
 }
 
-function openClientModal(id=null) {
-    editingClientId = id;
+function openClientModal(id) {
+    editingClientId = id || null;
     document.getElementById('clientModalTitle').textContent = id ? '✏️ Редактировать клиента' : '➕ Добавить клиента';
     document.getElementById('clEmail').value = '';
     document.getElementById('clPass').value = '';
@@ -1307,10 +856,13 @@ function openClientModal(id=null) {
     document.getElementById('clPhone').value = '';
     document.getElementById('clDeleteBtn').style.display = id ? 'flex' : 'none';
     document.getElementById('clientModal').classList.add('show');
-    
+
     if (id) {
-        fetch(API+'/users').then(r=>r.json()).then(users => {
-            const u = users.find(x => (x._id||x.id) === id);
+        fetch(API + '/users').then(function(r){return r.json();}).then(function(users) {
+            var u = null;
+            for (var i = 0; i < users.length; i++) {
+                if ((users[i]._id || users[i].id) === id) { u = users[i]; break; }
+            }
             if (u) {
                 document.getElementById('clEmail').value = u.email || '';
                 document.getElementById('clName').value = u.name || '';
@@ -1321,41 +873,51 @@ function openClientModal(id=null) {
 }
 
 async function saveClient() {
-    const data = {
+    var data = {
         email: document.getElementById('clEmail').value.trim(),
         password: document.getElementById('clPass').value,
         name: document.getElementById('clName').value.trim(),
         phone: document.getElementById('clPhone').value.trim()
     };
     if (!data.email) { showToast('❌ Email обязателен', 'error'); return; }
-    
     try {
-        const url = editingClientId ? API+'/admin/users/'+editingClientId : API+'/register';
-        await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
-        closeModal('clientModal'); 
+        var url = editingClientId ? API + '/admin/users/' + editingClientId : API + '/register';
+        await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        closeModal('clientModal');
         showToast('✅ Клиент сохранён', 'success');
-        loadClients(); loadDashboard();
-    } catch(e) { showToast('❌ Ошибка сохранения', 'error'); }
+        loadClients();
+        loadDashboard();
+    } catch(e) {
+        showToast('❌ Ошибка сохранения', 'error');
+    }
 }
 
 async function deleteClient() {
     if (!confirm('⚠️ Удалить клиента?\nВсе данные и заказы будут потеряны.')) return;
     try {
-        await fetch(API+'/delete-account', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId:editingClientId}) });
-        closeModal('clientModal'); 
+        await fetch(API + '/delete-account', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({userId: editingClientId})
+        });
+        closeModal('clientModal');
         showToast('🗑️ Клиент удалён');
-        loadClients(); loadDashboard();
-    } catch(e) { showToast('❌ Ошибка удаления', 'error'); }
+        loadClients();
+        loadDashboard();
+    } catch(e) {
+        showToast('❌ Ошибка удаления', 'error');
+    }
 }
 
-// ========== IMPROVED CHAT SYSTEM ==========
-
+// ========== CHATS ==========
 async function loadChatList() {
-    // Clear polling if returning from active chat
     if (chatPolling) { clearInterval(chatPolling); chatPolling = null; }
-    
     try {
-        const chats = await fetch(API+'/admin/chats').then(r=>r.json());
+        var chats = await fetch(API + '/admin/chats').then(function(r){return r.json();});
         allChatsData = chats || [];
         renderChatList(allChatsData);
         updateUnreadBadge();
@@ -1365,192 +927,176 @@ async function loadChatList() {
 }
 
 function renderChatList(chats) {
-    const list = document.getElementById('chatUsersList');
-    const subtitle = document.getElementById('chatListSubtitle');
-    
+    var list = document.getElementById('chatUsersList');
+    var subtitle = document.getElementById('chatListSubtitle');
     if (!chats || chats.length === 0) {
         list.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>Нет активных диалогов</p></div>';
         subtitle.textContent = 'Все активные переписки';
         return;
     }
-    
-    // Sort: unread first, then by lastTime
-    const sorted = [...chats].sort((a, b) => {
-        if ((a.unread || 0) > 0 && (b.unread || 0) === 0) return -1;
-        if ((a.unread || 0) === 0 && (b.unread || 0) > 0) return 1;
+
+    var sorted = chats.slice().sort(function(a, b) {
+        var ua = a.unread || 0;
+        var ub = b.unread || 0;
+        if (ua > 0 && ub === 0) return -1;
+        if (ua === 0 && ub > 0) return 1;
         return new Date(b.lastTime || 0) - new Date(a.lastTime || 0);
     });
-    
-    const totalUnread = sorted.reduce((sum, c) => sum + (c.unread || 0), 0);
-    subtitle.textContent = `Диалогов: ${sorted.length}` + (totalUnread > 0 ? ` · Непрочитанных: ${totalUnread}` : '');
-    
-    list.innerHTML = sorted.map(c => {
-        const name = c.name || c.userId || 'Клиент';
-        const lastMsg = c.lastMessage || 'Нет сообщений';
-        const time = c.lastTime ? formatTime(c.lastTime) : '';
-        const unread = c.unread || 0;
-        
-        return `
-            <div class="chat-user-item" onclick="openChat('${c.userId}', '${escapeHtml(name).replace(/'/g, "\\'")}')" style="${unread > 0 ? 'background: rgba(0,102,255,0.03);' : ''}">
-                <div class="chat-avatar" style="position:relative;">
-                    ${name[0].toUpperCase()}
-                    ${unread > 0 ? '<span style="position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;background:var(--error);border-radius:50%;border:2px solid white;"></span>' : ''}
-                </div>
-                <div class="chat-user-info">
-                    <div class="chat-user-name">
-                        ${escapeHtml(name)}
-                        ${unread > 0 ? `<span class="unread-badge">${unread}</span>` : ''}
-                    </div>
-                    <div class="chat-user-last">${escapeHtml(lastMsg)}</div>
-                </div>
-                <div class="chat-user-time">${time}</div>
-                ${unread > 0 ? `<div class="chat-user-unread">${unread}</div>` : ''}
-            </div>`;
+
+    var totalUnread = sorted.reduce(function(sum, c) { return sum + (c.unread || 0); }, 0);
+    subtitle.textContent = 'Диалогов: ' + sorted.length + (totalUnread > 0 ? ' · Непрочитанных: ' + totalUnread : '');
+
+    list.innerHTML = sorted.map(function(c) {
+        var name = c.name || c.userId || 'Клиент';
+        var lastMsg = c.lastMessage || 'Нет сообщений';
+        var time = c.lastTime ? formatTime(c.lastTime) : '';
+        var unread = c.unread || 0;
+        var firstChar = name.charAt(0).toUpperCase();
+        var safeName = escapeHtml(name).replace(/'/g, "\\'");
+
+        return '<div class="chat-user-item" data-uid="' + escapeHtml(c.userId) + '" data-name="' + safeName + '"' + (unread > 0 ? ' style="background: rgba(0,102,255,0.03);"' : '') + '>' +
+            '<div class="chat-avatar" style="position:relative;">' + firstChar +
+            (unread > 0 ? '<span style="position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;background:var(--error);border-radius:50%;border:2px solid white;"></span>' : '') +
+            '</div>' +
+            '<div class="chat-user-info">' +
+            '<div class="chat-user-name">' + escapeHtml(name) + (unread > 0 ? '<span class="unread-badge">' + unread + '</span>' : '') + '</div>' +
+            '<div class="chat-user-last">' + escapeHtml(lastMsg) + '</div>' +
+            '</div>' +
+            '<div class="chat-user-time">' + time + '</div>' +
+            (unread > 0 ? '<div class="chat-user-unread">' + unread + '</div>' : '') +
+            '</div>';
     }).join('');
+
+    list.onclick = function(e) {
+        var item = e.target.closest('.chat-user-item');
+        if (item) openChat(item.dataset.uid, item.dataset.name);
+    };
 }
 
 function openChat(userId, name) {
     currentChatUser = userId;
-    
-    // Mark as read locally
-    const chat = allChatsData.find(c => c.userId === userId);
-    if (chat) chat.unread = 0;
+    var chat = null;
+    for (var i = 0; i < allChatsData.length; i++) {
+        if (allChatsData[i].userId === userId) { allChatsData[i].unread = 0; chat = allChatsData[i]; break; }
+    }
     updateUnreadBadge();
-    
-    // Hide list, show chat
+
     document.getElementById('chatListView').style.display = 'none';
-    document.getElementById('chatActiveView').style.display = 'flex';
-    document.getElementById('chatActiveView').classList.remove('hiding');
-    
+    var activeView = document.getElementById('chatActiveView');
+    activeView.style.display = 'flex';
+    activeView.classList.remove('hiding');
+    activeView.classList.add('showing');
+
     document.getElementById('chatUserName').textContent = name;
-    document.getElementById('chatAvatar').textContent = name[0].toUpperCase();
-    
-    // Clear messages
-    const container = document.getElementById('adminChatMessages');
+    document.getElementById('chatAvatar').textContent = name.charAt(0).toUpperCase();
+
+    var container = document.getElementById('adminChatMessages');
     container.innerHTML = '<div class="empty-state" id="chatEmptyState"><div class="icon">💬</div><p>Начните диалог</p></div>';
-    
-    // Focus input
-    setTimeout(() => {
+
+    setTimeout(function() {
         document.getElementById('adminChatInput').focus();
     }, 300);
-    
-    // Load messages and start polling
+
     loadChatMessages(userId);
     if (chatPolling) clearInterval(chatPolling);
-    chatPolling = setInterval(() => loadChatMessages(userId, true), 3000);
+    chatPolling = setInterval(function() { loadChatMessages(userId, true); }, 3000);
 }
 
 function closeActiveChat() {
-    const view = document.getElementById('chatActiveView');
+    var view = document.getElementById('chatActiveView');
+    view.classList.remove('showing');
     view.classList.add('hiding');
-    
-    setTimeout(() => {
+
+    setTimeout(function() {
         view.style.display = 'none';
         view.classList.remove('hiding');
         document.getElementById('chatListView').style.display = 'flex';
         if (chatPolling) { clearInterval(chatPolling); chatPolling = null; }
         currentChatUser = null;
-        loadChatList(); // Refresh unread counts
+        loadChatList();
     }, 250);
 }
 
-async function loadChatMessages(userId, append = false) {
+async function loadChatMessages(userId, append) {
     if (!userId) return;
-    
     try {
-        const msgs = await fetch(API+'/chat/' + userId).then(r => r.json());
-        const container = document.getElementById('adminChatMessages');
-        
+        var msgs = await fetch(API + '/chat/' + userId).then(function(r){return r.json();});
+        var container = document.getElementById('adminChatMessages');
+
         if (!msgs || msgs.length === 0) {
-            if (!append) {
-                container.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>Начните диалог</p></div>';
-            }
+            if (!append) container.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>Начните диалог</p></div>';
             return;
         }
-        
-        // Remove empty state if present
-        const emptyEl = container.querySelector('.empty-state');
+
+        var emptyEl = container.querySelector('.empty-state');
         if (emptyEl) emptyEl.remove();
-        
-        // Detect new messages for notification
+
         if (append && msgs.length > 0) {
-            const existingIds = new Set();
-            container.querySelectorAll('.chat-msg').forEach(el => {
-                const id = el.getAttribute('data-id');
-                if (id) existingIds.add(id);
+            var existingIds = {};
+            container.querySelectorAll('.chat-msg').forEach(function(el) {
+                var id = el.getAttribute('data-id');
+                if (id) existingIds[id] = true;
             });
-            
-            const newMsgs = msgs.filter(m => {
-                const msgId = m._id || m.id;
-                return msgId && !existingIds.has(msgId);
+            var hasNew = false;
+            msgs.forEach(function(m) {
+                var msgId = m._id || m.id;
+                if (msgId && !existingIds[msgId]) hasNew = true;
             });
-            
-            if (newMsgs.length > 0) {
-                playMsgSound();
-            }
+            if (hasNew) playMsgSound();
         }
-        
+
         if (!append) container.innerHTML = '';
-        
-        let lastDate = '';
-        msgs.forEach(m => {
-            const msgId = m._id || m.id || Math.random().toString(36).substr(2, 9);
-            
-            // Check if already rendered
-            if (append && container.querySelector(`[data-id="${msgId}"]`)) return;
-            
-            // Date separator
+
+        var lastDate = '';
+        msgs.forEach(function(m) {
+            var msgId = m._id || m.id || 'tmp_' + Math.random().toString(36).substr(2, 9);
+            if (append && container.querySelector('[data-id="' + msgId + '"]')) return;
+
             if (m.time) {
-                const msgDate = new Date(m.time).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+                var msgDate = new Date(m.time).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
                 if (msgDate !== lastDate) {
                     lastDate = msgDate;
-                    const sep = document.createElement('div');
+                    var sep = document.createElement('div');
                     sep.className = 'chat-date-sep';
-                    sep.innerHTML = `<span>${msgDate}</span>`;
+                    sep.innerHTML = '<span>' + msgDate + '</span>';
                     container.appendChild(sep);
                 }
             }
-            
-            const el = document.createElement('div');
-            el.className = `chat-msg ${m.from === 'admin' ? 'admin' : 'client'}`;
+
+            var el = document.createElement('div');
+            el.className = 'chat-msg ' + (m.from === 'admin' ? 'admin' : 'client');
             el.setAttribute('data-id', msgId);
-            const time = formatTime(m.time);
-            el.innerHTML = `<span class="msg-text">${escapeHtml(m.text)}</span><span class="time">${time}</span>`;
+            var timeStr = formatTime(m.time);
+            el.innerHTML = '<span class="msg-text">' + escapeHtml(m.text) + '</span><span class="time">' + timeStr + '</span>';
             container.appendChild(el);
         });
-        
-        // Scroll to bottom (only on initial load or if near bottom)
+
         if (!append) {
             container.scrollTop = container.scrollHeight;
         } else {
-            const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
-            if (isNearBottom || currentChatUser) {
-                container.scrollTop = container.scrollHeight;
-            }
+            var isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+            if (isNearBottom || currentChatUser) container.scrollTop = container.scrollHeight;
         }
-        
-        // Update chat status
+
         updateChatStatus(userId, msgs);
-        
     } catch(e) {
         if (!append) {
-            const container = document.getElementById('adminChatMessages');
+            var container = document.getElementById('adminChatMessages');
             container.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Ошибка загрузки сообщений</p></div>';
         }
     }
 }
 
 function updateChatStatus(userId, msgs) {
-    const statusEl = document.getElementById('chatUserStatus');
+    var statusEl = document.getElementById('chatUserStatus');
     if (msgs && msgs.length > 0) {
-        const lastMsg = msgs[msgs.length - 1];
-        const lastTime = formatTime(lastMsg.time);
-        const isClient = lastMsg.from !== 'admin';
-        
+        var lastMsg = msgs[msgs.length - 1];
+        var lastTime = formatTime(lastMsg.time);
+        var isClient = lastMsg.from !== 'admin';
         if (isClient) {
-            statusEl.innerHTML = `<span class="online-dot"></span> в сети · ${lastTime}`;
+            statusEl.innerHTML = '<span class="online-dot"></span> в сети · ' + lastTime;
         } else {
-            statusEl.innerHTML = `Админ ответил · ${lastTime}`;
+            statusEl.innerHTML = 'Админ ответил · ' + lastTime;
         }
     } else {
         statusEl.innerHTML = '<span class="online-dot"></span> онлайн';
@@ -1558,61 +1104,51 @@ function updateChatStatus(userId, msgs) {
 }
 
 async function sendAdminMsg() {
-    const input = document.getElementById('adminChatInput');
-    const text = input.value.trim();
-    const sendBtn = document.getElementById('sendBtn');
-    
+    var input = document.getElementById('adminChatInput');
+    var text = input.value.trim();
+    var sendBtn = document.getElementById('sendBtn');
     if (!text || !currentChatUser) return;
-    
-    // Disable send button
+
     sendBtn.classList.add('sending');
-    
-    // Optimistic UI: add message immediately
-    const container = document.getElementById('adminChatMessages');
-    const emptyEl = container.querySelector('.empty-state');
+
+    var container = document.getElementById('adminChatMessages');
+    var emptyEl = container.querySelector('.empty-state');
     if (emptyEl) emptyEl.remove();
-    
-    // Add date separator if needed
-    const now = new Date();
-    const todayStr = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-    const lastSep = container.querySelector('.chat-date-sep:last-child span');
+
+    var now = new Date();
+    var todayStr = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+    var lastSep = container.querySelector('.chat-date-sep:last-child span');
     if (!lastSep || lastSep.textContent !== todayStr) {
-        const sep = document.createElement('div');
+        var sep = document.createElement('div');
         sep.className = 'chat-date-sep';
-        sep.innerHTML = `<span>${todayStr}</span>`;
+        sep.innerHTML = '<span>' + todayStr + '</span>';
         container.appendChild(sep);
     }
-    
-    const tempId = 'temp_' + Date.now();
-    const tempEl = document.createElement('div');
+
+    var tempId = 'temp_' + Date.now();
+    var tempEl = document.createElement('div');
     tempEl.className = 'chat-msg admin';
     tempEl.setAttribute('data-id', tempId);
-    const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-    tempEl.innerHTML = `<span class="msg-text">${escapeHtml(text)}</span><span class="time">${timeStr} · ✓</span>`;
+    var timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    tempEl.innerHTML = '<span class="msg-text">' + escapeHtml(text) + '</span><span class="time">' + timeStr + ' · ✓</span>';
     container.appendChild(tempEl);
-    
-    // Clear input
+
     input.value = '';
     input.style.height = 'auto';
     container.scrollTop = container.scrollHeight;
-    
-    // Send to server
+
     try {
-        await fetch(API + '/chat', { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ userId: currentChatUser, from: 'admin', text }) 
+        await fetch(API + '/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ userId: currentChatUser, from: 'admin', text: text })
         });
-        
-        // Update the temporary message with real data
         tempEl.querySelector('.time').textContent = timeStr + ' · ✓✓';
     } catch(e) {
-        // Mark as failed
         tempEl.querySelector('.time').textContent = timeStr + ' · ❌';
         tempEl.style.opacity = '0.6';
         showToast('❌ Ошибка отправки', 'error');
     }
-    
     sendBtn.classList.remove('sending');
 }
 
@@ -1636,15 +1172,15 @@ function refreshChat() {
 }
 
 function markAllRead() {
-    allChatsData.forEach(c => c.unread = 0);
+    allChatsData.forEach(function(c) { c.unread = 0; });
     updateUnreadBadge();
     renderChatList(allChatsData);
     showToast('✅ Все прочитано');
 }
 
 function updateUnreadBadge() {
-    const total = allChatsData.reduce((sum, c) => sum + (c.unread || 0), 0);
-    const badge = document.getElementById('chatBadge');
+    var total = allChatsData.reduce(function(sum, c) { return sum + (c.unread || 0); }, 0);
+    var badge = document.getElementById('chatBadge');
     if (total > 0) {
         badge.style.display = 'block';
         badge.textContent = total > 9 ? '9+' : total;
@@ -1653,35 +1189,39 @@ function updateUnreadBadge() {
     }
 }
 
-// WORKSHOPS
+// ========== WORKSHOPS ==========
 async function loadWorkshops() {
     try {
-        const ws = await fetch(API+'/workshops').then(r=>r.json());
-        const list = document.getElementById('workshopsList');
-        if (ws.length === 0) {
+        var ws = await fetch(API + '/workshops').then(function(r){return r.json();});
+        var list = document.getElementById('workshopsList');
+        if (!ws || ws.length === 0) {
             list.innerHTML = '<div class="empty-state"><div class="icon">🏭</div><p>Цеха не добавлены</p></div>';
             return;
         }
-        list.innerHTML = ws.map(w => `
-            <div class="list-card" onclick="openWorkshopModal('${w.id}')">
-                <div class="list-card-row">
-                    <div class="workshop-icon">🏭</div>
-                    <div class="list-card-info">
-                        <div class="list-card-title">${escapeHtml(w.name)}</div>
-                        <div class="list-card-sub">${escapeHtml(w.address||'Адрес не указан')} · ${escapeHtml(w.phone||'Телефон не указан')}</div>
-                    </div>
-                    <div class="list-card-meta">
-                        <div style="font-size:20px;color:var(--gray-400);">→</div>
-                    </div>
-                </div>
-            </div>`).join('');
+
+        list.innerHTML = ws.map(function(w) {
+            return '<div class="list-card" data-wid="' + escapeHtml(w.id) + '">' +
+                '<div class="list-card-row">' +
+                '<div class="workshop-icon">🏭</div>' +
+                '<div class="list-card-info">' +
+                '<div class="list-card-title">' + escapeHtml(w.name) + '</div>' +
+                '<div class="list-card-sub">' + escapeHtml(w.address || 'Адрес не указан') + ' · ' + escapeHtml(w.phone || 'Телефон не указан') + '</div>' +
+                '</div>' +
+                '<div class="list-card-meta"><div style="font-size:20px;color:var(--gray-400);">→</div></div>' +
+                '</div></div>';
+        }).join('');
+
+        list.onclick = function(e) {
+            var card = e.target.closest('.list-card');
+            if (card) openWorkshopModal(card.dataset.wid);
+        };
     } catch(e) {
         document.getElementById('workshopsList').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Ошибка загрузки</p></div>';
     }
 }
 
-function openWorkshopModal(id=null) {
-    editingWorkshopId = id;
+function openWorkshopModal(id) {
+    editingWorkshopId = id || null;
     document.getElementById('wsModalTitle').textContent = id ? '✏️ Редактировать цех' : '➕ Добавить цех';
     document.getElementById('wsName').value = '';
     document.getElementById('wsEmail').value = '';
@@ -1689,10 +1229,13 @@ function openWorkshopModal(id=null) {
     document.getElementById('wsAddress').value = '';
     document.getElementById('wsDeleteBtn').style.display = id ? 'flex' : 'none';
     document.getElementById('workshopModal').classList.add('show');
-    
+
     if (id) {
-        fetch(API+'/workshops').then(r=>r.json()).then(ws => {
-            const w = ws.find(x => x.id === id);
+        fetch(API + '/workshops').then(function(r){return r.json();}).then(function(ws) {
+            var w = null;
+            for (var i = 0; i < ws.length; i++) {
+                if (ws[i].id === id) { w = ws[i]; break; }
+            }
             if (w) {
                 document.getElementById('wsName').value = w.name || '';
                 document.getElementById('wsEmail').value = w.email || '';
@@ -1704,96 +1247,73 @@ function openWorkshopModal(id=null) {
 }
 
 async function saveWorkshop() {
-    const data = {
+    var data = {
         name: document.getElementById('wsName').value.trim(),
         email: document.getElementById('wsEmail').value.trim(),
         phone: document.getElementById('wsPhone').value.trim(),
         address: document.getElementById('wsAddress').value.trim()
     };
     if (!data.name) { showToast('❌ Название обязательно', 'error'); return; }
-    
     try {
-        await fetch(API+'/workshops', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(editingWorkshopId ? {...data, id:editingWorkshopId} : data) });
-        closeModal('workshopModal'); 
+        if (editingWorkshopId) {
+            data.id = editingWorkshopId;
+        }
+        await fetch(API + '/workshops', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        closeModal('workshopModal');
         showToast('✅ Цех сохранён', 'success');
-        loadWorkshops(); loadDashboard();
-    } catch(e) { showToast('❌ Ошибка сохранения', 'error'); }
+        loadWorkshops();
+        loadDashboard();
+    } catch(e) {
+        showToast('❌ Ошибка сохранения', 'error');
+    }
 }
 
 async function deleteWorkshop() {
     if (!confirm('⚠️ Удалить цех?\nЭто действие нельзя отменить.')) return;
     try {
-        await fetch(API+'/workshops', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ deleteId: editingWorkshopId }) });
-        closeModal('workshopModal'); 
+        await fetch(API + '/workshops', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ deleteId: editingWorkshopId })
+        });
+        closeModal('workshopModal');
         showToast('🗑️ Цех удалён');
-        loadWorkshops(); loadDashboard();
-    } catch(e) { showToast('❌ Ошибка удаления', 'error'); }
+        loadWorkshops();
+        loadDashboard();
+    } catch(e) {
+        showToast('❌ Ошибка удаления', 'error');
+    }
 }
 
-// Background polling for unread messages (every 15s)
-let bgPolling = null;
+// ========== BACKGROUND POLLING ==========
 async function bgCheckUnread() {
     try {
-        const chats = await fetch(API+'/admin/chats').then(r=>r.json());
+        var chats = await fetch(API + '/admin/chats').then(function(r){return r.json();});
         if (chats && chats.length > 0) {
-            const newTotal = chats.reduce((sum, c) => sum + (c.unread || 0), 0);
+            var newTotal = chats.reduce(function(sum, c) { return sum + (c.unread || 0); }, 0);
             if (newTotal > 0 && newTotal !== unreadCount) {
                 unreadCount = newTotal;
                 updateUnreadBadge();
-                // Update chat list if visible
-                const activeTab = document.querySelector('.tab.active');
+                var activeTab = document.querySelector('.tab.active');
                 if (activeTab && activeTab.id === 'tab-chats') {
                     allChatsData = chats;
                     renderChatList(chats);
                 }
-                // Notify if chat is not active
-                if (!currentChatUser) {
-                    playMsgSound();
-                }
+                if (!currentChatUser) playMsgSound();
             }
             allChatsData = chats;
         }
     } catch(e) {}
 }
 
-// ==========================================
-// ✅ НАДЁЖНАЯ ИНИЦИАЛИЗАЦИЯ
-// ==========================================
-
-// Глобальная функция входа (чтобы работала отовсюду)
-window.checkLogin = function() {
-    const pass = document.getElementById('adminPass')?.value;
-    console.log('🔑 Проверка пароля:', pass);
-    
-    if (pass === 'kprint2024') {
-        sessionStorage.setItem('adminAuth', 'true');
-        console.log('✅ Пароль верный');
-        checkAuth();
-    } else {
-        const err = document.getElementById('loginError');
-        if (err) err.style.display = 'block';
-        console.log('❌ Неверный пароль');
-    }
-};
-
-// Проверяем сессию при загрузке
+// ========== INIT ==========
 checkAuth();
 
-// Запускаем фон, если вошли
-if (sessionStorage.getItem('adminAuth') === 'true') {
-    loadDashboard();
-    bgCheckUnread();
-    bgPolling = setInterval(bgCheckUnread, 15000);
-}
-
-// Очистка при закрытии
-window.addEventListener('beforeunload', () => {
-    if (bgPolling) clearInterval(bgPolling);
-    if (chatPolling) clearInterval(chatPolling);
-});
-
-// Очистка при закрытии
-window.addEventListener('beforeunload', () => {
+window.addEventListener('beforeunload', function() {
     if (bgPolling) clearInterval(bgPolling);
     if (chatPolling) clearInterval(chatPolling);
 });
