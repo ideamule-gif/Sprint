@@ -1062,20 +1062,35 @@ async function loadDashboard() {
             list.innerHTML = '<div class="empty-state"><div class="icon">📦</div><p>Нет заказов</p></div>';
             return;
         }
-        list.innerHTML = recent.map(o => `
-            <div class="list-card-row" onclick="openOrderModal('${o._id||o.id}')">
-                <div class="list-card-info">
-                    <div class="list-card-title">#${o._id||o.id} · ${o.name||'Клиент'}</div>
-                    <div class="list-card-sub">${o.material||'—'}</div>
-                </div>
-                <div class="list-card-meta">
-                    <div class="list-card-amount">${(o.total||0).toLocaleString('ru-RU')} ₽</div>
-                    <div style="margin-top:4px;"><span class="status-badge status-${o.status||'new'}">${getStatusName(o.status)}</span></div>
-                </div>
-            </div>`).join('');
-    } catch(e) { console.error(e); }
-}
+list.innerHTML = recent.map(o => {
+    const orderId = o._id || o.id;
+    const total = Number(o.total || 0).toLocaleString('ru-RU');
+    const status = o.status || 'new';
+    const statusName = getStatusName(status);
+    
+    return `
+    <div class="list-card-row" data-order-id="${orderId}">
+        <div class="list-card-info">
+            <div class="list-card-title">#${orderId} · ${o.name || 'Клиент'}</div>
+            <div class="list-card-sub">${o.material || '—'}</div>
+        </div>
+        <div class="list-card-meta">
+            <div class="list-card-amount">${total} ₽</div>
+            <div style="margin-top:4px;">
+                <span class="status-badge status-${status}">${statusName}</span>
+            </div>
+        </div>
+    </div>`;
+}).join('');
 
+// 🔹 Делегирование кликов (вместо onclick в HTML)
+list.onclick = (e) => {
+    const card = e.target.closest('.list-card-row');
+    if (card && typeof openOrderModal === 'function') {
+        openOrderModal(card.dataset.orderId);
+    }
+};
+    
 // ORDERS
 async function loadOrders() {
     try {
