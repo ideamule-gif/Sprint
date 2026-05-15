@@ -140,7 +140,12 @@
         .typing-indicator .dot:nth-child(2) { animation-delay: 0.15s; }
         .typing-indicator .dot:nth-child(3) { animation-delay: 0.3s; }
 
-        .chat-input-row { display: flex; gap: 8px; padding: 10px 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); border-top: 1px solid var(--gray-100); flex-shrink: 0; }
+        .chat-input-row { 
+            display: flex; gap: 8px; padding: 10px 12px; 
+            padding-bottom: calc(max(12px, env(safe-area-inset-bottom)) + 62px + 10px);
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); 
+            border-top: 1px solid var(--gray-100); flex-shrink: 0; position: relative; z-index: 30;
+        }
         .chat-input-row textarea { flex: 1; border: 1px solid var(--gray-200); border-radius: 20px; padding: 10px 14px; font-family: var(--font-sans); font-size: 14px; resize: none; outline: none; max-height: 80px; line-height: 1.4; transition: border-color 0.2s; }
         .chat-input-row textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,102,255,0.08); }
         .send-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--primary); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,102,255,0.3); transition: transform 0.15s, opacity 0.15s; }
@@ -551,21 +556,29 @@ window.checkLogin = async function() {
         } catch(e) {}
     }
 
-function fetchJSON(url) {
-  const token = sessionStorage.getItem('adminToken');
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = 'Bearer ' + token;
-  
-  return fetch(url, { headers })
-    .then(res => {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
-    })
-    .catch(err => {
-      console.error('❌ API ошибка:', url, err);
-      throw err;
-    });
-}
+    function fetchJSON(url, method = 'GET', body = null) {
+      const token = sessionStorage.getItem('adminToken');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+      
+      const opts = { method, headers };
+      if (body) opts.body = JSON.stringify(body);
+      
+      return fetch(url, opts)
+        .then(res => {
+          if (!res.ok) {
+            return res.json().then(errData => {
+              throw new Error(`HTTP ${res.status}: ${errData.error || res.statusText}`);
+            }).catch(() => new Error(`HTTP ${res.status}`));
+          }
+          return res.json();
+        })
+        .catch(err => {
+          console.error(`🔴 Ошибка API [${method} ${url}]:`, err);
+          showToast(`❌ Ошибка: ${err.message}`, 'error');
+          throw err;
+        });
+    }
 
     // ========== DASHBOARD ==========
     async function loadDashboard() {
@@ -1332,6 +1345,117 @@ function fetchJSON(url) {
         if (chatPollingTimer) clearInterval(chatPollingTimer);
     });
 
+        // ===== УВЕДОМЛЕНИЯ И БЕЙДЖИ =====
+    function initNotifications() {
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+    }
+
+    function showBrowserNotification(title, body) {
+      if (Notification.permission === 'granted') {
+        new Notification(title, { body, icon: '/icon-192.png', badge: '/icon-192.png' });
+      }
+    }
+
+    // Обновляем бейдж на вкладке и дашборде
+    function updateUnreadBadge() {
+      const total = allChatsData.reduce((sum, c) => sum + (c.unread || 0), 0);
+      const badge = document.getElementById('chatBadge');
+      const dashBadge = document.getElementById('dashUnread');
+      
+      if (badge) {
+        badge.style.display = total > 0 ? 'block' : 'none';
+        badge.textContent = total > 9 ? '9+' : total;
+      }
+      if (dashBadge) {
+        dashBadge.style.display = total > 0 ? 'flex' : 'none';
+        dashBadge.textContent = total;
+      }
+    }
+
+    // Удаление чата
+    async function deleteChat(userId) {
+      if (!confirm('Удалить все сообщения с этим клиентом?')) return;
+      try {
+        await fetchJSON(API_BASE + '/admin/chat/' + userId, 'DELETE');
+        showToast('🗑️ Чат удалён', 'success');
+        loadChatList();
+      } catch(e) { console.error('deleteChat failed', e); }
+    }
+
+    // Фоновая проверка новых сообщений (каждые 8 сек)
+    async function bgCheckUnread() {
+      if (sessionStorage.getItem('adminAuth') !== 'true') return;
+      try {
+        const chats = await fetchJSON(API_BASE + '/admin/chats');
+        if (!chats || chats.length === 0) { allChatsData = []; updateUnreadBadge(); return; }
+        
+        const lastSync = sessionStorage.getItem('lastSyncTime') || '0';
+        const lastSyncDate = new Date(lastSync).getTime();
+        let newMsgCount = 0;
+        
+        chats.forEach(c => {
+          const msgTime = c.lastTime ? new Date(c.lastTime).getTime() : 0;
+          c.unread = msgTime > lastSyncDate ? 1 : 0;
+          newMsgCount += c.unread;
+        });
+        
+        allChatsData = chats;
+        updateUnreadBadge();
+        
+        if (newMsgCount > 0 && !currentChatUserId) {
+          showBrowserNotification('📨 Новое сообщение', `Нечитанных: ${newMsgCount}`);
+          playMsgSound();
+        }
+        
+        if (document.querySelector('.tab.active')?.id === 'tab-chats' && !currentChatUserId) {
+          renderChatList(chats);
+        }
+        
+        sessionStorage.setItem('lastSyncTime', new Date().toISOString());
+      } catch(e) { console.error('bgCheckUnread error', e); }
+    }
+
+    // Добавляем кнопку удаления в шапку чата
+    function patchChatHeader() {
+      const header = document.querySelector('.chat-list-header');
+      if (header && !header.querySelector('.delete-chat-btn')) {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-sm btn-danger delete-chat-btn';
+        btn.style.cssText = 'width:auto; padding: 6px 10px; font-size: 11px; margin-left: 8px;';
+        btn.innerHTML = '🗑️ Очистить архив';
+        btn.onclick = () => {
+          if (!confirm('Удалить ВСЕ чаты и сообщения? Это действие необратимо.')) return;
+          allChatsData.forEach(async (c) => await deleteChat(c.userId));
+        };
+        header.appendChild(btn);
+      }
+    }
+
+    // Добавляем счётчик непрочитанных на дашборд
+    function patchDashboardUnread() {
+      const statsGrid = document.querySelector('.stats-grid');
+      if (statsGrid && !document.getElementById('dashUnread')) {
+        const card = document.createElement('div');
+        card.className = 'stat-card';
+        card.innerHTML = `
+          <div class="stat-icon">💬</div>
+          <div class="stat-value" id="dashUnread" style="display:none;">0</div>
+          <div class="stat-label">Непрочитанных</div>
+        `;
+        statsGrid.appendChild(card);
+      }
+    }
+
+    // Запуск при инициализации
+    document.addEventListener('DOMContentLoaded', () => {
+      patchChatHeader();
+      patchDashboardUnread();
+      initNotifications();
+      setInterval(bgCheckUnread, 8000);
+    });
+    
 })();
 </script>
 </body>
