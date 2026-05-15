@@ -1,18 +1,12 @@
-# robots.txt для Landpa
-
 User-agent: *
 Allow: /
 
-# ❌ ЗАПРЕЩАЕМ индексацию админки и служебных путей
+# ❌ Запрет индексации админки, API и загрузок
 Disallow: /admin.html
+Disallow: /admin
 Disallow: /api/
 Disallow: /uploads/
 Disallow: /*?*
 
-# ✅ Разрешаем важные файлы
-Allow: /manifest.json
-Allow: /sw.js
-Allow: /icon-*.png
-
-# Карта сайта
+# ✅ Карта сайта
 Sitemap: https://landpa.ru/sitemap.xml
