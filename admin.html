@@ -299,11 +299,8 @@
         <div style="font-size: 40px; margin-bottom: 12px;">🔐</div>
         <h2>Вход в Admin</h2>
         <p>Панель управления Landpa</p>
-        <div style="position: relative; margin-bottom: 12px;">
-            <input type="password" id="adminPass" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')checkLogin()" style="margin-bottom: 0; padding-right: 44px;">
-            <button class="eye-toggle" onclick="togglePass()" id="eyeBtn" type="button">👁️</button>
-        </div>
-        <button class="btn btn-primary" onclick="checkLogin()" style="margin-top: 12px;">Войти</button>
+        <input type="password" id="adminPass" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')window.checkLogin()">
+        <button class="btn btn-primary" onclick="window.checkLogin()" style="margin-top: 12px;">Войти</button>
         <p id="loginError" style="color:var(--error); font-size:12px; margin-top:10px; display:none;">Неверный пароль</p>
     </div>
 </div>
@@ -963,15 +960,14 @@ let unreadCount = 0;
 let allChatsData = [];
 let chatSoundEnabled = true;
 
-// AUTH
 function checkAuth() {
     if (sessionStorage.getItem('adminAuth') === 'true') {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('adminContent').classList.add('show');
-        initApp();
-    } else {
-        document.getElementById('loginScreen').style.display = 'flex';
-        document.getElementById('adminContent').classList.remove('show');
+        loadDashboard();
+        if (!window._bgPolling) {
+            window._bgPolling = setInterval(bgCheckUnread, 15000);
+        }
     }
 }
 function checkLogin() {
