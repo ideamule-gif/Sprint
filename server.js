@@ -379,4 +379,9 @@ app.post('/api/chat/read', async (req, res) => {
 });
 
 app.use('/uploads', express.static(uploadsDir));
+// Запрет индексации админки
+app.get('/admin.html', (req, res, next) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  next();
+});
 app.listen(PORT, () => console.log('🚀 Server running on port', PORT));
