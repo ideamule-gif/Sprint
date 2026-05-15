@@ -200,8 +200,10 @@ app.post('/api/telegram-login', async (req, res) => {
 app.post('/api/order', async (req, res) => {
   const order = req.body;
   const orders = db.collection('orders');
-  const count = await orders.countDocuments();
-  order._id = String(count + 1).padStart(6, '0');
+// Находим последний заказ по номеру, чтобы не дублироваться при удалении
+const lastOrder = await orders.findOne({}, { sort: { _id: -1 } });
+const nextNum = lastOrder ? parseInt(lastOrder._id) + 1 : 1;
+order._id = nextNum.toString().padStart(6, '0');
   order.status = 'new';
   order.createdAt = new Date();
   if (order.fileBase64 && order.fileName) {
