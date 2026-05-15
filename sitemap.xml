@@ -8,15 +8,4 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  
-  <!-- Если будут отдельные страницы (услуги, контакты) -->
-  <!--
-  <url>
-    <loc>https://landpa.ru/services</loc>
-    <lastmod>2026-01-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  -->
-  
 </urlset>
