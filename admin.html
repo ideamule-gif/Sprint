@@ -404,33 +404,37 @@
 
     // ========== AUTH ==========
     function checkAuth() {
-        if (sessionStorage.getItem('adminAuth') === 'true') {
-            var ls = document.getElementById('loginScreen');
-            var ac = document.getElementById('adminContent');
-            if (ls) ls.classList.add('hidden');
-            if (ac) ac.classList.add('show');
-            loadDashboard();
-            if (!bgPollingTimer) {
-                bgPollingTimer = setInterval(bgCheckUnread, 15000);
-            }
-        }
-    }
+  if (sessionStorage.getItem('adminToken')) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminContent').classList.add('show');
+    loadDashboard();
+  }
+}
 
-    window.checkLogin = function() {
-        var pass = document.getElementById('adminPass');
-        if (!pass) return;
-        var val = pass.value;
-        var err = document.getElementById('loginError');
-        if (val === ADMIN_PASSWORD) {
-            sessionStorage.setItem('adminAuth', 'true');
-            if (err) err.style.display = 'none';
-            checkAuth();
-        } else {
-            if (err) err.style.display = 'block';
-            pass.value = '';
-            pass.focus();
-        }
-    };
+window.checkLogin = async function() {
+  const pass = document.getElementById('adminPass').value;
+  const errEl = document.getElementById('loginError');
+  try {
+    const res = await fetch(API_BASE + '/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pass })
+    });
+    const data = await res.json();
+    if (data.success) {
+      sessionStorage.setItem('adminToken', data.token);
+      if (errEl) errEl.style.display = 'none';
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('adminContent').classList.add('show');
+      loadDashboard();
+    } else {
+      if (errEl) { errEl.style.display = 'block'; errEl.textContent = data.error || 'Неверный пароль'; }
+    }
+  } catch(e) {
+    console.error('Ошибка входа:', e);
+    if (errEl) { errEl.style.display = 'block'; errEl.textContent = '❌ Сервер не отвечает'; }
+  }
+};
 
     window.togglePass = function() {
         var inp = document.getElementById('adminPass');
@@ -547,12 +551,21 @@
         } catch(e) {}
     }
 
-    function fetchJSON(url) {
-        return fetch(url).then(function(r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.json();
-        });
-    }
+function fetchJSON(url) {
+  const token = sessionStorage.getItem('adminToken');
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  
+  return fetch(url, { headers })
+    .then(res => {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .catch(err => {
+      console.error('❌ API ошибка:', url, err);
+      throw err;
+    });
+}
 
     // ========== DASHBOARD ==========
     async function loadDashboard() {
