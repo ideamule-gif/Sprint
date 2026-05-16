@@ -4,9 +4,9 @@ const path = require('path');
 const crypto = require('crypto');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const webpush = require('web-push');
+const cors = require('cors');
 
 const app = express();
-const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://ideamule_db_user:BUFRqKh9raaJ8vyA@sprint.nygqpkm.mongodb.net/?appName=Sprint';
 const client = new MongoClient(MONGO_URI, { serverApi: ServerApiVersion.v1 });
@@ -63,25 +63,6 @@ async function sendTelegram(chatId, text) {
     });
   } catch (e) {}
 }
-
-// ===== ADMIN AUTH =====
-// 🔐 ЗАДАЙТЕ СВОЙ ПАРОЛЬ ЗДЕСЬ ИЛИ ЧЕРЕЗ ПЕРЕМЕННУЮ ОКРУЖЕНИЯ ADMIN_PASSWORD
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'AdminSecure2026!';
-
-app.post('/api/admin/login', (req, res) => {
-  const { password } = req.body;
-  if (password !== ADMIN_PASSWORD) {
-    return res.status(401).json({ success: false, error: 'Неверный пароль' });
-  }
-  res.json({ success: true, token: 'admin-authorized' });
-});
-
-const requireAdmin = (req, res, next) => {
-  if (req.headers.authorization !== 'Bearer admin-authorized') {
-    return res.status(401).json({ error: 'Требуется авторизация администратора' });
-  }
-  next();
-};
 
 // Главная
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
@@ -200,10 +181,9 @@ app.post('/api/telegram-login', async (req, res) => {
 app.post('/api/order', async (req, res) => {
   const order = req.body;
   const orders = db.collection('orders');
-// Находим последний заказ по номеру, чтобы не дублироваться при удалении
-const lastOrder = await orders.findOne({}, { sort: { _id: -1 } });
-const nextNum = lastOrder ? parseInt(lastOrder._id) + 1 : 1;
-order._id = nextNum.toString().padStart(6, '0');
+  const lastOrder = await orders.findOne({}, { sort: { _id: -1 } });
+  const nextNum = lastOrder ? parseInt(lastOrder._id) + 1 : 1;
+  order._id = nextNum.toString().padStart(6, '0');
   order.status = 'new';
   order.createdAt = new Date();
   if (order.fileBase64 && order.fileName) {
@@ -213,7 +193,6 @@ order._id = nextNum.toString().padStart(6, '0');
     order.fileUrl = `/uploads/${order._id}_${order.fileName}`;
   }
   delete order.fileBase64;
-
   await orders.insertOne(order);
 
   const extrasText = order.extras?.length > 0 ? order.extras.map(e => `${e.name}: ${Math.round(e.cost)} р.`).join(', ') : 'Нет';
@@ -237,13 +216,27 @@ app.get('/api/orders/:userId', async (req, res) => {
   res.json(orders.map(o => ({ ...o, id: o._id.toString() })));
 });
 
-// ========== ВСЕ ЗАКАЗЫ (АДМИН) 🔐 =====
+// 🔐 АДМИН АВТОРИЗАЦИЯ (ОБЪЯВЛЯЕМ ТОЛЬКО ОДИН РАЗ)
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'Admin2026!';
+
+app.post('/api/admin/login', (req, res) => {
+  const { password } = req.body;
+  if (password !== ADMIN_PASS) return res.status(401).json({ success: false, error: 'Неверный пароль' });
+  res.json({ success: true, token: 'ok' });
+});
+
+const requireAdmin = (req, res, next) => {
+  if (req.headers.authorization !== 'Bearer ok') return res.status(401).json({ error: 'Требуется авторизация' });
+  next();
+};
+
+// ========== ВСЕ ЗАКАЗЫ (АДМИН) 🔐 ==========
 app.get('/api/admin/orders', requireAdmin, async (req, res) => {
   const orders = await db.collection('orders').find().sort({ createdAt: -1 }).toArray();
   res.json(orders.map(o => ({ ...o, id: o._id.toString() })));
 });
 
-// ========== СМЕНА СТАТУСА 🔐 =====
+// ========== СМЕНА СТАТУСА 🔐 ==========
 app.post('/api/admin/status', requireAdmin, async (req, res) => {
   const { orderId, status } = req.body;
   const order = await db.collection('orders').findOne({ _id: orderId });
@@ -318,6 +311,7 @@ app.post('/api/chat', async (req, res) => {
   res.json({ success: true });
 });
 
+// ========== АДМИН: ЧАТЫ 🔐 ==========
 app.get('/api/admin/chats', requireAdmin, async (req, res) => {
   const chat = db.collection('chat');
   const users = db.collection('users');
@@ -339,13 +333,13 @@ app.get('/api/admin/chats', requireAdmin, async (req, res) => {
   res.json(result);
 });
 
-// ========== УДАЛЕНИЕ ЗАКАЗА 🔐 =====
+// ========== УДАЛЕНИЕ ЗАКАЗА 🔐 ==========
 app.delete('/api/admin/orders/:orderId', requireAdmin, async (req, res) => {
   await db.collection('orders').deleteOne({ _id: req.params.orderId });
   res.json({ success: true });
 });
 
-// ========== ОЧИСТКА ЧАТА 🔐 =====
+// ========== ОЧИСТКА ЧАТА 🔐 ==========
 app.delete('/api/admin/chat/:userId', requireAdmin, async (req, res) => {
   if (ObjectId.isValid(req.params.userId)) {
     await db.collection('chat').deleteMany({ userId: req.params.userId });
@@ -378,90 +372,32 @@ app.post('/api/chat/read', async (req, res) => {
   res.json({ success: true });
 });
 
-app.use('/uploads', express.static(uploadsDir));
-// Запрет индексации админки
-app.get('/admin.html', (req, res, next) => {
-  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-  next();
-});
-
-// 🔐 АДМИН АВТОРИЗАЦИЯ (объявляем ТОЛЬКО ОДИН РАЗ)
-const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'Admin2026!';
-
-// Эндпоинт входа в админку
-app.post('/api/admin/login', (req, res) => {
-  const { password } = req.body;
-  if (password !== ADMIN_PASS) return res.status(401).json({ success: false, error: 'Неверный пароль' });
-  res.json({ success: true, token: 'ok' });
-});
-
-// Middleware защиты (ОДИН раз!)
-const requireAdmin = (req, res, next) => {
-  if (req.headers.authorization !== 'Bearer ok') return res.status(401).json({ error: 'Требуется авторизация' });
-  next();
-};
-
-// ===== ЗАЩИЩЁННЫЕ АДМИН-МАРШРУТЫ =====
-app.get('/api/admin/orders', requireAdmin, async (req, res) => {
-  const orders = await db.collection('orders').find().sort({ createdAt: -1 }).toArray();
-  res.json(orders.map(o => ({ ...o, id: o._id.toString() })));
-});
-
-app.post('/api/admin/status', requireAdmin, async (req, res) => {
-  const { orderId, status } = req.body;
-  const order = await db.collection('orders').findOne({ _id: orderId });
-  if (!order) return res.json({ success: false, error: 'Заказ не найден' });
-  await db.collection('orders').updateOne({ _id: orderId }, { $set: { status } });
-  sendTelegram(ADMIN_CHAT_ID, `📋 Статус заказа #${orderId}: ${statusNames[status] || status}`);
-  res.json({ success: true });
-});
-
-app.get('/api/admin/chats', requireAdmin, async (req, res) => {
-  const chat = db.collection('chat');
-  const users = db.collection('users');
-  const userIds = await chat.distinct('userId');
-  const result = [];
-  for (const uid of userIds) {
-    if (!uid || !ObjectId.isValid(uid)) continue;
-    let user = await users.findOne({ _id: new ObjectId(uid) }).catch(() => null);
-    const lastMsg = await chat.findOne({ userId: uid }, { sort: { time: -1 } });
-    result.push({
-      userId: uid,
-      name: user?.name || uid,
-      email: user?.email || '',
-      lastMessage: lastMsg?.text || '',
-      lastTime: lastMsg?.time || null
-    });
-  }
-  res.json(result);
-});
-
-app.delete('/api/admin/orders/:orderId', requireAdmin, async (req, res) => {
-  await db.collection('orders').deleteOne({ _id: req.params.orderId });
-  res.json({ success: true });
-});
-
-app.delete('/api/admin/chat/:userId', requireAdmin, async (req, res) => {
-  if (ObjectId.isValid(req.params.userId)) {
-    await db.collection('chat').deleteMany({ userId: req.params.userId });
-  }
-  res.json({ success: true });
-});
-
 // ========== РЕДАКТИРОВАНИЕ ПРОФИЛЯ ==========
 app.put('/api/profile', async (req, res) => {
   const userId = req.headers['x-user-id'];
   if (!userId || !ObjectId.isValid(userId)) return res.status(400).json({ success: false, error: 'Неверный ID' });
-  
   const { name, phone } = req.body;
   const updateData = {};
   if (name && name.trim()) updateData.name = name.trim();
   if (phone && phone.trim()) updateData.phone = phone.trim();
-  
   if (Object.keys(updateData).length === 0) return res.json({ success: false, error: 'Нет данных для обновления' });
-  
   await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: updateData });
   res.json({ success: true, ...updateData });
+});
+
+// ========== СТАТИКА ДЛЯ ЗАГРУЗОК ==========
+app.use('/uploads', express.static(uploadsDir));
+
+// ========== ЗАПРЕТ ИНДЕКСАЦИИ АДМИНКИ ==========
+app.get('/admin', (req, res, next) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store, private');
+  next();
+});
+app.get('/admin.html', (req, res, next) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store, private');
+  next();
 });
 
 // 🚀 ЗАПУСК СЕРВЕРА
