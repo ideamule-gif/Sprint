@@ -235,6 +235,49 @@
         max-width: 460px !important;
     }
 }
+
+        /* === ИДЕАЛЬНОЕ ЦЕНТРИРОВАНИЕ МОДАЛОК НА ПК === */
+@media (min-width: 769px) {
+    /* Фоновый оверлей растягиваем на весь экран и делаем flex-контейнером */
+    .modal, .popup, .dialog, .overlay, [class*="modal"], [class*="popup"], [id*="modal"], [id*="popup"] {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 10000 !important;
+        background: rgba(0,0,0,0.5) !important;
+        padding: 20px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Сам блок с контентом модалки */
+    .modal-content, .popup-content, .dialog-box, .modal > div, .popup > div, .dialog > div, [class*="body"], [class*="box"] {
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        right: auto !important;
+        transform: none !important;
+        margin: 0 auto !important;
+        max-width: 480px !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.25) !important;
+        padding: 24px !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+    }
+
+    /* Страховка от inline-стилей, которые JS может навешивать динамически */
+    [style*="left: "][style*="px"], [style*="left: "][style*="%"], [style*="top: "] {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+}
     </style>
 </head>
 <body>
