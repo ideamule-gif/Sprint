@@ -9,6 +9,39 @@
     <link rel="manifest" href="/manifest-admin.json">
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  
+    /* ===== ПК-АДАПТАЦИЯ: ЦЕНТРИРОВАНИЕ КАК В МОБИЛЬНОМ ПРИЛОЖЕНИИ ===== */
+@media (min-width: 769px) {
+    html {
+        background: #e5e7eb !important;
+        margin: 0 !important;
+    }
+    body {
+        max-width: 480px !important;
+        margin: 0 auto !important;
+        background: #ffffff !important;
+        min-height: 100vh !important;
+        box-shadow: 0 0 25px rgba(0,0,0,0.08) !important;
+        position: relative !important;
+    }
+    /* Вытаскиваем фиксированные панели за пределы body, чтобы они не сужались */
+    nav, .bottom-nav, .top-nav, .tabs-bar, .fixed-panel, [style*="position: fixed"], [style*="position:fixed"] {
+        position: fixed !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        max-width: 480px !important;
+        width: 100% !important;
+        right: auto !important;
+        margin: 0 !important;
+        z-index: 1000 !important;
+    }
+    /* Модальные окна и попапы тоже по центру */
+    .modal, .popup, .dialog, .overlay, [id*="modal"], [class*="modal"] {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        max-width: 460px !important;
+    }
+}
     
     <style>
         :root {
