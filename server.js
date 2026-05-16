@@ -384,4 +384,21 @@ app.get('/admin.html', (req, res, next) => {
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   next();
 });
+
+// ========== РЕДАКТИРОВАНИЕ ПРОФИЛЯ ==========
+app.put('/api/profile', async (req, res) => {
+  const userId = req.headers['x-user-id'];
+  if (!userId || !ObjectId.isValid(userId)) return res.status(400).json({ success: false, error: 'Неверный ID' });
+  
+  const { name, phone } = req.body;
+  const updateData = {};
+  if (name && name.trim()) updateData.name = name.trim();
+  if (phone && phone.trim()) updateData.phone = phone.trim();
+  
+  if (Object.keys(updateData).length === 0) return res.json({ success: false, error: 'Нет данных для обновления' });
+  
+  await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: updateData });
+  res.json({ success: true, ...updateData });
+});
+
 app.listen(PORT, () => console.log('🚀 Server running on port', PORT));
