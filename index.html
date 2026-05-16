@@ -971,6 +971,40 @@
             body { max-width: 100%; }
             .bottom-nav { max-width: 100%; width: calc(100% - 24px); }
         }
+
+        /* ===== АДАПТАЦИЯ ПОД ПК ===== */
+@media (min-width: 768px) {
+    /* Фон страницы на ПК (чтобы было видно границы контейнера) */
+    body {
+        background: #e5e7eb;
+        padding-bottom: 80px; /* Отступ под фиксированную навигацию */
+    }
+
+    /* Центрируем основной контент */
+    body, main, .content, .app-container {
+        max-width: 480px; /* Можешь поставить 1024px, если хочешь шире */
+        margin: 0 auto;
+        background: #f8fafc;
+        min-height: 100vh;
+        box-shadow: 0 0 30px rgba(0,0,0,0.08);
+    }
+
+    /* Фиксим нижнюю/верхнюю панель навигации */
+    nav, .bottom-nav, .admin-nav, .tabs-bar {
+        max-width: 480px !important;
+        left: 50% !important;
+        transform: translateX(-50%);
+        width: 100% !important;
+        border-radius: 12px 12px 0 0; /* Скругление углов на ПК */
+    }
+
+    /* Если навигация фиксированная */
+    nav[style*="fixed"], .fixed-nav {
+        position: fixed !important;
+        bottom: 0 !important;
+    }
+}
+        
     </style>
 </head>
 <body>
