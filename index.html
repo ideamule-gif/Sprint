@@ -1885,7 +1885,8 @@ function loadProfile() {
             ${currentUser.phone ? `<p style="color:var(--gray-500);font-size:13px;">📞 ${currentUser.phone}</p>` : ''}
             ${currentUser.tg ? `<p style="color:var(--gray-500);font-size:13px;">✈️ ${currentUser.tg}</p>` : ''}
         </div>
-        
+
+        <button id="edit-profile-btn" style="width:100%; margin-top:12px; padding:14px; border:1px solid #e5e7eb; border-radius:12px; background:#fff; font-size:15px; font-weight:500; cursor:pointer; color:#374151; box-shadow:0 2px 6px rgba(0,0,0,0.04);">✏️ Редактировать профиль</button>
         <button class="btn btn-outline" onclick="logout()" style="margin-top:12px;">🚪 Выйти</button>
         <button class="btn btn-danger" onclick="deleteAccount()" style="margin-top:10px;">🗑 Удалить профиль</button>
         
@@ -2406,6 +2407,55 @@ function showTypingIndicator() {
     setTimeout(() => el.style.display = 'none', 4000);
 }
 // 💡 Вызывайте showTypingIndicator() когда сервер присылает сигнал "typing"
+
+      // ===== РЕДАКТИРОВАНИЕ ПРОФИЛЯ =====
+const editBtn = document.getElementById('edit-profile-btn');
+if (editBtn) {
+  editBtn.addEventListener('click', () => {
+    // Безопасно получаем данные пользователя
+    const u = user || JSON.parse(localStorage.getItem('user')) || {};
+    
+    const modal = document.createElement('div');
+    modal.id = 'edit-profile-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000;padding:20px;';
+    modal.innerHTML = `
+      <div style="background:#fff;padding:24px;border-radius:16px;width:100%;max-width:340px;box-shadow:0 12px 35px rgba(0,0,0,0.15);">
+        <h3 style="margin:0 0 16px;text-align:center;font-size:18px;">✏️ Изменить данные</h3>
+        <input id="edit-name" placeholder="Ваше имя" value="${u.name||''}" style="width:100%;padding:12px;margin-bottom:12px;border:1px solid #ddd;border-radius:10px;font-size:15px;box-sizing:border-box;">
+        <input id="edit-phone" placeholder="Телефон" value="${u.phone||''}" style="width:100%;padding:12px;margin-bottom:20px;border:1px solid #ddd;border-radius:10px;font-size:15px;box-sizing:border-box;">
+        <div style="display:flex;gap:10px;">
+          <button id="save-profile-btn" style="flex:1;padding:12px;border:none;border-radius:10px;background:#0056b3;color:#fff;font-weight:600;cursor:pointer;font-size:15px;">💾 Сохранить</button>
+          <button onclick="document.getElementById('edit-profile-modal').remove()" style="flex:1;padding:12px;border:none;border-radius:10px;background:#f3f4f6;cursor:pointer;font-size:15px;">Отмена</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Сохранение
+    document.getElementById('save-profile-btn').addEventListener('click', async () => {
+      const name = document.getElementById('edit-name').value.trim();
+      const phone = document.getElementById('edit-phone').value.trim();
+      
+      const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-user-id': u.id },
+        body: JSON.stringify({ name, phone })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        if (name) u.name = name;
+        if (phone) u.phone = phone;
+        localStorage.setItem('user', JSON.stringify(u));
+        // Обновляем имя на странице без перезагрузки
+        document.querySelector('.profile-name, .user-name, #userName')?.textContent = u.name || 'Клиент';
+        modal.remove();
+      } else {
+        alert(data.error || 'Не удалось сохранить');
+      }
+    });
+  });
+}
       
 </script>
 </body>
