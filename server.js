@@ -385,7 +385,70 @@ app.get('/admin.html', (req, res, next) => {
   next();
 });
 
-// ========== РЕДАКТИРОВАНИЕ ПРОФИЛЯ ==========
+// 🔐 АДМИН АВТОРИЗАЦИЯ (только один раз!)
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'Admin2026!';
+
+// Эндпоинт входа
+app.post('/api/admin/login', (req, res) => {
+  const { password } = req.body;
+  if (password !== ADMIN_PASS) return res.status(401).json({ success: false, error: 'Неверный пароль' });
+  res.json({ success: true, token: 'ok' });
+});
+
+// Middleware защиты (объявляем ОДИН раз)
+const requireAdmin = (req, res, next) => {
+  if (req.headers.authorization !== 'Bearer ok') return res.status(401).json({ error: 'Требуется авторизация' });
+  next();
+};
+
+// Защищаем админские маршруты (перезаписываем их с middleware)
+app.get('/api/admin/orders', requireAdmin, async (req, res) => {
+  const orders = await db.collection('orders').find().sort({ createdAt: -1 }).toArray();
+  res.json(orders.map(o => ({ ...o, id: o._id.toString() })));
+});
+
+app.post('/api/admin/status', requireAdmin, async (req, res) => {
+  const { orderId, status } = req.body;
+  const order = await db.collection('orders').findOne({ _id: orderId });
+  if (!order) return res.json({ success: false, error: 'Заказ не найден' });
+  await db.collection('orders').updateOne({ _id: orderId }, { $set: { status } });
+  sendTelegram(ADMIN_CHAT_ID, `📋 Статус заказа #${orderId}: ${statusNames[status] || status}`);
+  res.json({ success: true });
+});
+
+app.get('/api/admin/chats', requireAdmin, async (req, res) => {
+  const chat = db.collection('chat');
+  const users = db.collection('users');
+  const userIds = await chat.distinct('userId');
+  const result = [];
+  for (const uid of userIds) {
+    if (!uid || !ObjectId.isValid(uid)) continue;
+    let user = await users.findOne({ _id: new ObjectId(uid) }).catch(() => null);
+    const lastMsg = await chat.findOne({ userId: uid }, { sort: { time: -1 } });
+    result.push({
+      userId: uid,
+      name: user?.name || uid,
+      email: user?.email || '',
+      lastMessage: lastMsg?.text || '',
+      lastTime: lastMsg?.time || null
+    });
+  }
+  res.json(result);
+});
+
+app.delete('/api/admin/orders/:orderId', requireAdmin, async (req, res) => {
+  await db.collection('orders').deleteOne({ _id: req.params.orderId });
+  res.json({ success: true });
+});
+
+app.delete('/api/admin/chat/:userId', requireAdmin, async (req, res) => {
+  if (ObjectId.isValid(req.params.userId)) {
+    await db.collection('chat').deleteMany({ userId: req.params.userId });
+  }
+  res.json({ success: true });
+});
+
+// ========== РЕДАКТИРОВАНИЕ ПРОФИЛЯ (только один раз!) ==========
 app.put('/api/profile', async (req, res) => {
   const userId = req.headers['x-user-id'];
   if (!userId || !ObjectId.isValid(userId)) return res.status(400).json({ success: false, error: 'Неверный ID' });
@@ -401,50 +464,5 @@ app.put('/api/profile', async (req, res) => {
   res.json({ success: true, ...updateData });
 });
 
-// 🔐 АДМИН ЛОГИН + ЗАЩИТА МАРШРУТОВ
-const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'Admin2026!';
-app.post('/api/admin/login', (req, res) => {
-  const { password } = req.body;
-  if (password !== ADMIN_PASS) return res.status(401).json({ success: false, error: 'Неверный пароль' });
-  res.json({ success: true, token: 'ok' });
-});
-const requireAdmin = (req, res, next) => {
-  if (req.headers.authorization !== 'Bearer ok') return res.status(401).json({ error: 'Требуется авторизация' });
-  next();
-};
-// Применяем защиту ко всем админским маршрутам:
-app.get('/api/admin/orders', requireAdmin, async (req, res) => {
-  const orders = await db.collection('orders').find().sort({ createdAt: -1 }).toArray();
-  res.json(orders.map(o => ({ ...o, id: o._id.toString() })));
-});
-app.post('/api/admin/status', requireAdmin, async (req, res) => {
-  const { orderId, status } = req.body;
-  const order = await db.collection('orders').findOne({ _id: orderId });
-  if (!order) return res.json({ success: false, error: 'Заказ не найден' });
-  await db.collection('orders').updateOne({ _id: orderId }, { $set: { status } });
-  sendTelegram(ADMIN_CHAT_ID, `📋 Статус заказа #${orderId}: ${statusNames[status] || status}`);
-  res.json({ success: true });
-});
-app.get('/api/admin/chats', requireAdmin, async (req, res) => {
-  const chat = db.collection('chat');
-  const users = db.collection('users');
-  const userIds = await chat.distinct('userId');
-  const result = [];
-  for (const uid of userIds) {
-    if (!uid || !ObjectId.isValid(uid)) continue;
-    let user = await users.findOne({ _id: new ObjectId(uid) }).catch(() => null);
-    const lastMsg = await chat.findOne({ userId: uid }, { sort: { time: -1 } });
-    result.push({ userId: uid, name: user?.name || uid, email: user?.email || '', lastMessage: lastMsg?.text || '', lastTime: lastMsg?.time || null });
-  }
-  res.json(result);
-});
-app.delete('/api/admin/orders/:orderId', requireAdmin, async (req, res) => {
-  await db.collection('orders').deleteOne({ _id: req.params.orderId });
-  res.json({ success: true });
-});
-app.delete('/api/admin/chat/:userId', requireAdmin, async (req, res) => {
-  if (ObjectId.isValid(req.params.userId)) await db.collection('chat').deleteMany({ userId: req.params.userId });
-  res.json({ success: true });
-});
-
+// Запуск сервера
 app.listen(PORT, () => console.log('🚀 Server running on port', PORT));
