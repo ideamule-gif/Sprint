@@ -972,36 +972,51 @@
             .bottom-nav { max-width: 100%; width: calc(100% - 24px); }
         }
 
-        /* ===== АДАПТАЦИЯ ПОД ПК ===== */
-@media (min-width: 768px) {
-    /* Фон страницы на ПК (чтобы было видно границы контейнера) */
+     /* ===== ИСПРАВЛЕНИЕ ДЛЯ ПК (Гарантированное центрирование) ===== */
+@media (min-width: 769px) {
+    html, body {
+        background: #e5e7eb !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Центрируем всю страницу */
     body {
-        background: #e5e7eb;
-        padding-bottom: 80px; /* Отступ под фиксированную навигацию */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        min-height: 100vh !important;
     }
 
-    /* Центрируем основной контент */
-    body, main, .content, .app-container {
-        max-width: 480px; /* Можешь поставить 1024px, если хочешь шире */
-        margin: 0 auto;
-        background: #f8fafc;
-        min-height: 100vh;
-        box-shadow: 0 0 30px rgba(0,0,0,0.08);
+    /* Принудительно сужаем И центрируем ЛЮБОЙ главный контейнер */
+    .app, #app, main, .content, .page, .container, body > div:first-of-type {
+        max-width: 480px !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        background: #ffffff !important;
+        min-height: 100vh !important;
+        box-shadow: 0 0 40px rgba(0,0,0,0.08) !important;
+        position: relative !important;
     }
 
-    /* Фиксим нижнюю/верхнюю панель навигации */
-    nav, .bottom-nav, .admin-nav, .tabs-bar {
+    /* Центрируем навигацию, табы и модалки */
+    nav, .bottom-nav, .top-nav, .tabs-bar, .header, footer, 
+    .modal, .popup, .overlay, .dialog {
         max-width: 480px !important;
         left: 50% !important;
-        transform: translateX(-50%);
+        transform: translateX(-50%) !important;
         width: 100% !important;
-        border-radius: 12px 12px 0 0; /* Скругление углов на ПК */
+        right: auto !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
     }
 
-    /* Если навигация фиксированная */
+    /* Фиксим фиксированные панели */
     nav[style*="fixed"], .fixed-nav {
         position: fixed !important;
         bottom: 0 !important;
+        top: auto !important;
     }
 }
         
