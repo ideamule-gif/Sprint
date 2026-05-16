@@ -971,55 +971,6 @@
             body { max-width: 100%; }
             .bottom-nav { max-width: 100%; width: calc(100% - 24px); }
         }
-
-     /* ===== ИСПРАВЛЕНИЕ ДЛЯ ПК (Гарантированное центрирование) ===== */
-@media (min-width: 769px) {
-    html, body {
-        background: #e5e7eb !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow-x: hidden !important;
-    }
-
-    /* Центрируем всю страницу */
-    body {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        min-height: 100vh !important;
-    }
-
-    /* Принудительно сужаем И центрируем ЛЮБОЙ главный контейнер */
-    .app, #app, main, .content, .page, .container, body > div:first-of-type {
-        max-width: 480px !important;
-        width: 100% !important;
-        margin: 0 auto !important;
-        background: #ffffff !important;
-        min-height: 100vh !important;
-        box-shadow: 0 0 40px rgba(0,0,0,0.08) !important;
-        position: relative !important;
-    }
-
-    /* Центрируем навигацию, табы и модалки */
-    nav, .bottom-nav, .top-nav, .tabs-bar, .header, footer, 
-    .modal, .popup, .overlay, .dialog {
-        max-width: 480px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 100% !important;
-        right: auto !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-
-    /* Фиксим фиксированные панели */
-    nav[style*="fixed"], .fixed-nav {
-        position: fixed !important;
-        bottom: 0 !important;
-        top: auto !important;
-    }
-}
-        
     </style>
 </head>
 <body>
