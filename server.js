@@ -385,23 +385,23 @@ app.get('/admin.html', (req, res, next) => {
   next();
 });
 
-// 🔐 АДМИН АВТОРИЗАЦИЯ (только один раз!)
+// 🔐 АДМИН АВТОРИЗАЦИЯ (объявляем ТОЛЬКО ОДИН РАЗ)
 const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'Admin2026!';
 
-// Эндпоинт входа
+// Эндпоинт входа в админку
 app.post('/api/admin/login', (req, res) => {
   const { password } = req.body;
   if (password !== ADMIN_PASS) return res.status(401).json({ success: false, error: 'Неверный пароль' });
   res.json({ success: true, token: 'ok' });
 });
 
-// Middleware защиты (объявляем ОДИН раз)
+// Middleware защиты (ОДИН раз!)
 const requireAdmin = (req, res, next) => {
   if (req.headers.authorization !== 'Bearer ok') return res.status(401).json({ error: 'Требуется авторизация' });
   next();
 };
 
-// Защищаем админские маршруты (перезаписываем их с middleware)
+// ===== ЗАЩИЩЁННЫЕ АДМИН-МАРШРУТЫ =====
 app.get('/api/admin/orders', requireAdmin, async (req, res) => {
   const orders = await db.collection('orders').find().sort({ createdAt: -1 }).toArray();
   res.json(orders.map(o => ({ ...o, id: o._id.toString() })));
@@ -448,7 +448,7 @@ app.delete('/api/admin/chat/:userId', requireAdmin, async (req, res) => {
   res.json({ success: true });
 });
 
-// ========== РЕДАКТИРОВАНИЕ ПРОФИЛЯ (только один раз!) ==========
+// ========== РЕДАКТИРОВАНИЕ ПРОФИЛЯ ==========
 app.put('/api/profile', async (req, res) => {
   const userId = req.headers['x-user-id'];
   if (!userId || !ObjectId.isValid(userId)) return res.status(400).json({ success: false, error: 'Неверный ID' });
@@ -464,5 +464,5 @@ app.put('/api/profile', async (req, res) => {
   res.json({ success: true, ...updateData });
 });
 
-// Запуск сервера
+// 🚀 ЗАПУСК СЕРВЕРА
 app.listen(PORT, () => console.log('🚀 Server running on port', PORT));
