@@ -63,6 +63,47 @@
       "priceRange": "₽₽",
       "description": "Онлайн-сервис заказа баннеров и широкоформатной печати в Краснодаре."
     }
+
+        // ===== 1. ФИКС БАННЕРА PWA (игнорирует старый кэш) =====
+(function() {
+  const b = document.getElementById('pwa-banner');
+  if (b && window.innerWidth < 768 && !sessionStorage.getItem('pwa-shown')) {
+    sessionStorage.setItem('pwa-shown', '1');
+    setTimeout(() => b.style.display = 'block', 2500);
+  }
+  // Кнопка закрытия
+  document.querySelector('.pwa-close')?.addEventListener('click', () => {
+    b.style.display = 'none';
+    localStorage.setItem('pwa-dismissed', Date.now());
+  });
+})();
+
+// ===== 2. ФИКС ЭМОДЗИ (находит любые похожие элементы) =====
+(function() {
+  const input = document.querySelector('input[placeholder*="Сообщение"], input[placeholder*="message"], .chat-input input, #messageInput');
+  const picker = document.querySelector('.emoji-picker, #emojiPicker, [class*="emoji"][class*="pick"]');
+  const btn = document.querySelector('.emoji-btn, #emojiToggle, button[class*="emoji"], [onclick*="emoji"]');
+  
+  if (btn && picker && input) {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isHidden = picker.style.display === 'none' || !picker.style.display;
+      if (isHidden) { input.blur(); setTimeout(() => picker.classList.add('show'), 80); }
+      else { picker.classList.remove('show'); input.focus(); }
+    });
+    picker.addEventListener('click', (e) => {
+      const el = e.target.closest('span, button, div');
+      if (el && el.textContent.trim() && el.textContent.trim().length <= 2) {
+        const char = el.textContent.trim();
+        const pos = input.selectionStart;
+        input.value = input.value.substring(0, pos) + char + input.value.substring(pos);
+        input.focus();
+        picker.classList.remove('show');
+      }
+    });
+  }
+})();
+        
     </script>
     
     <!-- Fonts -->
@@ -1095,6 +1136,25 @@
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }        
+
+        /* === ФИКС PWA + ЭМОДЗИ + МОДАЛКИ === */
+#pwa-banner { display: none; }
+.emoji-picker, #emojiPicker, [class*="emoji"][class*="pick"] {
+  display: none !important;
+  position: absolute !important;
+  bottom: 58px !important;
+  left: 8px !important; right: 8px !important;
+  background: #fff !important;
+  border-radius: 14px !important;
+  padding: 10px !important;
+  z-index: 900 !important;
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.12) !important;
+  max-height: 180px !important;
+  overflow-y: auto !important;
+}
+.emoji-picker.show { display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 6px !important; }
+@media (min-width: 768px) { #pwa-banner { display: none !important; } }
+        
     </style>
 </head>
 <body>
@@ -2318,132 +2378,117 @@ renderOrderStep();
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
 </script>
 
-  <script>
+<script>
+// ===== 1. ПРОВЕРКА ОРИЕНТАЦИИ (блокировка горизонтали) =====
 function checkOrientation() {
+  const lock = document.getElementById('landscape-lock');
+  if (!lock) return;
   if (window.innerWidth > window.innerHeight) {
-    document.getElementById('landscape-lock').style.display = 'flex';
+    lock.style.display = 'flex';
   } else {
-    document.getElementById('landscape-lock').style.display = 'none';
+    lock.style.display = 'none';
   }
 }
 window.addEventListener('resize', checkOrientation);
 window.addEventListener('orientationchange', checkOrientation);
 checkOrientation();
 
-// ===== НОВЫЙ КОД ДЛЯ БАННЕРА (ВСТАВЬТЕ СЮДА) =====
-function hidePwaBanner() {
-  document.getElementById('pwa-banner').style.display = 'none';
-  localStorage.setItem('pwa-dismissed', Date.now().toString());
-}
-if (!localStorage.getItem('pwa-dismissed') && window.innerWidth < 768) {
-  setTimeout(() => {
-    const b = document.getElementById('pwa-banner');
-    if (b) b.style.display = 'block';
-  }, 3000);
-}
-// ===== КОНЕЦ НОВОГО КОДА =====
+// ===== 2. PWA БАННЕР (появляется через 2.5 сек, закрывается по ✕) =====
+(function() {
+  const banner = document.getElementById('pwa-banner');
+  if (banner && window.innerWidth < 768 && !sessionStorage.getItem('pwa-shown')) {
+    sessionStorage.setItem('pwa-shown', '1');
+    setTimeout(() => banner.style.display = 'block', 2500);
+  }
+  document.querySelector('.pwa-close')?.addEventListener('click', () => {
+    banner.style.display = 'none';
+    localStorage.setItem('pwa-dismissed', Date.now());
+  });
+})();
 
-      // ===== ЛОГИКА ЭМОДЗИ (как в WhatsApp) =====
-const chatInput = document.querySelector('.chat-input input, #messageInput, input[placeholder*="Сообщение"]');
-const emojiBtn = document.querySelector('.emoji-btn, #emojiToggle, button:has(.emoji-icon)');
-const emojiPicker = document.querySelector('.emoji-picker, #emojiPicker');
-
-if (emojiBtn && chatInput && emojiPicker) {
-    // Клик по кнопке 😊 -> скрыть клавиатуру, показать эмодзи
-    emojiBtn.addEventListener('click', () => {
-        if (emojiPicker.style.display === 'flex') {
-            emojiPicker.style.display = 'none';
-            chatInput.focus(); // вернуть клавиатуру
-        } else {
-            chatInput.blur(); // скрыть клавиатуру
-            setTimeout(() => emojiPicker.style.display = 'flex', 100);
-        }
+// ===== 3. ЭМОДЗИ (открывается вместо клавиатуры, закрывается после выбора) =====
+(function() {
+  const input = document.querySelector('input[placeholder*="Сообщение"], input[placeholder*="message"], .chat-input input, #messageInput');
+  const picker = document.querySelector('.emoji-picker, #emojiPicker, [class*="emoji"][class*="pick"]');
+  const btn = document.querySelector('.emoji-btn, #emojiToggle, button[class*="emoji"], [onclick*="emoji"]');
+  
+  if (btn && picker && input) {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isHidden = picker.style.display === 'none' || !picker.style.display;
+      if (isHidden) { input.blur(); setTimeout(() => picker.classList.add('show'), 80); }
+      else { picker.classList.remove('show'); input.focus(); }
     });
-
-    // Клик по эмодзи -> вставить символ, закрыть панель, вернуть фокус
-    emojiPicker.addEventListener('click', (e) => {
-        const el = e.target.closest('span, div');
-        if (el && el.textContent.trim()) {
-            const char = el.textContent.trim();
-            const start = chatInput.selectionStart;
-            chatInput.value = chatInput.value.substring(0, start) + char + chatInput.value.substring(start);
-            chatInput.focus();
-            chatInput.selectionStart = chatInput.selectionEnd = start + char.length;
-            emojiPicker.style.display = 'none'; // закрыть после выбора
-        }
-    });
-
-    // Клик в поле ввода -> автоматически закрыть эмодзи
-    chatInput.addEventListener('focus', () => {
-        emojiPicker.style.display = 'none';
-    });
-}
-
-// ===== ИНДИКАТОР «ПЕЧАТАЕТ» (3 точки) =====
-function showTypingIndicator() {
-    let el = document.getElementById('typing-dots');
-    if (!el) {
-        el = document.createElement('div');
-        el.id = 'typing-dots';
-        el.className = 'typing-indicator';
-        el.innerHTML = '<div class="typing-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
-        document.querySelector('.chat-messages, #chatMessages')?.appendChild(el);
-    }
-    el.style.display = 'flex';
-    // Авто-скрытие через 4 сек (или когда придет реальное сообщение)
-    setTimeout(() => el.style.display = 'none', 4000);
-}
-// 💡 Вызывайте showTypingIndicator() когда сервер присылает сигнал "typing"
-
-      // ===== РЕДАКТИРОВАНИЕ ПРОФИЛЯ =====
-const editBtn = document.getElementById('edit-profile-btn');
-if (editBtn) {
-  editBtn.addEventListener('click', () => {
-    // Безопасно получаем данные пользователя
-    const u = user || JSON.parse(localStorage.getItem('user')) || {};
-    
-    const modal = document.createElement('div');
-    modal.id = 'edit-profile-modal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000;padding:20px;';
-    modal.innerHTML = `
-      <div style="background:#fff;padding:24px;border-radius:16px;width:100%;max-width:340px;box-shadow:0 12px 35px rgba(0,0,0,0.15);">
-        <h3 style="margin:0 0 16px;text-align:center;font-size:18px;">✏️ Изменить данные</h3>
-        <input id="edit-name" placeholder="Ваше имя" value="${u.name||''}" style="width:100%;padding:12px;margin-bottom:12px;border:1px solid #ddd;border-radius:10px;font-size:15px;box-sizing:border-box;">
-        <input id="edit-phone" placeholder="Телефон" value="${u.phone||''}" style="width:100%;padding:12px;margin-bottom:20px;border:1px solid #ddd;border-radius:10px;font-size:15px;box-sizing:border-box;">
-        <div style="display:flex;gap:10px;">
-          <button id="save-profile-btn" style="flex:1;padding:12px;border:none;border-radius:10px;background:#0056b3;color:#fff;font-weight:600;cursor:pointer;font-size:15px;">💾 Сохранить</button>
-          <button onclick="document.getElementById('edit-profile-modal').remove()" style="flex:1;padding:12px;border:none;border-radius:10px;background:#f3f4f6;cursor:pointer;font-size:15px;">Отмена</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    // Сохранение
-    document.getElementById('save-profile-btn').addEventListener('click', async () => {
-      const name = document.getElementById('edit-name').value.trim();
-      const phone = document.getElementById('edit-phone').value.trim();
-      
-      const res = await fetch('/api/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'x-user-id': u.id },
-        body: JSON.stringify({ name, phone })
-      });
-      const data = await res.json();
-      
-      if (data.success) {
-        if (name) u.name = name;
-        if (phone) u.phone = phone;
-        localStorage.setItem('user', JSON.stringify(u));
-        // Обновляем имя на странице без перезагрузки
-        document.querySelector('.profile-name, .user-name, #userName')?.textContent = u.name || 'Клиент';
-        modal.remove();
-      } else {
-        alert(data.error || 'Не удалось сохранить');
+    picker.addEventListener('click', (e) => {
+      const el = e.target.closest('span, button, div');
+      if (el && el.textContent.trim() && el.textContent.trim().length <= 2) {
+        const char = el.textContent.trim();
+        const pos = input.selectionStart;
+        input.value = input.value.substring(0, pos) + char + input.value.substring(pos);
+        input.focus();
+        picker.classList.remove('show');
       }
     });
-  });
-}
-      
+    input.addEventListener('focus', () => picker.classList.remove('show'));
+  }
+})();
+
+// ===== 4. ИНДИКАТОР «ПЕЧАТАЕТ» (3 точки) =====
+window.showTyping = function() {
+  let el = document.getElementById('typing-dots');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'typing-dots';
+    el.className = 'typing-indicator';
+    el.innerHTML = '<div class="typing-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+    document.querySelector('.chat-messages, #chatMessages, .messages')?.appendChild(el);
+  }
+  el.style.display = 'flex';
+  setTimeout(() => el.style.display = 'none', 4000);
+};
+
+// ===== 5. РЕДАКТИРОВАНИЕ ПРОФИЛЯ =====
+document.getElementById('edit-profile-btn')?.addEventListener('click', () => {
+  const rawUser = localStorage.getItem('user');
+  const u = rawUser ? JSON.parse(rawUser) : {};
+  const uid = u.id || localStorage.getItem('userId');
+  if (!uid) { alert('Пожалуйста, войдите в аккаунт.'); return; }
+
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:#fff;padding:24px;border-radius:16px;width:100%;max-width:340px;box-shadow:0 10px 30px rgba(0,0,0,0.15);">
+      <h3 style="margin:0 0 16px;text-align:center;font-size:18px;">✏️ Изменить данные</h3>
+      <input id="ep-name" placeholder="Имя" value="${u.name||''}" style="width:100%;padding:12px;margin-bottom:12px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+      <input id="ep-phone" placeholder="Телефон" value="${u.phone||''}" style="width:100%;padding:12px;margin-bottom:16px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+      <div style="display:flex;gap:10px;">
+        <button id="ep-save" style="flex:1;padding:12px;border:none;border-radius:8px;background:#0056b3;color:#fff;font-weight:600;cursor:pointer;">💾 Сохранить</button>
+        <button id="ep-cancel" style="flex:1;padding:12px;border:none;border-radius:8px;background:#eee;cursor:pointer;">Отмена</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  document.getElementById('ep-cancel').onclick = () => modal.remove();
+  
+  document.getElementById('ep-save').onclick = async () => {
+    const name = document.getElementById('ep-name').value.trim();
+    const phone = document.getElementById('ep-phone').value.trim();
+    const res = await fetch('/api/profile', { 
+      method:'PUT', 
+      headers:{ 'Content-Type':'application/json', 'x-user-id': uid }, 
+      body: JSON.stringify({name, phone}) 
+    });
+    const d = await res.json();
+    if (d.success) {
+      if (name) u.name = name; if (phone) u.phone = phone;
+      localStorage.setItem('user', JSON.stringify(u));
+      modal.remove();
+      document.querySelector('.profile-name, .user-name, #userName')?.textContent = u.name || 'Клиент';
+      alert('Профиль обновлён');
+    } else {
+      alert(d.error || 'Ошибка сохранения');
+    }
+  };
+});
 </script>
 </body>
 </html>
