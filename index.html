@@ -64,7 +64,6 @@
       "description": "Онлайн-сервис заказа баннеров и широкоформатной печати в Краснодаре."
     }
     </script>
-    <!-- ===== END SEO ===== -->
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -73,6 +72,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+
+    /* ===== PWA Баннер ===== */
+.pwa-banner { position: fixed; bottom: 80px; left: 12px; right: 12px; z-index: 950; animation: slideUpPwa 0.5s ease forwards; }
+@keyframes slideUpPwa { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.pwa-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); padding: 14px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.12); display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.pwa-icon { font-size: 28px; }
+.pwa-text b { font-size: 14px; display: block; margin-bottom: 2px; }
+.pwa-text p { font-size: 12px; color: #666; margin: 0; }
+.pwa-close { background: none; border: none; font-size: 20px; color: #999; cursor: pointer; padding: 0 4px; margin-left: auto; }
+.pwa-steps { background: #f5f7fa; padding: 10px 12px; border-radius: 12px; font-size: 11px; color: #555; line-height: 1.4; }
+.pwa-steps span { display: block; margin-bottom: 4px; }
+.pwa-steps span:last-child { margin-bottom: 0; }
+@media (min-width: 768px) { .pwa-banner { display: none !important; } }
     
     <style>
         :root {
@@ -1004,10 +1016,122 @@
         max-width: 460px !important;
     }
 }
+        
+        /* ===== PWA баннер на главной ===== */
+        .pwa-banner {
+  position: fixed; bottom: 80px; left: 12px; right: 12px; z-index: 900;
+  animation: slideUpBanner 0.5s ease forwards;
+}
+.pwa-card {
+  background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+  padding: 14px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+}
+.pwa-icon { font-size: 24px; }
+.pwa-text { flex: 1; }
+.pwa-text b { font-size: 14px; display: block; }
+.pwa-text p { font-size: 12px; color: var(--gray-500); margin: 2px 0 0; }
+.pwa-close {
+  background: none; border: none; font-size: 18px; color: var(--gray-400);
+  cursor: pointer; padding: 4px;
+}
+.pwa-steps {
+  background: #f8f9fa; padding: 10px 14px; border-radius: 12px;
+  font-size: 11px; color: var(--gray-600); display: flex; flex-direction: column; gap: 4px;
+}
+@keyframes slideUpBanner { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@media (min-width: 768px) { .pwa-banner { display: none !important; } } /* На ПК не показываем */
+
+/* ===== ЧАТ: ФОН КАК В WHATSAPP ===== */
+.chat-messages, #chatMessages, .messages-container {
+  background: #f0f2f5 !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239c92ac' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+  background-attachment: fixed !important;
+}
+
+/* ===== ЭМОДЗИ-ПАНЕЛЬ: ОТКРЫВАЕТСЯ НАД СТРОКОЙ ВВОДА ===== */
+.emoji-picker, #emojiPicker, .emojis-container {
+  position: absolute !important;
+  bottom: 56px !important; /* Высота строки ввода + небольшой отступ */
+  left: 8px !important;
+  right: 8px !important;
+  max-height: 200px !important;
+  background: #fff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1) !important;
+  padding: 10px !important;
+  z-index: 150 !important;
+  display: none !important; /* Скрыто по умолчанию */
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  overflow-y: auto !important;
+}
+.emoji-picker.show, #emojiPicker.show, .emojis-container.show {
+  display: flex !important;
+}
+.emoji-picker span, .emoji-btn {
+  font-size: 22px !important;
+  cursor: pointer !important;
+  padding: 4px !important;
+  border-radius: 8px !important;
+  transition: background 0.15s !important;
+}
+.emoji-picker span:hover, .emoji-btn:hover {
+  background: #f0f0f0 !important;
+}
+
+/* ===== ИНДИКАТОР «ПЕЧАТАЕТ» — АККУРАТНЫЙ, НЕ НА ВЕСЬ ЭКРАН ===== */
+.typing-indicator {
+  position: absolute !important;
+  bottom: 8px !important;
+  left: 16px !important;
+  z-index: 10 !important;
+}
+.typing-bubble {
+  background: #e9ecef !important;
+  padding: 8px 14px !important;
+  border-radius: 18px 18px 18px 4px !important;
+  display: inline-flex !important;
+  gap: 4px !important;
+  align-items: center !important;
+}
+.typing-dot {
+  width: 6px !important;
+  height: 6px !important;
+  background: #6c757d !important;
+  border-radius: 50% !important;
+  animation: typingBounce 1.4s infinite ease-in-out both !important;
+}
+.typing-dot:nth-child(1) { animation-delay: -0.32s !important; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s !important; }
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}        
     </style>
 </head>
 <body>
+     <div id="landscape-lock" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9999; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
+      <div style="font-size:48px; margin-bottom:16px;">🔄</div>
+      <div style="font-size:18px; color:#333; line-height:1.5;">Пожалуйста, поверните телефон<br>вертикально для удобной работы</div>
+    </div>
 
+    <!-- PWA Баннер -->
+<div id="pwa-banner" class="pwa-banner" style="display:none;">
+  <div class="pwa-card">
+    <div class="pwa-icon">📲</div>
+    <div class="pwa-text">
+      <b>Установите приложение</b>
+      <p>Работает быстрее и присылает уведомления о заказе</p>
+    </div>
+    <button class="pwa-close" onclick="hidePwaBanner()">✕</button>
+  </div>
+  <div class="pwa-steps">
+    <span>🍎 <b>iPhone:</b> Поделиться → На экран «Домой»</span>
+    <span>🤖 <b>Android:</b> Меню (⋮) → Установить приложение</span>
+  </div>
+</div>
+    
 <nav class="bottom-nav">
     <div class="nav-item active" data-tab="tab-home">
         <span class="nav-icon">🏠</span>
@@ -2204,6 +2328,85 @@ function closeModal() {
 // ===== INIT =====
 renderOrderStep();
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
+</script>
+
+  <script>
+function checkOrientation() {
+  if (window.innerWidth > window.innerHeight) {
+    document.getElementById('landscape-lock').style.display = 'flex';
+  } else {
+    document.getElementById('landscape-lock').style.display = 'none';
+  }
+}
+window.addEventListener('resize', checkOrientation);
+window.addEventListener('orientationchange', checkOrientation);
+checkOrientation();
+
+// ===== НОВЫЙ КОД ДЛЯ БАННЕРА (ВСТАВЬТЕ СЮДА) =====
+function hidePwaBanner() {
+  document.getElementById('pwa-banner').style.display = 'none';
+  localStorage.setItem('pwa-dismissed', Date.now().toString());
+}
+if (!localStorage.getItem('pwa-dismissed') && window.innerWidth < 768) {
+  setTimeout(() => {
+    const b = document.getElementById('pwa-banner');
+    if (b) b.style.display = 'block';
+  }, 3000);
+}
+// ===== КОНЕЦ НОВОГО КОДА =====
+
+      // ===== ЛОГИКА ЭМОДЗИ (как в WhatsApp) =====
+const chatInput = document.querySelector('.chat-input input, #messageInput, input[placeholder*="Сообщение"]');
+const emojiBtn = document.querySelector('.emoji-btn, #emojiToggle, button:has(.emoji-icon)');
+const emojiPicker = document.querySelector('.emoji-picker, #emojiPicker');
+
+if (emojiBtn && chatInput && emojiPicker) {
+    // Клик по кнопке 😊 -> скрыть клавиатуру, показать эмодзи
+    emojiBtn.addEventListener('click', () => {
+        if (emojiPicker.style.display === 'flex') {
+            emojiPicker.style.display = 'none';
+            chatInput.focus(); // вернуть клавиатуру
+        } else {
+            chatInput.blur(); // скрыть клавиатуру
+            setTimeout(() => emojiPicker.style.display = 'flex', 100);
+        }
+    });
+
+    // Клик по эмодзи -> вставить символ, закрыть панель, вернуть фокус
+    emojiPicker.addEventListener('click', (e) => {
+        const el = e.target.closest('span, div');
+        if (el && el.textContent.trim()) {
+            const char = el.textContent.trim();
+            const start = chatInput.selectionStart;
+            chatInput.value = chatInput.value.substring(0, start) + char + chatInput.value.substring(start);
+            chatInput.focus();
+            chatInput.selectionStart = chatInput.selectionEnd = start + char.length;
+            emojiPicker.style.display = 'none'; // закрыть после выбора
+        }
+    });
+
+    // Клик в поле ввода -> автоматически закрыть эмодзи
+    chatInput.addEventListener('focus', () => {
+        emojiPicker.style.display = 'none';
+    });
+}
+
+// ===== ИНДИКАТОР «ПЕЧАТАЕТ» (3 точки) =====
+function showTypingIndicator() {
+    let el = document.getElementById('typing-dots');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'typing-dots';
+        el.className = 'typing-indicator';
+        el.innerHTML = '<div class="typing-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+        document.querySelector('.chat-messages, #chatMessages')?.appendChild(el);
+    }
+    el.style.display = 'flex';
+    // Авто-скрытие через 4 сек (или когда придет реальное сообщение)
+    setTimeout(() => el.style.display = 'none', 4000);
+}
+// 💡 Вызывайте showTypingIndicator() когда сервер присылает сигнал "typing"
+      
 </script>
 </body>
 </html>
