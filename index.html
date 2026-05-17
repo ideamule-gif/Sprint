@@ -1139,6 +1139,13 @@ select {
 </head>
 
 <body>
+<!-- ===== 10.1. БЛОКИРОВКА ГОРИЗОНТАЛЬНОГО РЕЖИМА ===== -->
+    <div id="landscape-lock" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9999; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
+      <div style="font-size:48px; margin-bottom:16px;">🔄</div>
+      <div style="font-size:18px; color:#333; line-height:1.5;">Пожалуйста, поверните телефон<br>вертикально для удобной работы
+      </div>
+    </div>
+    
     <!-- ===== 10.2. PWA БАННЕР (УСТАНОВКА ПРИЛОЖЕНИЯ) ===== -->
     <div id="pwa-banner" class="pwa-banner" style="display:none;">
       <div class="pwa-card">
@@ -1209,11 +1216,11 @@ select {
     <div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
         <div class="modal-box" id="modalContent"></div>
     </div>
-
+<script>
 // ==============================================
 // 12. СКРИПТЫ: ЛОГИКА ПРИЛОЖЕНИЯ
 // ==============================================
-<script>
+    
 // ===== 12.1. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И НАСТРОЙКИ =====
 const API = '/api';
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -2001,8 +2008,7 @@ function loadProfile() {
             ${currentUser.tg ? `<p style="color:var(--gray-500);font-size:13px;">✈️ ${currentUser.tg}</p>` : ''}
         </div>
 
-        <button id="edit-profile-btn" style="width:100%; margin-top:12px; padding:14px; border:1px solid #e5e7eb; border-radius:12px; background:#fff; font-size:15px; font-weight:500; cursor:pointer; color:#374151; box-shadow:0 2px 6px rgba(0,0,0,0.04);">✏️ Редактировать профиль</button>
-        <button class="btn btn-outline" onclick="logout()" style="margin-top:12px;">🚪 Выйти</button>
+        <button id="edit-profile-btn" style="width:100%; margin-top:12px; padding:14px; border:1px solid #e5e7eb; border-radius:12px; background:#fff; font-size:15px; font-weight:500; cursor:pointer; color:#374151;">✏️ Редактировать профиль</button>        <button class="btn btn-outline" onclick="logout()" style="margin-top:12px;">🚪 Выйти</button>
         <button class="btn btn-danger" onclick="deleteAccount()" style="margin-top:10px;">🗑 Удалить профиль</button>
         
         <div class="section-header" style="margin-top:24px;">📋 История заказов</div>
