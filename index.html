@@ -1264,6 +1264,11 @@ function switchTab(tabId) {
     if (tabId === 'tab-order') renderOrderStep();
     
     if (tabId === 'tab-chat') {
+        // 🔹 При открытии чата — сбрасываем счётчик и удаляем уведомление
+chatUnreadCount = 0;
+updateChatBadge();
+document.getElementById('chat-toast')?.remove();
+        
         loadChatPage();
         if (currentUser?.id) {
             // Пометить сообщения как прочитанные
@@ -1753,6 +1758,11 @@ function appendNewChatMessages(newMsgs) {
         // Если пользователь не внизу — показываем badge
         if (msg.from === 'admin' && !wasNearBottom) {
             chatUnreadCount++;
+            // 🔔 Показываем всплывающее уведомление, если пользователь НЕ в чате
+const currentTab = sessionStorage.getItem('activeTab');
+if (currentTab !== 'tab-chat' && msg.from === 'admin') {
+  showChatNotification();
+}
             updateChatBadge();
         }
     });
@@ -2642,6 +2652,53 @@ document.addEventListener('click', (e) => {
     };
   }
 });
+
+// ===== ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ НАД ВКЛАДКОЙ ЧАТ =====
+function showChatNotification() {
+  // Удаляем старое уведомление, если есть
+  const old = document.getElementById('chat-toast');
+  if (old) old.remove();
+  
+  const toast = document.createElement('div');
+  toast.id = 'chat-toast';
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #0066FF, #00E5FF);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    box-shadow: 0 8px 24px rgba(0,102,255,0.4);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: toastSlide 0.3s ease, toastFade 0.3s ease 3.5s forwards;
+    cursor: pointer;
+  `;
+  toast.innerHTML = `🔔 Новое сообщение <span style="font-size:16px">→</span>`;
+  toast.onclick = () => {
+    switchTab('tab-chat');
+    toast.remove();
+  };
+  document.body.appendChild(toast);
+  
+  // Авто-удаление через 4 сек
+  setTimeout(() => toast.remove(), 4000);
+}
+
+// Анимации для тоста
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes toastSlide { from { opacity:0; transform:translate(-50%, 20px); } to { opacity:1; transform:translate(-50%, 0); } }
+  @keyframes toastFade { to { opacity:0; transform:translate(-50%, -10px); } }
+`;
+document.head.appendChild(style);
+        
 </script>
 </body>
 </html>
