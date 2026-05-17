@@ -1552,7 +1552,7 @@ function calc() {
     // Сохраняем данные для отправки
     matData = {
         type: currentMaterial, width: w, height: h, qty, total: Math.round(total),
-        totalArea, extras, material: { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' }[currentMaterial]
+        totalArea, extras, material: ({ banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' })[currentMaterial]
     };
 }
 
