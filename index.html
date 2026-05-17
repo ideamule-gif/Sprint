@@ -2529,7 +2529,14 @@ if ('serviceWorker' in navigator) {
 function checkOrientation() {
   const lock = document.getElementById('landscape-lock');
   if (!lock) return;
-  if (window.innerWidth > window.innerHeight) {
+  
+  // Более надёжная проверка: учитываем соотношение сторон + экран устройства
+  const isLandscape = window.innerWidth > window.innerHeight && screen.orientation?.type?.includes('landscape');
+  
+  // Для устройств без screen.orientation API (старые браузеры)
+  const fallback = window.innerWidth > window.innerHeight && window.innerWidth > 768;
+  
+  if (isLandscape || fallback) {
     lock.style.display = 'flex';
   } else {
     lock.style.display = 'none';
