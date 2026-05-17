@@ -2529,13 +2529,11 @@ function checkOrientation() {
   const lock = document.getElementById('landscape-lock');
   if (!lock) return;
   
-  // Более надёжная проверка: учитываем соотношение сторон + экран устройства
-  const isLandscape = window.innerWidth > window.innerHeight && screen.orientation?.type?.includes('landscape');
+  // Показываем блокировку ТОЛЬКО на мобильных/планшетах (< 768px) в горизонтальном режиме
+  const isMobile = window.innerWidth < 768;
+  const isLandscape = window.innerWidth > window.innerHeight;
   
-  // Для устройств без screen.orientation API (старые браузеры)
-  const fallback = window.innerWidth > window.innerHeight && window.innerWidth > 768;
-  
-  if (isLandscape || fallback) {
+  if (isMobile && isLandscape) {
     lock.style.display = 'flex';
   } else {
     lock.style.display = 'none';
@@ -2599,53 +2597,50 @@ window.showTyping = function() {
   setTimeout(() => el.style.display = 'none', 4000);
 };
 
-// ===== 18.5. РЕДАКТИРОВАНИЕ ПРОФИЛЯ (МОДАЛКА + ЗАПРОС НА СЕРВЕР) =====
-document.getElementById('edit-profile-btn')?.addEventListener('click', () => {
-  // 🔹 ИСПРАВЛЕНО: используем 'currentUser' как во всём приложении, а не 'user'
-  const rawUser = localStorage.getItem('currentUser');
-  const u = rawUser ? JSON.parse(rawUser) : {};
-  const uid = u.id || localStorage.getItem('userId');
-  
-  if (!uid) { alert('Пожалуйста, войдите в аккаунт.'); return; }
+// ===== 18.5. РЕДАКТИРОВАНИЕ ПРОФИЛЯ (через делегирование событий) =====
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'edit-profile-btn' || e.target.closest('#edit-profile-btn')) {
+    const rawUser = localStorage.getItem('currentUser');
+    const u = rawUser ? JSON.parse(rawUser) : {};
+    const uid = u.id || localStorage.getItem('userId');
+    if (!uid) { alert('Пожалуйста, войдите в аккаунт.'); return; }
 
-  const modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
-  modal.innerHTML = `
-    <div style="background:#fff;padding:24px;border-radius:16px;width:100%;max-width:340px;box-shadow:0 10px 30px rgba(0,0,0,0.15);">
-      <h3 style="margin:0 0 16px;text-align:center;font-size:18px;">✏️ Изменить данные</h3>
-      <input id="ep-name" placeholder="Имя" value="${u.name||''}" style="width:100%;padding:12px;margin-bottom:12px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
-      <input id="ep-phone" placeholder="Телефон" value="${u.phone||''}" style="width:100%;padding:12px;margin-bottom:16px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
-      <div style="display:flex;gap:10px;">
-        <button id="ep-save" style="flex:1;padding:12px;border:none;border-radius:8px;background:#0056b3;color:#fff;font-weight:600;cursor:pointer;">💾 Сохранить</button>
-        <button id="ep-cancel" style="flex:1;padding:12px;border:none;border-radius:8px;background:#eee;cursor:pointer;">Отмена</button>
-      </div>
-    </div>`;
-  document.body.appendChild(modal);
-  document.getElementById('ep-cancel').onclick = () => modal.remove();
-  
-  document.getElementById('ep-save').onclick = async () => {
-    const name = document.getElementById('ep-name').value.trim();
-    const phone = document.getElementById('ep-phone').value.trim();
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
+    modal.innerHTML = `
+      <div style="background:#fff;padding:24px;border-radius:16px;width:100%;max-width:340px;box-shadow:0 10px 30px rgba(0,0,0,0.15);">
+        <h3 style="margin:0 0 16px;text-align:center;font-size:18px;">✏️ Изменить данные</h3>
+        <input id="ep-name" placeholder="Имя" value="${u.name||''}" style="width:100%;padding:12px;margin-bottom:12px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+        <input id="ep-phone" placeholder="Телефон" value="${u.phone||''}" style="width:100%;padding:12px;margin-bottom:16px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+        <div style="display:flex;gap:10px;">
+          <button id="ep-save" style="flex:1;padding:12px;border:none;border-radius:8px;background:#0056b3;color:#fff;font-weight:600;cursor:pointer;">💾 Сохранить</button>
+          <button id="ep-cancel" style="flex:1;padding:12px;border:none;border-radius:8px;background:#eee;cursor:pointer;">Отмена</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    document.getElementById('ep-cancel').onclick = () => modal.remove();
     
-    const res = await fetch('/api/profile', { 
-      method:'PUT', 
-      headers:{ 'Content-Type':'application/json', 'x-user-id': uid }, 
-      body: JSON.stringify({name, phone}) 
-    });
-    const d = await res.json();
-    
-    if (d.success) {
-      if (name) u.name = name; if (phone) u.phone = phone;
-      // 🔹 ИСПРАВЛЕНО: сохраняем в 'currentUser', как во всём приложении
-      localStorage.setItem('currentUser', JSON.stringify(u));
-      modal.remove();
-      const nameEl = document.querySelector('.profile-name, .user-name, #userName');
-      if (nameEl) nameEl.textContent = u.name || 'Клиент';
-      alert('Профиль обновлён');
-    } else {
-      alert(d.error || 'Ошибка сохранения');
-    }
-  };
+    document.getElementById('ep-save').onclick = async () => {
+      const name = document.getElementById('ep-name').value.trim();
+      const phone = document.getElementById('ep-phone').value.trim();
+      const res = await fetch('/api/profile', { 
+        method:'PUT', 
+        headers:{ 'Content-Type':'application/json', 'x-user-id': uid }, 
+        body: JSON.stringify({name, phone}) 
+      });
+      const d = await res.json();
+      if (d.success) {
+        if (name) u.name = name; if (phone) u.phone = phone;
+        localStorage.setItem('currentUser', JSON.stringify(u));
+        modal.remove();
+        const nameEl = document.querySelector('.profile-name, .user-name, #userName');
+        if (nameEl) nameEl.textContent = u.name || 'Клиент';
+        alert('Профиль обновлён');
+      } else {
+        alert(d.error || 'Ошибка сохранения');
+      }
+    };
+  }
 });
 </script>
 </body>
