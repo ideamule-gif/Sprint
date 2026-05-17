@@ -2632,7 +2632,8 @@ document.getElementById('edit-profile-btn')?.addEventListener('click', () => {
       // 🔹 ИСПРАВЛЕНО: сохраняем в 'currentUser', как во всём приложении
       localStorage.setItem('currentUser', JSON.stringify(u));
       modal.remove();
-      document.querySelector('.profile-name, .user-name, #userName')?.textContent = u.name || 'Клиент';
+      const nameEl = document.querySelector('.profile-name, .user-name, #userName');
+      if (nameEl) nameEl.textContent = u.name || 'Клиент';
       alert('Профиль обновлён');
     } else {
       alert(d.error || 'Ошибка сохранения');
