@@ -48,14 +48,15 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 // ===== FETCH: CACHE-STRATEGY =====
-const CACHE_NAME = 'someprint-v1';
+const CACHE_NAME = 'someprint-v2'; // ← версия изменена!
 const STATIC_ASSETS = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/icon-192.png',
-    '/icon-512.png'
-    // Добавь сюда другие статические файлы, если есть
+  '/',
+  '/index.html',
+  '/admin.html',        // ← добавь, если ещё нет
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/favicon.ico'        // ← добавлено
 ];
 
 // Кэшируем статику при установке
