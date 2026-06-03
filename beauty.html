@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ SILK & SOUL | Дом Эстетики и Красоты</title>
+    <!-- Подключаем Tailwind CSS через CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts: Премиальный Bodoni Moda и мягкий Geologica -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Geologica:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Geologica', sans-serif;
+            background-color: #0f0e0e; /* Мягкий бархатный черный */
+        }
+        .luxury-font {
+            font-family: 'Bodoni Moda', serif;
+        }
+        /* Эффект шелкового градиента для кнопок и акцентов */
+        .silk-gradient {
+            background: linear-gradient(135deg, #e3d5ca 0%, #d5bdaf 100%);
+        }
+        /* Тонкие изящные рамки */
+        .beauty-border {
+            border: 1px solid rgba(213, 189, 175, 0.1);
+        }
+        .service-row {
+            transition: all 0.4s ease;
+        }
+        .service-row:hover {
+            background: rgba(213, 189, 175, 0.03);
+            border-color: rgba(213, 189, 175, 0.3);
+            padding-left: 8px;
+        }
+    </style>
+</head>
+<body class="text-[#d5bdaf]/80 antialiased overflow-x-hidden">
+
+    <!-- НАВИГАЦИЯ -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-5 bg(#0f0e0e)/80 backdrop-blur-lg border-b border-[#d5bdaf]/5">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="#" class="luxury-font text-2xl tracking-widest text-[#e3d5ca] font-medium">SILK <span class="italic font-light text-[#d5bdaf]/60">&</span> SOUL</a>
+            
+            <div class="hidden md:flex space-x-10 text-[11px] uppercase tracking-[0.25em] font-light">
+                <a href="#about" class="hover:text-[#e3d5ca] transition-colors">Концепция</a>
+                <a href="#menu" class="hover:text-[#e3d5ca] transition-colors">Услуги</a>
+                <a href="#philosophy" class="hover:text-[#e3d5ca] transition-colors">Философия</a>
+                <a href="#contact" class="hover:text-[#e3d5ca] transition-colors">Контакты</a>
+            </div>
+            
+            <a href="#contact" class="hidden md:inline-block border border-[#d5bdaf]/30 text-[#e3d5ca] hover:bg-[#e3d5ca] hover:text-[#0f0e0e] px-6 py-2.5 text-[10px] uppercase tracking-widest transition-all duration-500 rounded-none">
+                Запись в салон
+            </a>
+        </div>
+    </nav>
+
+    <!-- ГЛАВНЫЙ ЭКРАН (HERO) -->
+    <section class="relative min-h-screen flex items-center justify-center pt-24 px-6 overflow-hidden">
+        <!-- Мягкое внутреннее свечение -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#d5bdaf]/3 rounded-full blur-[150px] pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto text-center z-10 space-y-8">
+            <span class="text-[9px] font-medium tracking-[0.4em] uppercase text-[#d5bdaf] bg-[#d5bdaf]/5 px-4 py-2 border border-[#d5bdaf]/10">
+                Краснодар • Пространство Премиального Ухода
+            </span>
+            <h1 class="luxury-font text-5xl sm:text-7xl md:text-8xl text-[#e3d5ca] tracking-wide leading-tight font-light">
+                Искусство <br>быть <span class="italic text-[#d5bdaf]/50">собой</span>
+            </h1>
+            <p class="text-[#d5bdaf]/50 max-w-md mx-auto text-xs sm:text-sm font-light leading-relaxed tracking-wide">
+                Полный спектр бьюти-услуг в атмосфере безупречного сервиса. Раскрываем вашу естественную красоту через призму высокой заботы.
+            </p>
+            <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#menu" class="w-full sm:w-auto silk-gradient text-[#0f0e0e] font-medium px-8 py-4 text-[11px] tracking-widest uppercase transition-all duration-500 hover:opacity-90 text-center shadow-xl shadow-[#d5bdaf]/5">
+                    Наше меню
+                </a>
+                <a href="#contact" class="w-full sm:w-auto border border-zinc-800 hover:border-[#d5bdaf]/30 bg-zinc-900/10 px-8 py-4 text-[11px] tracking-widest uppercase transition-all duration-500 text-center text-[#e3d5ca]">
+                    Консультация
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- О КОНЦЕПЦИИ -->
+    <section id="about" class="py-24 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center border-t border-[#d5bdaf]/10">
+        <div class="space-y-6">
+            <span class="text-[10px] font-medium tracking-[0.3em] uppercase text-[#d5bdaf]/60">// CONCEPT</span>
+            <h2 class="luxury-font text-3xl md:text-5xl text-[#e3d5ca] tracking-wide font-light">Премиальный сервис полного цикла</h2>
+            <p class="text-[#d5bdaf]/50 font-light text-xs sm:text-sm leading-relaxed">
+                SILK & SOUL — это не просто салон, это закрытое бьюти-пространство, где собраны лучшие мастера города. Мы объединили уход за волосами, эстетику ногтей, косметологию и визаж в одну цельную экосистему.
+            </p>
+            <p class="text-[#d5bdaf]/50 font-light text-xs sm:text-sm leading-relaxed">
+                Вы можете выбрать параллельные услуги в 4 или 6 рук, чтобы сэкономить драгоценное время без потери премиального качества исполнения.
+            </p>
+        </div>
+        <!-- Заглушка под журнальный визуал -->
+        <div class="beauty-border h-[450px] bg-[#141313] flex items-center justify-center relative group overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e0e] to-transparent opacity-60"></div>
+            <span class="luxury-font text-[#d5bdaf]/30 text-sm tracking-widest uppercase group-hover:text-[#e3d5ca]/60 transition-colors z-10 italic">
+                [ Коллаж: атмосфера люкс-сервиса ]
+            </span>
+        </div>
+    </section>
+
+    <!-- МЕНЮ УСЛУГ (ДОРОГОЙ МИНИМАЛИЗМ) -->
+    <section id="menu" class="py-24 bg-[#121111] px-6 border-y border-[#d5bdaf]/10">
+        <div class="max-w-4xl mx-auto">
+            <div class="space-y-4 mb-20 text-center">
+                <span class="text-[10px] font-medium tracking-[0.3em] uppercase text-[#d5bdaf]/60">// MENU</span>
+                <h2 class="luxury-font text-3xl md:text-5xl text-[#e3d5ca] tracking-wide font-light">Ритуалы и Стоимость</h2>
+            </div>
+
+            <!-- Категории услуг -->
+            <div class="space-y-12">
+                <!-- Категория 1 -->
+                <div class="space-y-4">
+                    <h3 class="luxury-font text-xl text-[#e3d5ca] border-b border-[#d5bdaf]/10 pb-2 tracking-wider">Волосы & Стилистика</h3>
+                    
+                    <div class="beauty-border p-4 bg-[#0f0e0e]/50 flex justify-between items-center service-row rounded-none">
+                        <div>
+                            <h4 class="text-xs uppercase tracking-wider text-[#e3d5ca]">Стрижка-кутюрье от топ-стилиста</h4>
+                            <p class="text-[10px] text-[#d5bdaf]/40 mt-1">Включает уход, мытье премиальными брендами и укладку.</p>
+                        </div>
+                        <span class="text-xs font-medium text-[#e3d5ca] ml-4">3 500 ₽</span>
+                    </div>
+
+                    <div class="beauty-border p-4 bg-[#0f0e0e]/50 flex justify-between items-center service-row rounded-none">
+                        <div>
+                            <h4 class="text-xs uppercase tracking-wider text-[#e3cae3] text-[#e3d5ca]">Сложное окрашивание (Airtouch, Balayage)</h4>
+                            <p class="text-[10px] text-[#d5bdaf]/40 mt-1">Индивидуальный подбор формулы цвета, защита структуры волос.</p>
+                        </div>
+                        <span class="text-xs font-medium text-[#e3d5ca] ml-4">от 9 000 ₽</span>
+                    </div>
+                </div>
+
+                <!-- Категория 2 -->
+                <div class="space-y-4">
+                    <h3 class="luxury-font text-xl text-[#e3d5ca] border-b border-[#d5bdaf]/10 pb-2 tracking-wider">Лицо & Визаж</h3>
+                    
+                    <div class="beauty-border p-4 bg-[#0f0e0e]/50 flex justify-between items-center service-row rounded-none">
+                        <div>
+                            <h4 class="text-xs uppercase tracking-wider text-[#e3d5ca]">Дневной / Вечерний образ (Макияж + Укладка)</h4>
+                            <p class="text-[10px] text-[#d5bdaf]/40 mt-1">Создание безупречного тона и формы для вашего важного события.</p>
+                        </div>
+                        <span class="text-xs font-medium text-[#e3d5ca] ml-4">5 500 ₽</span>
+                    </div>
+
+                    <div class="beauty-border p-4 bg-[#0f0e0e]/50 flex justify-between items-center service-row rounded-none">
+                        <div>
+                            <h4 class="text-xs uppercase tracking-wider text-[#e3d5ca]">Уходовый ритуал «Сияние кожи»</h4>
+                            <p class="text-[10px] text-[#d5bdaf]/40 mt-1">Премиальный уход от японских и французских брендов косметики.</p>
+                        </div>
+                        <span class="text-xs font-medium text-[#e3d5ca] ml-4">4 200 ₽</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ФИЛОСОФИЯ БРЕНДА -->
+    <section id="philosophy" class="py-32 max-w-4xl mx-auto px-6 text-center space-y-8">
+        <span class="text-[10px] font-medium tracking-[0.3em] uppercase text-[#d5bdaf]/60">// PHILOSOPHY</span>
+        <blockquote class="luxury-font text-2xl sm:text-3xl md:text-4xl text-[#e3d5ca] italic font-light leading-relaxed">
+            «Красота не требует жертв. Красота требует внимания, тишины и профессионального прикосновения.»
+        </blockquote>
+        <div class="w-12 h-px bg-[#d5bdaf]/30 mx-auto"></div>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-[#d5bdaf]/40">команда silk & soul</p>
+    </section>
+
+    <!-- КОНТАКТЫ & ФУТЕР -->
+    <footer id="contact" class="bg-[#0a0909] border-t border-[#d5bdaf]/10 py-16 px-6">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-xs tracking-wide">
+            
+            <div class="space-y-4">
+                <h3 class="luxury-font text-xl text-[#e3d5ca] tracking-widest font-medium">SILK & SOUL</h3>
+                <p class="text-[#d5bdaf]/40 font-light leading-relaxed">
+                    Пространство, где эстетика встречается с душой. Только сертифицированные бренды и экспертный подход.
+                </p>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-medium text-[#e3d5ca] uppercase tracking-widest text-[10px]">// ЛОКАЦИЯ</h4>
+                <p class="text-[#d5bdaf]/60 font-light">Краснодар, Фестивальный мкр, ул. Дальняя, 39</p>
+                <p class="text-[#d5bdaf]/40 font-light">Каждый день: 09:00 — 21:00</p>
+            </div>
+            
+            <div class="space-y-4">
+                <h4 class="font-medium text-[#e3d5ca] uppercase tracking-widest text-[10px]">// ОНЛАЙН-ВИЗИТ</h4>
+                <p class="text-[#e3d5ca] font-medium text-sm tracking-wider">+7 (918) 444-55-66</p>
+                <div class="flex space-x-6 pt-1 uppercase text-[10px] font-medium tracking-widest text-[#d5bdaf]/60">
+                    <a href="#" class="hover:text-[#e3d5ca] transition-colors">Telegram Direct</a>
+                    <a href="#" class="hover:text-[#e3d5ca] transition-colors">Instagram</a>
+                </div>
+            </div>
+
+        </div>
+        <div class="max-w-6xl mx-auto text-center text-[9px] text-[#d5bdaf]/30 tracking-widest uppercase mt-16 pt-8 border-t border-[#d5bdaf]/10">
+            © 2026 SILK & SOUL. Эстетическое пространство премиум-класса.
+        </div>
+    </footer>
+
+</body>
+</html>

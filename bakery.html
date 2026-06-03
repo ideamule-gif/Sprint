@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥐 Тесто & Слава | Ремесленная Пекарня</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #faf6f0; /* Теплый молочно-кремовый фон */
+        }
+        .heading-font {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Элегантная карточка с мягкой тенью */
+        .bakery-card {
+            background: #ffffff;
+            border: 1px solid rgba(212, 163, 115, 0.15);
+            box-shadow: 0 4px 20px -2px rgba(139, 94, 60, 0.05);
+        }
+        .bakery-nav {
+            background: rgba(250, 246, 240, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(212, 163, 115, 0.1);
+        }
+    </style>
+</head>
+<body class="text-stone-800 antialiased overflow-x-hidden">
+
+    <nav class="bakery-nav fixed top-0 left-0 w-full z-50 px-6 py-4 transition-all duration-300">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="#" class="heading-font text-2xl font-bold tracking-wide text-amber-900">Тесто & Слава</a>
+            
+            <div class="hidden md:flex space-x-8 text-sm font-medium tracking-wide text-stone-600">
+                <a href="#philosophy" class="hover:text-amber-700 transition-colors">Наша философия</a>
+                <a href="#showcase" class="hover:text-amber-700 transition-colors">Свежая выпечка</a>
+                <a href="#process" class="hover:text-amber-700 transition-colors">Как мы печем</a>
+                <a href="#visit" class="hover:text-amber-700 transition-colors">Контакты</a>
+            </div>
+            
+            <a href="#showcase" class="hidden md:inline-block bg-amber-800 hover:bg-amber-900 text-amber-50 px-5 py-2.5 rounded-xl text-xs font-semibold tracking-wider uppercase transition-all duration-300 shadow-md shadow-amber-900/10">
+                Смотреть витрину
+            </a>
+        </div>
+    </nav>
+
+    <section class="relative min-h-screen flex items-center justify-center pt-24 px-6 overflow-hidden">
+        <div class="absolute top-1/4 -left-20 w-96 h-96 bg-amber-200/30 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-orange-100/40 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto text-center z-10 space-y-8">
+            <span class="text-xs font-semibold tracking-widest uppercase text-amber-800 bg-amber-100 px-4 py-1.5 rounded-full border border-amber-200/40">
+                Ремесленный хлеб на закваске
+            </span>
+            <h1 class="heading-font text-4xl sm:text-6xl md:text-7xl font-semibold tracking-tight text-stone-900 leading-[1.15]">
+                Хлеб, у которого <br><span class="italic text-amber-700">есть душа</span>
+            </h1>
+            <p class="text-stone-600 max-w-xl mx-auto text-base sm:text-lg font-light leading-relaxed">
+                Каждое утро мы замешиваем тесто вручную, используя только фермерскую муку, воду, морскую соль и дикие дрожжи. Хрустящая корочка гарантирована.
+            </p>
+            <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#showcase" class="w-full sm:w-auto bg-amber-800 hover:bg-amber-900 text-amber-50 font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg shadow-amber-900/10 text-center">
+                    Что испечено сегодня
+                </a>
+                <a href="#philosophy" class="w-full sm:w-auto border border-stone-300 hover:border-stone-400 bg-white/60 hover:bg-white px-8 py-4 rounded-xl transition-all duration-300 text-center text-stone-700">
+                    Узнать секрет закваски
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="philosophy" class="py-24 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div class="bakery-card h-[450px] rounded-3xl overflow-hidden flex items-center justify-center relative group order-2 md:order-1 bg-amber-50/50">
+            <div class="absolute inset-0 bg-gradient-to-tr from-amber-200/10 to-transparent"></div>
+            <span class="text-amber-800/40 text-sm tracking-widest uppercase px-6 text-center font-medium group-hover:text-amber-800/60 transition-colors">
+                [ Место для фото: Пышный мякиш хлеба или хрустящий круассан крупным планом ]
+            </span>
+        </div>
+        
+        <div class="space-y-6 order-1 md:order-2">
+            <h2 class="heading-font text-3xl md:text-5xl font-semibold text-stone-900 leading-tight">Честные ingredients. <br>Никакой химии.</h2>
+            <p class="text-stone-600 font-light leading-relaxed">
+                Мы отказались от промышленных улучшителей теста и искусственных разрыхлителей. Наш хлеб проходит процесс долгой ферментации на холоде до 36 часов. 
+            </p>
+            <p class="text-stone-600 font-light leading-relaxed">
+                Именно поэтому он получается таким ароматным, легко усваивается организмом и долго сохраняет свою естественную свежесть.
+            </p>
+            
+            <div class="grid grid-cols-2 gap-6 pt-6 border-t border-stone-200/60">
+                <div>
+                    <h5 class="heading-font text-lg font-bold text-amber-800">36 часов</h5>
+                    <p class="text-xs text-stone-500 mt-1 uppercase tracking-wider">Естественного созревания</p>
+                </div>
+                <div>
+                    <h5 class="heading-font text-lg font-bold text-amber-800">Без дрожжей</h5>
+                    <p class="text-xs text-stone-500 mt-1 uppercase tracking-wider">Только живая закваска</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="showcase" class="py-24 bg-white px-6 border-y border-stone-200/40">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center space-y-4 mb-16">
+                <h2 class="heading-font text-3xl md:text-4xl font-semibold text-stone-900">Утренний улов нашей печи</h2>
+                <p class="text-stone-500 font-light max-w-md mx-auto text-sm">Вся выпечка готовится ограниченными партиями, чтобы всегда оставаться свежей</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                <div class="bakery-card p-6 rounded-2xl space-y-4 group hover:scale-[1.01] transition-transform duration-300">
+                    <div class="w-full h-48 bg-stone-50 rounded-xl flex items-center justify-center text-xs text-stone-400 group-hover:bg-amber-50/40 transition-colors">
+                        [ Фото: Тартин пшеничный ]
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-semibold text-stone-900 group-hover:text-amber-800 transition-colors">Тартин Пшеничный</h4>
+                            <p class="text-xs text-stone-500 mt-1">Фирменный хлеб на закваске с крупными порами и карамельной корочкой.</p>
+                        </div>
+                        <span class="font-semibold text-amber-800 heading-font ml-2">240₽</span>
+                    </div>
+                </div>
+
+                <div class="bakery-card p-6 rounded-2xl space-y-4 group hover:scale-[1.01] transition-transform duration-300">
+                    <div class="w-full h-48 bg-stone-50 rounded-xl flex items-center justify-center text-xs text-stone-400 group-hover:bg-amber-50/40 transition-colors">
+                        [ Фото: Круассан ]
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-semibold text-stone-900 group-hover:text-amber-800 transition-colors">Круассан Классический</h4>
+                            <p class="text-xs text-stone-500 mt-1">Настоящее французское сливочное масло 82.5%, невесомые хрустящие слои.</p>
+                        </div>
+                        <span class="font-semibold text-amber-800 heading-font ml-2">160₽</span>
+                    </div>
+                </div>
+
+                <div class="bakery-card p-6 rounded-2xl space-y-4 group hover:scale-[1.01] transition-transform duration-300">
+                    <div class="w-full h-48 bg-stone-50 rounded-xl flex items-center justify-center text-xs text-stone-400 group-hover:bg-amber-50/40 transition-colors">
+                        [ Фото: Бородинский ]
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-semibold text-stone-900 group-hover:text-amber-800 transition-colors">Бородинский на заварке</h4>
+                            <p class="text-xs text-stone-500 mt-1">Плотный ржаной хлеб с добавлением солода, кориандра и натурального меда.</p>
+                        </div>
+                        <span class="font-semibold text-amber-800 heading-font ml-2">190₽</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="process" class="py-24 max-w-5xl mx-auto px-6">
+        <div class="text-center space-y-4 mb-20">
+            <h2 class="heading-font text-3xl md:text-4xl font-semibold text-stone-900">Как рождается настоящий вкус</h2>
+            <p class="text-stone-500 font-light text-sm">Никакой спешки — мы полностью доверяем законам природы</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+            <div class="space-y-3">
+                <div class="w-12 h-12 bg-amber-800 text-amber-50 font-semibold rounded-full flex items-center justify-center mx-auto text-lg heading-font">1</div>
+                <h4 class="font-semibold text-stone-900 pt-2">Аутолиз и ручной замес</h4>
+                <p class="text-xs text-stone-500 leading-relaxed max-w-xs mx-auto">Соединяем муку и воду, бережно развивая структуру клейковины без механического нагрева теста.</p>
+            </div>
+            <div class="space-y-3">
+                <div class="w-12 h-12 bg-amber-800 text-amber-50 font-semibold rounded-full flex items-center justify-center mx-auto text-lg heading-font">2</div>
+                <h4 class="font-semibold text-stone-900 pt-2">Холодный отдых</h4>
+                <p class="text-xs text-stone-500 leading-relaxed max-w-xs mx-auto">Сформированные буханки зреют при +4°C. За это время раскрываются все вкусовые дескрипторы зерна.</p>
+            </div>
+            <div class="space-y-3">
+                <div class="w-12 h-12 bg-amber-800 text-amber-50 font-semibold rounded-full flex items-center justify-center mx-auto text-lg heading-font">3</div>
+                <h4 class="font-semibold text-stone-900 pt-2">Подовая печь</h4>
+                <p class="text-xs text-stone-500 leading-relaxed max-w-xs mx-auto">Выпекаем на раскаленном камне при высокой температуре, получая фирменный глянец и хруст.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer id="visit" class="bg-[#1f1a16] text-amber-100/70 py-16 px-6">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-sm">
+            
+            <div class="space-y-4">
+                <h3 class="heading-font text-2xl font-semibold text-white">Тесто & Слава</h3>
+                <p class="text-stone-400 font-light leading-relaxed">
+                    Уютная ремесленная пекарня у вас на районе. Ждем вас за хрустящим багетом и чашкой утреннего фильтра.
+                </p>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-semibold text-white uppercase tracking-wider text-xs">Адрес и время</h4>
+                <p class="text-stone-400 font-light">ул. Ремесленная, д. 14, Санкт-Петербург</p>
+                <p class="text-stone-400 font-light">Каждый день: 07:30 — 21:00</p>
+                <span class="inline-block mt-2 text-xs bg-amber-900/40 text-amber-400 border border-amber-800/30 px-3 py-1 rounded-full">
+                    Горячие буханки выходят в 08:00 и 16:30
+                </span>
+            </div>
+            
+            <div class="space-y-4">
+                <h4 class="font-semibold text-white uppercase tracking-wider text-xs">Зарезервировать хлеб</h4>
+                <p class="text-stone-400 font-light">Популярные позиции часто разбирают до полудня. Позвоните нам, и мы отложим выпечку для вас.</p>
+                <p class="text-white font-medium text-base">+7 (999) 123-45-67</p>
+            </div>
+
+        </div>
+        <div class="max-w-6xl mx-auto text-center text-xs text-stone-500 mt-16 pt-8 border-t border-stone-800/60">
+            © 2026 Ремесленная пекарня «Тесто & Слава». Все права защищены.
+        </div>
+    </footer>
+
+</body>
+</html>
