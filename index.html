@@ -1,0 +1,2704 @@
+<!-- ============================================== -->
+<!-- 1. НАЧАЛО ДОКУМЕНТА: DOCTYPE И <HEAD>          -->
+<!-- ============================================== -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- ========================================== -->
+    <!-- 1.1. БАЗОВЫЕ МЕТА-ТЕГИ                     -->
+    <!-- ========================================== -->
+    <meta name="yandex-verification" content="80a05995c472e748" />
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Landpa — Онлайн-печать баннеров</title>
+    
+    <!-- ========================================== -->
+    <!-- 1.2. PWA / МОБИЛЬНЫЕ НАСТРОЙКИ             -->
+    <!-- ========================================== -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0066FF">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="touch-icon" href="/icon-192.png">
+    
+    <!-- ========================================== -->
+    <!-- 1.3. SEO: ОПИСАНИЕ, КЛЮЧЕВЫЕ СЛОВА, АВТОР  -->
+    <!-- ========================================== -->
+    <meta name="description" content="Онлайн-заказ баннеров, плакатов, самоклейки и визиток в Краснодаре. Расчёт стоимости за 1 минуту, бесплатная доставка, печать от 1 дня.">
+    <meta name="keywords" content="баннеры, печать баннеров, широкоформатная печать, заказать баннер, Краснодар, типография, самоклейка, плакаты, визитки, Landpa">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Landpa">
+    <meta name="geo.region" content="RU-KDA">
+    <meta name="geo.placename" content="Краснодар">
+    
+    <!-- ========================================== -->
+    <!-- 1.4. КАНОНИЧЕСКИЙ URL                      -->
+    <!-- ========================================== -->
+    <link rel="canonical" href="https://landpa.ru/">
+    
+    <!-- ========================================== -->
+    <!-- 1.5. OPEN GRAPH / FACEBOOK / VK            -->
+    <!-- ========================================== -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://landpa.ru/">
+    <meta property="og:title" content="Landpa — Онлайн-печать баннеров">
+    <meta property="og:description" content="Закажи баннер за 1 минуту. Бесплатная доставка по Краснодару.">
+    <meta property="og:image" content="https://landpa.ru/icon-512.png">
+    <meta property="og:locale" content="ru_RU">
+    
+    <!-- ========================================== -->
+    <!-- 1.6. TWITTER CARDS                         -->
+    <!-- ========================================== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://landpa.ru/">
+    <meta name="twitter:title" content="Landpa — Печать баннеров">
+    <meta name="twitter:description" content="Онлайн-заказ широкоформатной печати. Быстро, качественно, с доставкой.">
+    <meta name="twitter:image" content="https://landpa.ru/icon-512.png">
+    
+    <!-- ========================================== -->
+    <!-- 1.7. STRUCTURED DATA (JSON-LD) ДЛЯ ПОИСКА  -->
+    <!-- ========================================== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Landpa",
+      "image": "https://landpa.ru/icon-512.png",
+      "url": "https://landpa.ru",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Краснодар",
+        "addressCountry": "RU"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 45.0355,
+        "longitude": 38.9753
+      },
+      "areaServed": {
+        "@type": "City",
+        "name": "Краснодар"
+      },
+      "priceRange": "₽₽",
+      "description": "Онлайн-сервис заказа баннеров и широкоформатной печати в Краснодаре."
+    }
+    </script> <!-- ✅ ИСПРАВЛЕНО: добавлен закрывающий </script> -->
+    
+    <!-- ========================================== -->
+    <!-- 1.8. JS-ФИКСЫ: PWA БАННЕР + ЭМОДЗИ         -->
+    <!-- ========================================== -->
+    <script>
+    // ===== 1. ФИКС БАННЕРА PWA (игнорирует старый кэш) =====
+    (function() {
+      const b = document.getElementById('pwa-banner');
+      if (b && window.innerWidth < 768 && !sessionStorage.getItem('pwa-shown')) {
+        sessionStorage.setItem('pwa-shown', '1');
+        setTimeout(() => b.style.display = 'block', 2500);
+      }
+      document.querySelector('.pwa-close')?.addEventListener('click', () => {
+        b.style.display = 'none';
+        localStorage.setItem('pwa-dismissed', Date.now());
+      });
+    })();
+
+    // ===== 2. ФИКС ЭМОДЗИ (универсальные селекторы) =====
+    (function() {
+      const input = document.querySelector('input[placeholder*="Сообщение"], input[placeholder*="message"], .chat-input input, #messageInput');
+      const picker = document.querySelector('.emoji-picker, #emojiPicker, [class*="emoji"][class*="pick"]');
+      const btn = document.querySelector('.emoji-btn, #emojiToggle, button[class*="emoji"], [onclick*="emoji"]');
+      
+      if (btn && picker && input) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const isHidden = picker.style.display === 'none' || !picker.style.display;
+          if (isHidden) { input.blur(); setTimeout(() => picker.classList.add('show'), 80); }
+          else { picker.classList.remove('show'); input.focus(); }
+        });
+        picker.addEventListener('click', (e) => {
+          const el = e.target.closest('span, button, div');
+          if (el && el.textContent.trim() && el.textContent.trim().length <= 2) {
+            const char = el.textContent.trim();
+            const pos = input.selectionStart;
+            input.value = input.value.substring(0, pos) + char + input.value.substring(pos);
+            input.focus();
+            picker.classList.remove('show');
+          }
+        });
+      }
+    })();
+    </script> <!-- ✅ ИСПРАВЛЕНО: добавлен закрывающий </script> -->
+    
+    <!-- ========================================== -->
+    <!-- 1.9. ШРИФТЫ (GOOGLE FONTS)                 -->
+    <!-- ========================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- ============================================== -->
+    <!-- 2. СТИЛИ (CSS) — ВСЕ ПЕРЕМЕННЫЕ И ПРАВИЛА      -->
+    <!-- ============================================== -->
+    <style>
+        /* ===== 2.1. CSS-ПЕРЕМЕННЫЕ (ЦВЕТА, ОТСТУПЫ, ШРИФТЫ) ===== */
+        :root {
+            /* Brand Colors */
+            --primary: #0066FF;
+            --primary-dark: #0052CC;
+            --primary-light: #3385FF;
+            --accent: #00E5FF;
+            --black: #0A0A0A;
+            --white: #FFFFFF;
+            --gray-50: #F5F5F5;
+            --gray-100: #E5E5E5;
+            --gray-200: #D4D4D4;
+            --gray-300: #A3A3A3;
+            --gray-400: #737373;
+            --gray-500: #525252;
+            --gray-600: #404040;
+            --error: #FF3366;
+            --success: #00CC88;
+            --warning: #FFB800;
+            
+            /* UI */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
+            --shadow-xl: 0 16px 40px rgba(0,0,0,0.1);
+            
+            /* Typography */
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-display: 'Manrope', var(--font-sans);
+        }
+        
+        /* ===== 2.2. БАЗОВЫЙ СБРОС И НАСТРОЙКИ BODY ===== */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        html, body {
+            height: 100dvh;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            background: var(--gray-50);
+            color: var(--black);
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== 2.3. АНИМАЦИИ ===== */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes typingBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+        .anim-fade { animation: fadeInUp 0.5s ease forwards; }
+        .anim-d1 { animation-delay: 0.05s; opacity: 0; }
+        .anim-d2 { animation-delay: 0.12s; opacity: 0; }
+        .anim-d3 { animation-delay: 0.2s; opacity: 0; }
+
+        /* ===== 2.4. ТИПОГРАФИКА ===== */
+        h1, h2, h3, .display-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .section-header {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--black);
+            line-height: 1.2;
+        }
+
+        /* ===== 2.5. ВКЛАДКИ (TABS) ===== */
+        .tab { 
+            display: none; 
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            padding-bottom: max(100px, env(safe-area-inset-bottom) + 20px);
+            -webkit-overflow-scrolling: touch;
+        }
+        .tab.active { display: block; animation: fadeIn 0.3s ease; }
+        #tab-chat { padding: 0 !important; padding-bottom: 0 !important; }
+        #tab-chat #chatPage { height: 100%; display: flex; flex-direction: column; }
+        #tab-chat .chat-box {
+            height: 100%;
+            border-radius: 0;
+            box-shadow: none;
+            margin: 0;
+            border: none;
+            padding-bottom: max(85px, env(safe-area-inset-bottom) + 15px);
+        }
+        #profileContent { 
+            position: relative; 
+            z-index: 1; 
+            width: 100%;
+            opacity: 1 !important;
+        }
+
+        /* ===== 2.6. КАРТОЧКИ И ПЛИТКИ ===== */
+        .card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 12px;
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:active { transform: scale(0.99); }
+
+        .tile-row { display: flex; flex-direction: column; gap: 12px; }
+        .tile {
+            background: var(--white);
+            padding: 24px 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .tile::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        .tile:hover::before, .tile:active::before { transform: scaleX(1); }
+        .tile:active { border-color: var(--primary); transform: scale(0.98); box-shadow: var(--shadow-lg); }
+        .tile .tile-icon { font-size: 40px; margin-bottom: 10px; }
+        .tile .tile-title { font-weight: 800; font-size: 18px; font-family: var(--font-display); }
+        .tile .tile-sub { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
+        .tile .tile-time { font-size: 11px; color: var(--primary); margin-top: 6px; font-weight: 600; }
+
+        /* ===== 2.7. ФОРМЫ И ПОЛЯ ВВОДА ===== */
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-family: var(--font-sans);
+            background: var(--white);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0,102,255,0.08);
+        }
+        .form-group input.error { border-color: var(--error); }
+        .row { display: flex; gap: 12px; }
+        .row>div { flex: 1; }
+        .hint { font-size: 12px; color: var(--gray-500); margin-top: 6px; }
+        .hint-red { font-size: 12px; color: var(--error); margin-top: 6px; display: none; }
+
+        /* ===== 2.8. КНОПКИ ===== */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-display);
+            text-align: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 16px rgba(0,102,255,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,102,255,0.4); }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--gray-200);
+            color: var(--black);
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        .btn-outline:active { background: var(--gray-50); border-color: var(--gray-300); }
+        .btn-danger {
+            background: transparent;
+            border: 2px solid var(--error);
+            color: var(--error);
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        .btn-danger:active { background: #FFF0F3; }
+
+        /* ===== 2.9. ЗОНА ЗАГРУЗКИ ФАЙЛОВ ===== */
+        .upload-zone {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-md);
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--gray-500);
+            transition: all 0.3s;
+            background: var(--gray-50);
+        }
+        .upload-zone:hover { border-color: var(--primary); background: rgba(0,102,255,0.04); color: var(--primary); }
+        .upload-zone.has-file {
+            border-color: var(--success);
+            border-style: solid;
+            color: var(--success);
+            font-weight: 600;
+            background: #F0FFF9;
+        }
+
+        /* ===== 2.10. СВОДКА ЗАКАЗА И ЦЕНА ===== */
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 14px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .summary-row:last-of-type { border-bottom: none; }
+        .summary-row span:first-child { color: var(--gray-500); }
+        .summary-row.total {
+            font-weight: 800;
+            font-size: 22px;
+            font-family: var(--font-display);
+            border-top: 2px solid var(--black);
+            border-bottom: none;
+            margin-top: 10px;
+            padding-top: 14px;
+            color: var(--black);
+        }
+        .price-big {
+            font-size: 42px;
+            font-weight: 800;
+            font-family: var(--font-display);
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        /* ===== 2.11. СТАТУСЫ ЗАКАЗОВ (BADGES) ===== */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-new { background: #FFF4E5; color: #B45309; }
+        .status-processing { background: #DBEAFE; color: #1E40AF; }
+        .status-printing { background: #E0E7FF; color: #3730A3; }
+        .status-ready { background: #D1FAE5; color: #065F46; }
+        .status-shipped { background: #EDE9FE; color: #5B21B6; }
+        .status-done { background: #D1FAE5; color: #065F46; }
+
+        /* ===== 2.12. КНОПКА "НАЗАД" И ИНДИКАТОР ШАГОВ ===== */
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--primary);
+            padding: 8px 0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap 0.2s;
+            font-family: var(--font-sans);
+        }
+        .back-btn:active { gap: 4px; }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 0 4px;
+        }
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            transition: all 0.3s;
+        }
+        .step-dot.active { background: var(--primary); transform: scale(1.3); }
+        .step-dot.done { background: var(--primary-light); }
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: var(--gray-200);
+            transition: background 0.3s;
+        }
+        .step-line.active { background: var(--primary); }
+        
+      /* ============================================== */
+/* 3. СТИЛИ: ЧАТ (TELEGRAM/WHATSAPP СТИЛЬ)        */
+/* ============================================== */
+
+/* ===== 3.1. ОСНОВНОЙ КОНТЕЙНЕР ЧАТА ===== */
+.chat-box {
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ===== 3.2. ШАПКА ЧАТА (АВАТАР, ИМЯ, СТАТУС) ===== */
+.chat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gray-100);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+.chat-header .chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+.chat-header .chat-info h3 { 
+    font-size: 15px; 
+    font-weight: 700; 
+    color: var(--black);
+    font-family: var(--font-display);
+}
+.chat-header .chat-info span { 
+    font-size: 12px; 
+    color: var(--gray-500); 
+}
+.chat-header .chat-info span.online { 
+    color: var(--success); 
+    font-weight: 600; 
+}
+
+/* ===== 3.3. ОБЛАСТЬ СООБЩЕНИЙ (ФОН + СКРОЛЛ) ===== */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    /* Фон как в WhatsApp/Telegram — с еле заметным паттерном */
+    background: #E8E5DF;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d6d3cd' fill-opacity='0.25'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ===== 3.4. РАЗДЕЛИТЕЛЬ ДАТ ===== */
+.date-divider { text-align: center; margin: 12px 0 8px; }
+.date-divider span {
+    background: rgba(0,0,0,0.4);
+    color: var(--white);
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* ===== 3.5. СООБЩЕНИЯ (ПУЗЫРЬКИ) ===== */
+.chat-msg {
+    max-width: 80%;
+    padding: 9px 13px 8px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.45;
+    position: relative;
+    animation: msgSlideIn 0.25s ease-out;
+    word-wrap: break-word;
+}
+@keyframes msgSlideIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* Сообщение клиента — справа, голубое */
+.chat-msg.client {
+    align-self: flex-end;
+    background: #E3F2FD;
+    color: var(--black);
+    border-bottom-right-radius: 5px;
+}
+/* Сообщение админа — слева, белое */
+.chat-msg.admin {
+    align-self: flex-start;
+    background: var(--white);
+    color: var(--black);
+    border-bottom-left-radius: 5px;
+}
+.chat-msg .msg-text { margin-right: 45px; display: block; }
+.chat-msg .msg-meta {
+    float: right;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    margin-left: 8px;
+    position: relative;
+    top: 4px;
+}
+.chat-msg .msg-time { font-size: 10px; color: rgba(0,0,0,0.35); }
+.chat-msg.client .msg-time { color: rgba(0,102,255,0.5); }
+.chat-msg .msg-check { font-size: 12px; color: rgba(0,102,255,0.4); }
+.chat-msg .msg-check.read { color: var(--primary); }
+
+/* ===== 3.6. ИНДИКАТОР «ПЕЧАТАЕТ...» (3 ТОЧКИ) ===== */
+.typing-indicator {
+    align-self: flex-start;
+    background: var(--white);
+    padding: 12px 16px;
+    border-radius: 16px;
+    border-bottom-left-radius: 5px;
+    display: none;
+    gap: 5px;
+    align-items: center;
+    animation: msgSlideIn 0.25s ease-out;
+    margin: 0 12px 8px;
+}
+.typing-indicator.active { display: flex; }
+.typing-indicator .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gray-400);
+    animation: typingBounce 1.2s infinite;
+}
+.typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ===== 3.7. КНОПКА «ПРОКРУТИТЬ ВНИЗ» + BADGE ===== */
+.scroll-down-btn {
+    position: absolute;
+    bottom: 90px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--gray-600);
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    z-index: 10;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.2s;
+}
+.scroll-down-btn:hover { transform: scale(1.1); }
+.scroll-down-btn.visible { display: flex; animation: fadeInUp 0.2s ease-out; }
+.scroll-down-btn .unread-badge-chat {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--primary);
+    color: var(--white);
+    font-size: 9px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== 3.8. ПОЛЕ ВВОДА СООБЩЕНИЯ (НОВЫЙ ДИЗАЙН) ===== */
+.chat-input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 10px 12px 14px;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--gray-100);
+}
+.chat-input-row .input-wrapper {
+    flex: 1;
+    position: relative;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    display: flex;
+    align-items: flex-end;
+    padding: 6px 6px 6px 14px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.chat-input-row .input-wrapper:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0,102,255,0.12);
+}
+.chat-input-row textarea {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 6px 0;
+    resize: none;
+    max-height: 100px;
+    outline: none;
+    overflow-y: auto;
+}
+.chat-input-row textarea::placeholder { color: var(--gray-400); }
+.chat-input-row .emoji-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 4px;
+    flex-shrink: 0;
+    opacity: 0.4;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.chat-input-row .emoji-btn:hover { opacity: 1; transform: scale(1.1); }
+.chat-input-row .send-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0,102,255,0.3);
+}
+.chat-input-row .send-btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,102,255,0.4); }
+.chat-input-row .send-btn:active { transform: scale(0.95); }
+
+/* ===== 3.9. ПАНЕЛЬ ЭМОДЗИ (ВЫПАДАЮЩАЯ) ===== */
+.emoji-picker {
+    position: absolute;
+    bottom: 65px; /* Отступ от поля ввода */
+    left: 12px;
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xl);
+    padding: 10px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 2px;
+    width: 260px;
+    max-height: 180px;
+    overflow-y: auto;
+    z-index: 20;
+    border: 1px solid var(--gray-100);
+}
+.emoji-picker.active { display: flex; animation: fadeInUp 0.2s ease-out; }
+.emoji-picker button {
+    font-size: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 5px;
+    border-radius: 8px;
+    transition: background 0.15s;
+}
+.emoji-picker button:hover { background: var(--gray-50); }
+
+/* ===== 3.10. СКРОЛЛБАР ДЛЯ СООБЩЕНИЙ ===== */
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 2px; }
+
+/* ===== 3.11. ПУСТЫЕ СОСТОЯНИЯ (ЧАТ, ПРОФИЛЬ, ОШИБКА) ===== */
+.empty-chat, .profile-empty, .profile-error {
+    text-align: center; 
+    padding: 40px 20px;
+    background: var(--white); 
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md); 
+    margin-bottom: 12px;
+}
+.profile-error { border-left: 3px solid var(--error); }
+.empty-chat svg { width: 56px; height: 56px; opacity: 0.25; }
+.empty-chat p { font-size: 14px; opacity: 0.6; color: var(--gray-500); }
+
+/* ============================================== */
+/* 4. СТИЛИ: ФОРМЫ И ЭЛЕМЕНТЫ УПРАВЛЕНИЯ          */
+/* ============================================== */
+
+/* ===== 4.1. ЧЕКБОКСЫ ===== */
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    padding: 10px 0;
+    cursor: pointer;
+}
+.checkbox-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+/* ===== 4.2. ВЫПАДАЮЩИЕ СПИСКИ (SELECT) ===== */
+select { 
+    appearance: none; 
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23525252' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); 
+    background-repeat: no-repeat; 
+    background-position: right 14px center; 
+    padding-right: 36px; 
+}
+
+/* ===== 4.3. СКЕЛЕТОН ЗАГРУЗКИ (АНИМАЦИЯ) ===== */
+.skeleton {
+    background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-200) 50%, var(--gray-100) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-md);
+}
+
+/* ============================================== */
+/* 5. СТИЛИ: ГЛАВНАЯ СТРАНИЦА (HERO-БЛОК)         */
+/* ============================================== */
+
+/* ===== 5.1. ГЕРОЙ-СЕКЦИЯ (ПРИВЕТСТВИЕ + КНОПКА) ===== */
+.hero-section {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 24px;
+    padding: 20px 0;
+}
+.hero-greeting {
+    font-size: 42px;
+    font-weight: 800;
+    font-family: var(--font-display);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeInUp 0.6s ease;
+    letter-spacing: -0.02em;
+}
+.hero-wave {
+    display: inline-block;
+    animation: wave 0.6s ease-in-out 3;
+    transform-origin: 70% 70%;
+}
+@keyframes wave { 
+    0%, 100% { transform: rotate(0deg); } 
+    25% { transform: rotate(15deg); } 
+    75% { transform: rotate(-15deg); } 
+}
+.hero-subtitle {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    max-width: 300px;
+    line-height: 1.6;
+}
+.hero-btn {
+    padding: 18px 44px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 16px;
+    max-width: 240px;
+}
+.hero-features {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+}
+.hero-feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+.hero-feature span:first-child { font-size: 28px; }
+.hero-feature span:last-child { font-size: 11px; color: var(--gray-500); font-weight: 600; }
+        
+      /* ============================================== */
+/* 6. СТИЛИ: ФУТЕР И МОДАЛЬНЫЕ ОКНА               */
+/* ============================================== */
+
+/* ===== 6.1. ССЫЛКИ В ФУТЕРЕ (ПОЛИТИКА, СОГЛАШЕНИЕ) ===== */
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+}
+.footer-links a {
+    font-size: 11px;
+    color: var(--gray-500);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+.footer-links a:hover { background: var(--gray-100); color: var(--black); }
+
+/* ===== 6.2. МОДАЛЬНОЕ ОКНО (ВЫЕЗЖАЕТ СНИЗУ) ===== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    justify-content: center;
+    align-items: flex-end; /* На мобильном — снизу */
+    animation: fadeIn 0.2s ease;
+}
+.modal.show { display: flex; }
+.modal-box {
+    background: var(--white);
+    padding: 28px;
+    border-radius: 24px 24px 0 0; /* Скругление только сверху */
+    max-width: 480px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.7;
+    animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes slideInUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+.modal-box h2 { font-size: 22px; font-weight: 800; margin-bottom: 14px; font-family: var(--font-display); }
+.modal-box h3 { font-size: 16px; font-weight: 700; margin: 16px 0 8px; font-family: var(--font-display); }
+.modal-box p { margin-bottom: 10px; }
+
+/* ===== 6.3. АНИМАЦИЯ ШАГОВ ЗАКАЗА ===== */
+.order-step-content { animation: slideInRight 0.3s ease-out; }
+
+/* ============================================== */
+/* 7. СТИЛИ: НИЖНЯЯ НАВИГАЦИЯ (GLASSMORPHISM)     */
+/* ============================================== */
+
+/* ===== 7.1. ПАНЕЛЬ НАВИГАЦИИ ===== */
+.bottom-nav {
+    position: fixed;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 24px);
+    max-width: 420px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255,255,255,0.7) inset;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px;
+    z-index: 100;
+    flex-shrink: 0;
+}
+
+/* ===== 7.2. ЭЛЕМЕНТЫ НАВИГАЦИИ (ИКОНКИ + ТЕКСТ) ===== */
+.nav-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-500);
+    padding: 6px 14px;
+    border-radius: 14px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-item .nav-icon { font-size: 22px; transition: transform 0.25s; }
+.nav-item.active { background: rgba(0,102,255,0.12); color: var(--primary); }
+.nav-item.active .nav-icon { transform: scale(1.15); }
+
+/* ===== 7.3. BADGE (СЧЁТЧИК УВЕДОМЛЕНИЙ) ===== */
+.nav-item .badge {
+    position: absolute;
+    top: 2px; right: 6px;
+    background: var(--error); color: var(--white);
+    border-radius: 10px; padding: 1px 5px;
+    font-size: 9px; font-weight: 700;
+    min-width: 14px; text-align: center;
+    box-shadow: 0 2px 4px rgba(255,51,102,0.3);
+}
+
+/* ===== 7.4. АДАПТИВ ДЛЯ МАЛЫХ ЭКРАНОВ ===== */
+@media (max-width: 480px) {
+    body { max-width: 100%; }
+    .bottom-nav { max-width: 100%; width: calc(100% - 24px); }
+}
+
+/* ============================================== */
+/* 8. СТИЛИ: АДАПТАЦИЯ ПОД ПК (ЦЕНТРИРОВАНИЕ)     */
+/* ============================================== */
+@media (min-width: 769px) {
+    html { background: #e5e7eb !important; margin: 0 !important; }
+    body {
+        max-width: 480px !important;
+        margin: 0 auto !important;
+        background: #ffffff !important;
+        min-height: 100vh !important;
+        box-shadow: 0 0 25px rgba(0,0,0,0.08) !important;
+        position: relative !important;
+    }
+    /* Фиксированные панели центрируем */
+    nav, .bottom-nav, .top-nav, .tabs-bar, .fixed-panel, [style*="position: fixed"] {
+        position: fixed !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        max-width: 480px !important;
+        width: 100% !important;
+        right: auto !important;
+        margin: 0 !important;
+        z-index: 1000 !important;
+    }
+    /* Модалки тоже по центру */
+    .modal, .popup, .dialog, .overlay, [id*="modal"], [class*="modal"] {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        max-width: 460px !important;
+    }
+}
+
+/* ============================================== */
+/* 9. СТИЛИ: PWA БАННЕР + ЧАТ (ФИНАЛЬНЫЕ ФИКСЫ)   */
+/* ============================================== */
+
+/* ===== 9.1. PWA БАННЕР ===== */
+#pwa-banner { display: none; }
+.pwa-banner {
+  position: fixed; bottom: 80px; left: 12px; right: 12px; z-index: 900;
+  animation: slideUpBanner 0.5s ease forwards;
+}
+.pwa-card {
+  background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+  padding: 14px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+}
+.pwa-icon { font-size: 24px; }
+.pwa-text { flex: 1; }
+.pwa-text b { font-size: 14px; display: block; }
+.pwa-text p { font-size: 12px; color: var(--gray-500); margin: 2px 0 0; }
+.pwa-close {
+  background: none; border: none; font-size: 18px; color: var(--gray-400);
+  cursor: pointer; padding: 4px;
+}
+.pwa-steps {
+  background: #f8f9fa; padding: 10px 14px; border-radius: 12px;
+  font-size: 11px; color: var(--gray-600); display: flex; flex-direction: column; gap: 4px;
+}
+@keyframes slideUpBanner { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@media (min-width: 768px) { #pwa-banner { display: none !important; } }
+
+/* ===== 9.2. ФОН ЧАТА (КАК В WHATSAPP) ===== */
+.chat-messages, #chatMessages, .messages-container {
+  background: #f0f2f5 !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239c92ac' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+  background-attachment: fixed !important;
+}
+
+/* ===== 9.3. ПАНЕЛЬ ЭМОДЗИ ===== */
+.emoji-picker, #emojiPicker, [class*="emoji"][class*="pick"] {
+  display: none !important;
+  position: absolute !important;
+  bottom: 58px !important;
+  left: 8px !important; right: 8px !important;
+  background: #fff !important;
+  border-radius: 14px !important;
+  padding: 10px !important;
+  z-index: 900 !important;
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.12) !important;
+  max-height: 180px !important;
+  overflow-y: auto !important;
+}
+.emoji-picker.show { display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 6px !important; }
+.emoji-picker span, .emoji-btn {
+  font-size: 22px !important;
+  cursor: pointer !important;
+  padding: 4px !important;
+  border-radius: 8px !important;
+  transition: background 0.15s !important;
+}
+.emoji-picker span:hover, .emoji-btn:hover { background: #f0f0f0 !important; }
+
+/* ===== 9.4. ИНДИКАТОР «ПЕЧАТАЕТ» ===== */
+.typing-indicator {
+  position: absolute !important;
+  bottom: 8px !important;
+  left: 16px !important;
+  z-index: 10 !important;
+}
+.typing-bubble {
+  background: #e9ecef !important;
+  padding: 8px 14px !important;
+  border-radius: 18px 18px 18px 4px !important;
+  display: inline-flex !important;
+  gap: 4px !important;
+  align-items: center !important;
+}
+.typing-dot {
+  width: 6px !important;
+  height: 6px !important;
+  background: #6c757d !important;
+  border-radius: 50% !important;
+  animation: typingBounce 1.4s infinite ease-in-out both !important;
+}
+.typing-dot:nth-child(1) { animation-delay: -0.32s !important; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s !important; }
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+        /* ============================================== */
+        /* 10. РАЗМЕТКА: ТЕЛО СТРАНИЦЫ (<body>) */
+        /* ============================================== */
+</style> <!-- ✅ Конец блока <style> -->
+</head>
+
+<body>
+<!-- ===== 10.1. БЛОКИРОВКА ГОРИЗОНТАЛЬНОГО РЕЖИМА ===== -->
+    <div id="landscape-lock" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9999; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
+      <div style="font-size:48px; margin-bottom:16px;">🔄</div>
+      <div style="font-size:18px; color:#333; line-height:1.5;">Пожалуйста, поверните телефон<br>вертикально для удобной работы
+      </div>
+    </div>
+    
+    <!-- ===== 10.2. PWA БАННЕР (УСТАНОВКА ПРИЛОЖЕНИЯ) ===== -->
+    <div id="pwa-banner" class="pwa-banner" style="display:none;">
+      <div class="pwa-card">
+        <div class="pwa-icon">📲</div>
+        <div class="pwa-text">
+          <b>Установите приложение</b>
+          <p>Работает быстрее и присылает уведомления о заказе</p>
+        </div>
+        <button class="pwa-close" onclick="hidePwaBanner()">✕</button>
+      </div>
+      <div class="pwa-steps">
+        <span>🍎 <b>iPhone:</b> Поделиться → На экран «Домой»</span>
+        <span>🤖 <b>Android:</b> Меню (⋮) → Установить приложение</span>
+      </div>
+    </div>
+    
+    <!-- ===== 10.3. НИЖНЯЯ НАВИГАЦИЯ (4 ВКЛАДКИ) ===== -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-tab="tab-home">
+            <span class="nav-icon">🏠</span><span>Главная</span>
+        </div>
+        <div class="nav-item" data-tab="tab-order">
+            <span class="nav-icon">📐</span><span>Заказ</span>
+        </div>
+        <div class="nav-item" data-tab="tab-chat">
+            <span class="nav-icon">💬</span><span>Чат</span>
+        </div>
+        <div class="nav-item" data-tab="tab-profile">
+            <span class="nav-icon">👤</span><span>Профиль</span>
+        </div>
+    </nav>
+
+    <!-- ============================================== -->
+    <!-- 11. ВКЛАДКИ (КОНТЕНТ ПЕРЕКЛЮЧАЕТСЯ ПО TAB)     -->
+    <!-- ============================================== -->
+
+    <!-- ===== 11.1. ВКЛАДКА: ГЛАВНАЯ ===== -->
+    <div class="tab active" id="tab-home">
+        <div class="hero-section">
+            <div class="hero-greeting">Привет <span class="hero-wave">👋</span></div>
+            <div class="hero-subtitle">Это сервис для заказа баннеров. Закажи в пару кликов — мы напечатаем и доставим.</div>
+            <button class="btn btn-primary hero-btn" onclick="switchTab('tab-order')">Сделать заказ</button>
+            <div class="hero-features">
+                <div class="hero-feature"><span>🚀</span><span>Быстро</span></div>
+                <div class="hero-feature"><span>🎨</span><span>Качественно</span></div>
+                <div class="hero-feature"><span>🚚</span><span>Доставка</span></div>
+                <div class="hero-feature"><span>💰</span><span>Выгодно</span></div>
+            </div>
+        </div>
+        <div class="footer-links">
+            <a href="#" onclick="openModal('policy')">Политика</a>
+            <a href="#" onclick="openModal('terms')">Соглашение</a>
+            <a href="#" onclick="openModal('design')">Требования к макетам</a>
+            <a href="#" onclick="openModal('install')">Установка приложения</a>
+        </div>
+    </div>
+
+    <!-- ===== 11.2. ВКЛАДКА: ЗАКАЗ (ДИНАМИЧЕСКИЙ КОНТЕНТ) ===== -->
+    <div class="tab" id="tab-order"><div id="orderStep"></div></div>
+
+    <!-- ===== 11.3. ВКЛАДКА: ЧАТ (ДИНАМИЧЕСКИЙ КОНТЕНТ) ===== -->
+    <div class="tab" id="tab-chat"><div id="chatPage"></div></div>
+
+    <!-- ===== 11.4. ВКЛАДКА: ПРОФИЛЬ (ДИНАМИЧЕСКИЙ КОНТЕНТ) ===== -->
+    <div class="tab" id="tab-profile"><div id="profileContent"></div></div>
+
+    <!-- ===== 11.5. ГЛОБАЛЬНОЕ МОДАЛЬНОЕ ОКНО ===== -->
+    <div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+        <div class="modal-box" id="modalContent"></div>
+    </div>
+<script>
+// ==============================================
+// 12. СКРИПТЫ: ЛОГИКА ПРИЛОЖЕНИЯ
+// ==============================================
+    
+// ===== 12.1. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И НАСТРОЙКИ =====
+const API = '/api';
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+let matData = {};
+let uploadedFile = null;
+let orderStep = 1;
+let currentMaterial = 'banner';
+let savedTab = sessionStorage.getItem('activeTab') || 'tab-home';
+
+// Состояние чата
+let chatMessages = [];
+let lastKnownId = 0;
+let chatUnreadCount = 0;
+let isUserNearBottom = true;
+let pollingTimer = null;
+let isSending = false;
+let pendingSendId = 0;
+
+const VAPID_PUBLIC = 'BO4rOIC4gMmMlgze-laJFcHh71oauLdhZji_Knqag6Z2MIosXOdueOofIbvlnH-EHIdr170jTLrFWhAOL-NcVds';
+
+// Базовые цены за материалы
+const basePrices = {
+    'banner-500': 500, 'banner-700': 700, 'banner-820': 820,
+    'selfad-840': 840, 'poster-500': 500, 'poster-800': 800
+};
+
+// ===== 12.2. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК =====
+function switchTab(tabId) {
+    // Скрыть все вкладки, убрать активный класс с кнопок
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+    
+    // Показать нужную вкладку, подсветить кнопку
+    document.getElementById(tabId).classList.add('active');
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    
+    // Сохранить выбор в sessionStorage
+    sessionStorage.setItem('activeTab', tabId);
+    
+    // Загрузить контент в зависимости от вкладки
+    if (tabId === 'tab-order') renderOrderStep();
+    
+    if (tabId === 'tab-chat') {
+        // 🔹 При открытии чата — сбрасываем счётчик и удаляем уведомление
+chatUnreadCount = 0;
+updateChatBadge();
+document.getElementById('chat-toast')?.remove();
+        
+        loadChatPage();
+        if (currentUser?.id) {
+            // Пометить сообщения как прочитанные
+            fetch(API + '/chat/' + currentUser.id)
+                .then(r => r.json())
+                .then(msgs => {
+                    fetch(API + '/chat/read', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+                        body: JSON.stringify({ userId: currentUser.id, count: msgs.filter(m => m.from === 'admin').length })
+                    }).catch(() => {});
+                }).catch(() => {});
+        }
+    }
+    
+    if (tabId === 'tab-profile') loadProfile();
+}
+
+// Навешиваем обработчики кликов на кнопки навигации
+document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+    item.addEventListener('click', () => switchTab(item.dataset.tab));
+});
+
+// Загружаем сохранённую вкладку при старте
+switchTab(savedTab);
+if (window.location.search.includes('tab=chat')) switchTab('tab-chat');
+
+// ===== 12.3. PUSH-УВЕДОМЛЕНИЯ (SERVICE WORKER) =====
+async function subscribePush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    try {
+        const reg = await navigator.serviceWorker.ready;
+        let sub = await reg.pushManager.getSubscription();
+        
+        // Если подписки нет — создаём новую
+        if (!sub) {
+            sub = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC)
+            });
+        }
+        
+        // Отправляем подписку на сервер, если пользователь авторизован
+        if (currentUser?.id) {
+            await fetch(API + '/push-subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser.id, subscription: sub })
+            });
+        }
+    } catch(e) {
+        console.log('Push subscription error:', e);
+    }
+}
+
+// Вспомогательная функция: конвертация base64 в Uint8Array для VAPID-ключа
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+// ==============================================
+// 13. ЛОГИКА ЗАКАЗА (3 ШАГА)
+// ==============================================
+
+// ===== 13.1. ОСНОВНАЯ ФУНКЦИЯ: ОТРИСОВКА ШАГА =====
+function renderOrderStep() {
+    const container = document.getElementById('orderStep');
+    clearInterval(window._chatInterval); // Останавливаем опрос чата, чтобы не мешал
+    
+    let stepHtml = '';
+    
+    // Индикатор прогресса (3 точки + 2 линии)
+    stepHtml = `<div class="step-indicator">
+        <div class="step-dot ${orderStep >= 1 ? (orderStep > 1 ? 'done' : 'active') : ''}"></div>
+        <div class="step-line ${orderStep >= 2 ? 'active' : ''}"></div>
+        <div class="step-dot ${orderStep >= 2 ? (orderStep > 2 ? 'done' : 'active') : ''}"></div>
+        <div class="step-line ${orderStep >= 3 ? 'active' : ''}"></div>
+        <div class="step-dot ${orderStep >= 3 ? 'active' : ''}"></div>
+    </div>`;
+    
+    // ===== ШАГ 1: ВЫБОР МАТЕРИАЛА =====
+    if (orderStep === 1) {
+        stepHtml += `<div class="order-step-content">
+            <div class="section-header anim-fade anim-d1">Выберите материал</div>
+            <div class="tile-row">
+                <div class="tile anim-fade anim-d2" onclick="selectMaterial('banner')">
+                    <div class="tile-icon">🪧</div>
+                    <div class="tile-title">Баннер</div>
+                    <div class="tile-sub">300г / 440г / 510г</div>
+                    <div class="tile-time">⏱ 1-3 рабочих дня</div>
+                </div>
+                <div class="tile anim-fade anim-d3" onclick="selectMaterial('selfad')">
+                    <div class="tile-icon">🏷️</div>
+                    <div class="tile-title">Самоклейка</div>
+                    <div class="tile-sub">Матовая / глянцевая</div>
+                    <div class="tile-time">⏱ 1-3 рабочих дня</div>
+                </div>
+                <div class="tile anim-fade anim-d1" onclick="selectMaterial('poster')">
+                    <div class="tile-icon">🖼️</div>
+                    <div class="tile-title">Плакат</div>
+                    <div class="tile-sub">Blueback / белая бумага</div>
+                    <div class="tile-time">⏱ 1-3 рабочих дня</div>
+                </div>
+                <div class="tile anim-fade anim-d2" onclick="selectMaterial('cards')">
+                    <div class="tile-icon">📇</div>
+                    <div class="tile-title">Визитки</div>
+                    <div class="tile-sub">Мелованный картон 300 г/м²</div>
+                    <div class="tile-time">⏱ 1 рабочая неделя</div>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    // ===== ШАГ 2: ПАРАМЕТРЫ И РАСЧЁТ ЦЕНЫ =====
+    else if (orderStep === 2) {
+        const materialNames = { banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат', cards: '📇 Визитки' };
+        stepHtml += `<div class="order-step-content">
+            <button class="back-btn" onclick="orderStep=1;renderOrderStep();">← Назад</button>
+            <div class="section-header">${materialNames[currentMaterial]}</div>
+            <div class="card">
+                ${currentMaterial !== 'cards' ? `
+                <div class="row">
+                    <div class="form-group"><label>Ширина, мм</label><input type="number" id="mWidth" value="1000" oninput="calc()"></div>
+                    <div class="form-group"><label>Высота, мм</label><input type="number" id="mHeight" value="1000" oninput="calc()"></div>
+                </div>
+                <div class="hint-red" id="widthHint"></div>
+                <div class="form-group"><label>Количество, шт</label><input type="number" id="mQty" value="1" min="1" oninput="calc()"></div>` : ''}
+                <div id="matOpts"></div>
+            </div>
+            <div style="text-align:center;margin:16px 0;"><div class="price-big" id="mTotal">—</div></div>
+            <button class="btn btn-primary" onclick="orderStep=3;renderOrderStep();">📋 Далее</button>
+        </div>`;
+        
+        // Динамически подгружаем опции для выбранного материала
+        setTimeout(() => {
+            const opts = document.getElementById('matOpts');
+            if (!opts) return;
+            
+            if (currentMaterial === 'banner') {
+                opts.innerHTML = `
+                    <div class="form-group"><label>Плотность</label><select id="bDens" onchange="calc()"><option value="500">300 г/м² — тонкий</option><option value="700" selected>440 г/м² — стандарт</option><option value="820">510 г/м² — премиум</option></select></div>
+                    <label class="checkbox-row"><input type="checkbox" id="bProkl" onchange="calc()"> Проклейка (+60 р/м.п.)</label>
+                    <label class="checkbox-row"><input type="checkbox" id="bLyuv" onchange="calc()"> Люверсы (+20 р/шт)</label>`;
+            } else if (currentMaterial === 'selfad') {
+                opts.innerHTML = `
+                    <div class="form-group"><label>Тип</label><select id="sType" onchange="calc()"><option value="840">Матовая</option><option value="840">Глянцевая</option></select></div>
+                    <label class="checkbox-row"><input type="checkbox" id="sRezka" onchange="calc()"> Обрезка (+25 р/м.п.)</label>
+                    <div class="hint">Без обрезки — с белыми полями.</div>`;
+            } else if (currentMaterial === 'poster') {
+                opts.innerHTML = `
+                    <div class="form-group"><label>Бумага</label><select id="pType" onchange="calc()"><option value="500">Blueback (эконом)</option><option value="800">Белая (стандарт)</option></select></div>
+                    <div class="hint">Blueback — синяя оборотка.</div>`;
+            } else if (currentMaterial === 'cards') {
+                opts.innerHTML = `
+                    <div class="form-group"><label>Тираж</label><select id="cardsQty" onchange="calc()">
+                        <option value="500">500 шт — 1 500 ₽</option>
+                        <option value="1000" selected>1000 шт — 1 900 ₽</option>
+                        <option value="2000">2000 шт — 3 200 ₽</option>
+                        <option value="3000">3000 шт — 4 200 ₽</option>
+                        <option value="4000">4000 шт — 5 200 ₽</option>
+                        <option value="5000">5000 шт — 6 000 ₽</option>
+                        <option value="10000">10000 шт — 9 900 ₽</option>
+                    </select></div>
+                    <label class="checkbox-row"><input type="checkbox" id="cardsFast" onchange="calc()"> Ускорить производство (+30%)</label>`;
+            }
+            calc(); // Пересчитываем цену после отрисовки опций
+        }, 10);
+    }
+    
+    // ===== ШАГ 3: ОФОРМЛЕНИЕ И ПОДТВЕРЖДЕНИЕ =====
+    else if (orderStep === 3) {
+        const hintText = currentMaterial === 'cards' 
+            ? 'Бесплатная доставка по Краснодару. Срок: 1 рабочая неделя.' 
+            : 'Бесплатная доставка по Краснодару. Срок: 1-3 рабочих дня.';
+        
+        stepHtml += `<div class="order-step-content">
+            <button class="back-btn" onclick="orderStep=2;renderOrderStep();">← Назад</button>
+            <div class="section-header">📋 Оформление</div>
+            <div class="card" id="orderSummary">${buildSummary()}</div>
+            <div class="card">
+                <div style="font-weight:700;font-size:15px;margin-bottom:12px;">📎 Макет</div>
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                    <span id="uploadText">Нажмите, чтобы загрузить файл</span>
+                    <div class="hint" style="margin-top:8px;">PDF, PNG, JPG, CDR, AI, EPS</div>
+                </div>
+                <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.cdr,.ai,.eps" style="display:none;" onchange="handleFile(event)">
+            </div>
+            <div class="card">
+                <div style="font-weight:700;font-size:15px;margin-bottom:12px;">👤 Данные</div>
+                <div class="form-group"><label>Имя *</label><input type="text" id="custName" value="${currentUser?.name||''}" required></div>
+                <div class="form-group"><label>Телефон *</label><input type="tel" id="custPhone" value="${currentUser?.phone||''}" placeholder="+7 ___ ___-__-__" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="custEmail" value="${currentUser?.email||''}"></div>
+                <div class="form-group"><label>Telegram</label><input type="text" id="custTg" value="${currentUser?.tg||''}" placeholder="@username"></div>
+                <div class="form-group"><label>Адрес доставки *</label><textarea id="custAddr" rows="2">${currentUser?.addr||''}</textarea></div>
+                <div class="form-group"><label>Комментарий</label><textarea id="custComment" rows="2" placeholder="Пожелания, уточнения..."></textarea></div>
+                <div class="hint">${hintText}</div>
+            </div>
+            <button class="btn btn-primary" onclick="submitOrder()">✅ Оформить заказ</button>
+        </div>`;
+    }
+    
+    container.innerHTML = stepHtml;
+}
+
+// ===== 13.2. ВЫБОР МАТЕРИАЛА =====
+function selectMaterial(type) {
+    currentMaterial = type;
+    orderStep = 2;
+    renderOrderStep();
+}
+
+// ===== 13.3. ПОЛУЧЕНИЕ БАЗОВОЙ ЦЕНЫ =====
+function getBasePrice() {
+    if (currentMaterial === 'banner') return basePrices['banner-' + (document.getElementById('bDens')?.value || '700')];
+    if (currentMaterial === 'selfad') return 840;
+    return basePrices['poster-' + (document.getElementById('pType')?.value || '500')];
+}
+
+// ===== 13.4. РАСЧЁТ ИТОГОВОЙ СТОИМОСТИ =====
+function calc() {
+    const totalEl = document.getElementById('mTotal');
+    if (!totalEl) return;
+    
+    // 🔹 Визитки — фиксированные цены за тираж
+    if (currentMaterial === 'cards') {
+        const cardsPrices = { 500: 1500, 1000: 1900, 2000: 3200, 3000: 4200, 4000: 5200, 5000: 6000, 10000: 9900 };
+        const qty = parseInt(document.getElementById('cardsQty')?.value) || 1000;
+        let total = cardsPrices[qty] || 1000;
+        if (document.getElementById('cardsFast')?.checked) total = Math.round(total * 1.3);
+        totalEl.innerText = Math.round(total).toLocaleString() + ' ₽';
+        matData = { type: currentMaterial, width: 90, height: 50, qty, total: Math.round(total), totalArea: 0, extras: [], material: '📇 Визитки' };
+        return;
+    }
+    
+    // 🔹 Остальные материалы — расчёт по площади
+    const w = parseFloat(document.getElementById('mWidth')?.value) || 1000;
+    const h = parseFloat(document.getElementById('mHeight')?.value) || 1000;
+    const qty = parseInt(document.getElementById('mQty')?.value) || 1;
+    const area = (w / 1000) * (h / 1000); // м²
+    const totalArea = area * qty;
+    let maxW = currentMaterial === 'banner' ? 3200 : 1500; // Макс. ширина печати
+    
+    // Подсветка ошибки, если ширина превышена
+    const hint = document.getElementById('widthHint');
+    if (w > maxW) {
+        document.getElementById('mWidth')?.classList.add('error');
+        if (hint) { hint.style.display = 'block'; hint.innerText = `⚠️ Макс. ширина — ${maxW} мм`; }
+    } else {
+        document.getElementById('mWidth')?.classList.remove('error');
+        if (hint) hint.style.display = 'none';
+    }
+    
+    let base = getBasePrice();
+    let ppm = totalArea >= 5 ? base : Math.round(base * 1.3); // Цена за м² (скидка от 5 м²)
+    let perim = ((w + h) * 2) / 1000; // Периметр в метрах
+    let extras = [];
+    
+    // 🔹 Доп. опции для баннера
+    if (currentMaterial === 'banner') {
+        if (document.getElementById('bProkl')?.checked) extras.push({ name: 'Проклейка', cost: perim * 60 * qty });
+        if (document.getElementById('bLyuv')?.checked) {
+            const lc = (Math.floor(w / 300) + Math.floor(h / 300)) * 2; // Люверсы каждые 30 см
+            const lcQty = lc < 4 ? 4 * qty : lc * qty; // Мин. 4 шт
+            extras.push({ name: `Люверсы (${lcQty} шт)`, cost: lcQty * 20 });
+        }
+    }
+    // 🔹 Доп. опции для самоклейки
+    else if (currentMaterial === 'selfad') {
+        if (document.getElementById('sRezka')?.checked) extras.push({ name: `Обрезка (${(perim*qty).toFixed(2)} м.п.)`, cost: perim * 25 * qty });
+    }
+    
+    // Итоговая цена
+    let total = area * ppm * qty;
+    extras.forEach(e => total += e.cost);
+    if (currentMaterial !== 'cards') total += 300; // Мин. заказ 300 р.
+    if (total < 1000) total = 1000; // Мин. сумма заказа 1000 р.
+    
+    totalEl.innerText = Math.round(total).toLocaleString() + ' ₽';
+    
+    // Сохраняем данные для отправки
+    matData = {
+        type: currentMaterial, width: w, height: h, qty, total: Math.round(total),
+        totalArea, extras, material: ({ banner: '🪧 Баннер', selfad: '🏷️ Самоклейка', poster: '🖼️ Плакат' })[currentMaterial]
+    };
+}
+
+// ===== 13.5. СВОДКА ЗАКАЗА (ДЛЯ ШАГА 3) =====
+function buildSummary() {
+    const d = matData;
+    return `
+        <div class="summary-row"><span>Материал</span><span>${d.material}</span></div>
+        <div class="summary-row"><span>Размер</span><span>${d.type==='cards' ? '90×50' : d.width+'×'+d.height} мм</span></div>
+        <div class="summary-row"><span>Количество</span><span>${d.qty} шт</span></div>
+        ${d.extras.map(e => `<div class="summary-row"><span>${e.name}</span><span>${Math.round(e.cost)} ₽</span></div>`).join('')}
+        <div class="summary-row total"><span>Итого</span><span>${d.total.toLocaleString()} ₽</span></div>
+    `;
+}
+
+// ===== 13.6. ЗАГРУЗКА ФАЙЛА (МАКЕТА) =====
+function handleFile(e) {
+    const f = e.target.files[0];
+    if (f) {
+        document.getElementById('uploadZone').classList.add('has-file');
+        document.getElementById('uploadText').innerText = '✅ ' + f.name;
+        uploadedFile = f;
+    }
+}
+
+// ===== 13.7. ОТПРАВКА ЗАКАЗА НА СЕРВЕР =====
+async function submitOrder() {
+    const name = document.getElementById('custName')?.value.trim();
+    const phone = document.getElementById('custPhone')?.value.trim();
+    if (!name || !phone) { alert('Заполните имя и телефон'); return; }
+    
+    const order = {
+        ...matData,
+        name, phone,
+        email: document.getElementById('custEmail')?.value.trim() || '',
+        tg: document.getElementById('custTg')?.value.trim() || '',
+        addr: document.getElementById('custAddr')?.value.trim() || '',
+        comment: document.getElementById('custComment')?.value.trim() || '',
+        userId: currentUser?.id || ''
+    };
+    
+    // Конвертируем файл в base64, если выбран
+    if (uploadedFile) {
+        const reader = new FileReader();
+        const base64 = await new Promise(r => {
+            reader.onload = () => r(reader.result.split(',')[1]);
+            reader.readAsDataURL(uploadedFile);
+        });
+        order.fileBase64 = base64;
+        order.fileName = uploadedFile.name;
+    }
+    
+    try {
+        const res = await fetch(API + '/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify(order)
+        });
+        const data = await res.json();
+        if (data.success) {
+            // Сохраняем данные пользователя, если он не авторизован
+            if (!currentUser && order.email) {
+                currentUser = { email: order.email, name, phone, tg: order.tg, addr: order.addr };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+            alert('✅ Заказ #' + data.id + ' оформлен!');
+            orderStep = 1;
+            renderOrderStep();
+            switchTab('tab-home');
+        }
+    } catch (e) {
+        alert('Ошибка сервера');
+    }
+}
+
+
+// ==============================================
+// 14. ЧАТ — TELEGRAM-СТИЛЬ
+// ==============================================
+
+// ===== 14.1. ЗАГРУЗКА СТРАНИЦЫ ЧАТА =====
+async function loadChatPage() {
+    const container = document.getElementById('chatPage');
+    
+    // Если пользователь не авторизован — показываем заглушку
+    if (!currentUser) {
+        container.innerHTML = `<div class="card" style="text-align:center;padding:40px 20px;">
+            <div style="font-size:48px;margin-bottom:12px;">🔒</div>
+            <p style="color:var(--gray-500);margin-bottom:16px;">Войдите в профиль, чтобы использовать чат</p>
+            <button class="btn btn-primary" onclick="switchTab('tab-profile')" style="max-width:200px;margin:0 auto;">👤 Войти</button>
+        </div>`;
+        clearInterval(window._chatInterval);
+        return;
+    }
+    
+    // Загружаем историю сообщений с сервера
+    try {
+        const res = await fetch(API + '/chat/' + currentUser.id, { headers: { 'x-user-id': currentUser?.id || '' } });
+        const msgs = await res.json();
+        chatMessages = Array.isArray(msgs) ? msgs : [];
+    } catch(e) {
+        chatMessages = generateDemoMessages(); // Демо-сообщения при ошибке
+    }
+    
+    // Рендерим интерфейс чата
+    container.innerHTML = `
+        <div class="chat-box">
+            <div class="chat-header">
+                <div class="chat-avatar">L</div>
+                <div class="chat-info">
+                    <h3>Landpa — Поддержка</h3>
+                    <span id="chatStatus" class="online">в сети</span>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="typing-indicator" id="typingIndicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <button class="scroll-down-btn" id="scrollDownBtn" onclick="scrollToBottomChat()">
+                <span>↓</span>
+            </button>
+            <div class="emoji-picker" id="emojiPicker"></div>
+            <div class="chat-input-row">
+                <div class="input-wrapper">
+                    <textarea id="chatInput" rows="1" placeholder="Сообщение..." oninput="autoResizeChat(this)"></textarea>
+                    <button class="emoji-btn" onclick="toggleEmojiPicker()">😊</button>
+                </div>
+                <button class="send-btn" id="chatSendBtn" onclick="sendChatMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    renderAllChatMessages();
+    buildEmojiPickerChat();
+    
+    // Обработчики событий
+    const chatInput = document.getElementById('chatInput');
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage();
+        }
+    });
+    
+    const msgsBox = document.getElementById('chatMessages');
+    msgsBox.addEventListener('scroll', () => {
+        const distToBottom = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight;
+        isUserNearBottom = distToBottom < 80;
+        const btn = document.getElementById('scrollDownBtn');
+        if (isUserNearBottom) {
+            btn.classList.remove('visible');
+            if (chatUnreadCount > 0) { chatUnreadCount = 0; updateChatBadge(); }
+        } else {
+            btn.classList.add('visible');
+        }
+    });
+    
+    // Закрытие эмодзи-панели при клике вне
+    document.addEventListener('click', (e) => {
+        const picker = document.getElementById('emojiPicker');
+        const emojiBtn = document.querySelector('.emoji-btn');
+        if (picker && picker.classList.contains('active') && !picker.contains(e.target) && !emojiBtn.contains(e.target)) {
+            picker.classList.remove('active');
+        }
+    });
+    
+    // Запускаем опрос новых сообщений каждые 3 сек
+    clearInterval(window._chatInterval);
+    window._chatInterval = setInterval(pollChat, 3000);
+}
+
+// ===== 14.2. ОПРОС НОВЫХ СООБЩЕНИЙ (POLLING) =====
+function pollChat() {
+    if (!currentUser?.id) return;
+    fetch(API + '/chat/' + currentUser.id + '?since=' + lastKnownId, {
+        headers: { 'x-user-id': currentUser?.id || '' }
+    }).then(r => r.json()).then(msgs => {
+        const newMsgs = Array.isArray(msgs) ? msgs : [];
+        if (newMsgs.length > 0) appendNewChatMessages(newMsgs);
+    }).catch(() => {});
+}
+
+// ===== 14.3. ДОБАВЛЕНИЕ НОВЫХ СООБЩЕНИЙ В ИНТЕРФЕЙС =====
+function appendNewChatMessages(newMsgs) {
+    const msgsBox = document.getElementById('chatMessages');
+    if (!msgsBox) return;
+    const wasNearBottom = isUserNearBottom;
+    
+    newMsgs.forEach(msg => {
+        // Пропускаем дубликаты
+        if (chatMessages.find(m => m.id === msg.id || (m.text === msg.text && m.from === msg.from && m.time === msg.time))) return;
+        chatMessages.push(msg);
+        msgsBox.appendChild(createChatMessageElement(msg));
+        // Если пользователь не внизу — показываем badge
+        if (msg.from === 'admin' && !wasNearBottom) {
+            chatUnreadCount++;
+            // 🔔 Показываем всплывающее уведомление, если пользователь НЕ в чате
+const currentTab = sessionStorage.getItem('activeTab');
+if (currentTab !== 'tab-chat' && msg.from === 'admin') {
+  showChatNotification();
+}
+            updateChatBadge();
+        }
+    });
+    
+    lastKnownId = chatMessages[chatMessages.length - 1]?.id || 0;
+    if (wasNearBottom) scrollToBottomChat(false);
+}
+
+// ===== 14.4. ОТРИСОВКА ВСЕЙ ИСТОРИИ ЧАТА =====
+function renderAllChatMessages() {
+    const msgsBox = document.getElementById('chatMessages');
+    if (!msgsBox) return;
+    msgsBox.innerHTML = '';
+    
+    if (chatMessages.length === 0) {
+        msgsBox.innerHTML = '<div class="empty-chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Нет сообщений</p></div>';
+        return;
+    }
+    
+    let lastDate = '';
+    chatMessages.forEach(msg => {
+        const msgDate = new Date(msg.time).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+        if (msgDate !== lastDate) {
+            lastDate = msgDate;
+            const divider = document.createElement('div');
+            divider.className = 'date-divider';
+            divider.innerHTML = `<span>${msgDate}</span>`;
+            msgsBox.appendChild(divider);
+        }
+        msgsBox.appendChild(createChatMessageElement(msg));
+    });
+    
+    lastKnownId = chatMessages[chatMessages.length - 1]?.id || 0;
+    scrollToBottomChat(false);
+}
+
+// ===== 14.5. СОЗДАНИЕ ЭЛЕМЕНТА СООБЩЕНИЯ =====
+function createChatMessageElement(msg) {
+    const el = document.createElement('div');
+    const type = msg.from === 'admin' ? 'admin' : 'client';
+    el.className = `chat-msg ${type}`;
+    const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    const checkSvg = type === 'client' ? `<span class="msg-check ${msg.read ? 'read' : ''}">✓✓</span>` : '';
+    el.innerHTML = `<span class="msg-text">${escapeHtml(msg.text)}</span><span class="msg-meta"><span class="msg-time">${time}</span>${checkSvg}</span>`;
+    return el;
+}
+
+// ===== 14.6. ОТПРАВКА СООБЩЕНИЯ =====
+async function sendChatMessage() {
+    if (isSending) return;
+    const input = document.getElementById('chatInput');
+    const text = input?.value.trim();
+    if (!text || !currentUser?.id) return;
+    
+    isSending = true;
+    const tempId = ++pendingSendId;
+    
+    // Показываем сообщение сразу (оптимистичный рендер)
+    const tempMsg = { id: tempId, from: 'client', text, time: new Date().toISOString(), read: false };
+    chatMessages.push(tempMsg);
+    const msgsBox = document.getElementById('chatMessages');
+    if (msgsBox) {
+        msgsBox.appendChild(createChatMessageElement(tempMsg));
+        scrollToBottomChat();
+    }
+    
+    input.value = '';
+    input.style.height = 'auto';
+    
+    try {
+        await fetch(API + '/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify({ userId: currentUser.id, from: currentUser.email || 'client', text })
+        });
+        
+        // Имитация ответа админа (для демо)
+        setTimeout(() => simulateAdminReply(text), 1500 + Math.random() * 2000);
+    } catch(e) {
+        const idx = chatMessages.findIndex(m => m.id === tempId);
+        if (idx !== -1) chatMessages[idx].failed = true;
+    }
+    
+    isSending = false;
+}
+
+// ===== 14.7. ИМИТАЦИЯ ОТВЕТА АДМИНА (ДЕМО) =====
+function simulateAdminReply(userText) {
+    const replies = [
+        'Спасибо за обращение! Мы ответим в ближайшее время.',
+        'Понял вас, сейчас проверю информацию.',
+        'Хорошо, принято!',
+        'Можете уточнить детали?',
+        'Отлично, всё записал.',
+        'Спасибо! Обработаем ваш запрос.',
+        'Уже работаю над этим 🔧',
+        'Ваш запрос передан менеджеру ⏳'
+    ];
+    
+    const statusEl = document.getElementById('chatStatus');
+    const typingEl = document.getElementById('typingIndicator');
+    
+    // Показываем "печатает..."
+    if (statusEl) { statusEl.textContent = 'печатает...'; statusEl.className = ''; }
+    if (typingEl) typingEl.classList.add('active');
+    scrollToBottomChat();
+    
+    setTimeout(() => {
+        const replyText = replies[Math.floor(Math.random() * replies.length)];
+        const replyMsg = { id: Date.now(), from: 'admin', text: replyText, time: new Date().toISOString() };
+        chatMessages.push(replyMsg);
+        
+        if (typingEl) typingEl.classList.remove('active');
+        if (statusEl) { statusEl.textContent = 'в сети'; statusEl.className = 'online'; }
+        
+        const msgsBox = document.getElementById('chatMessages');
+        if (msgsBox) {
+            msgsBox.appendChild(createChatMessageElement(replyMsg));
+            scrollToBottomChat();
+        }
+        
+        // Отправляем реальный ответ на сервер
+        fetch(API + '/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id || '' },
+            body: JSON.stringify({ userId: currentUser.id, from: 'admin', text: replyText })
+        }).catch(() => {});
+    }, 1500 + Math.random() * 1500);
+}
+
+// ===== 14.8. ПРОКРУТКА ВНИЗ =====
+function scrollToBottomChat(smooth = true) {
+    const msgsBox = document.getElementById('chatMessages');
+    if (!msgsBox) return;
+    if (smooth && 'scrollBehavior' in document.documentElement.style) {
+        msgsBox.scrollTo({ top: msgsBox.scrollHeight, behavior: 'smooth' });
+    } else {
+        msgsBox.scrollTop = msgsBox.scrollHeight;
+    }
+    isUserNearBottom = true;
+    const btn = document.getElementById('scrollDownBtn');
+    if (btn) btn.classList.remove('visible');
+}
+
+// ===== 14.9. АВТО-РАСШИРЕНИЕ ПОЛЯ ВВОДА =====
+function autoResizeChat(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+// ===== 14.10. ГЕНЕРАЦИЯ ПАНЕЛИ ЭМОДЗИ =====
+function buildEmojiPickerChat() {
+    const emojis = ['😀','😂','🥹','😍','🤔','😢','😡','','👎','❤️','🔥','⭐','🎉','✅','❌','','🙏','','🤝','💪','😎','🥺','😊','🤗','😅','😇','','😋','😌','😏','😒','😔','😴','🤤','😱','🥳','','💀','','🤡','','🐱','','🌟','','☀️','','⚡','','🎵','','💻','','☕','','🍔','','🖨️',''];
+    const picker = document.getElementById('emojiPicker');
+    if (!picker) return;
+    emojis.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.textContent = emoji;
+        btn.onclick = () => {
+            const input = document.getElementById('chatInput');
+            if (!input) return;
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            input.value = input.value.substring(0, start) + emoji + input.value.substring(end);
+            input.focus();
+            input.selectionStart = input.selectionEnd = start + emoji.length;
+            autoResizeChat(input);
+        };
+        picker.appendChild(btn);
+    });
+}
+
+// ===== 14.11. ПЕРЕКЛЮЧЕНИЕ ПАНЕЛИ ЭМОДЗИ =====
+function toggleEmojiPicker() {
+    const picker = document.getElementById('emojiPicker');
+    if (picker) picker.classList.toggle('active');
+}
+
+// ===== 14.12. ЭКРАНИРОВАНИЕ HTML (ЗАЩИТА ОТ XSS) =====
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// ===== 14.13. ГЕНЕРАЦИЯ ДЕМО-СООБЩЕНИЙ (ДЛЯ ТЕСТА) =====
+function generateDemoMessages() {
+    const now = Date.now();
+    return [
+        { id: 1, from: 'admin', text: 'Добро пожаловать в чат поддержки! 👋', time: new Date(now - 3600000).toISOString() },
+        { id: 2, from: 'admin', text: 'Чем можем помочь?', time: new Date(now - 3500000).toISOString() },
+        { id: 3, from: 'client', text: 'Привет! У меня вопрос по заказу', time: new Date(now - 3400000).toISOString(), read: true },
+        { id: 4, from: 'admin', text: 'Конечно, напишите номер заказа и мы всё проверим', time: new Date(now - 3300000).toISOString() },
+        { id: 5, from: 'client', text: 'Заказ #4829, когда будет доставка?', time: new Date(now - 3200000).toISOString(), read: true },
+        { id: 6, from: 'admin', text: 'Сейчас посмотрим... 📦', time: new Date(now - 3100000).toISOString() },
+        { id: 7, from: 'admin', text: 'Ваш заказ уже в пути! Ожидаемая дата доставки — завтра до 18:00 ✅', time: new Date(now - 2900000).toISOString() },
+    ];
+}
+    
+// ==============================================
+// 15. ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ
+// ==============================================
+
+// ===== 15.1. ОСНОВНАЯ ФУНКЦИЯ: ОТРИСОВКА ПРОФИЛЯ =====
+function loadProfile() {
+    const container = document.getElementById('profileContent');
+    if (!container) {
+        console.warn('⚠️ #profileContent не найден');
+        return;
+    }
+    
+    // 🔹 Если пользователь НЕ авторизован — показываем форму входа
+    if (!currentUser) {
+        container.innerHTML = `
+            <div class="section-header">👤 Профиль</div>
+            <div class="card" style="text-align:center;padding:30px 20px;">
+                <div style="font-size:40px;margin-bottom:12px;">🔐</div>
+                <p style="color:var(--gray-500);margin-bottom:20px;">Войдите, чтобы видеть профиль и историю заказов</p>
+                
+                <div id="tgWidgetContainer" style="margin-bottom:20px;"></div>
+                
+                <p style="color:var(--gray-500);font-size:12px;margin:16px 0;">или войдите по email</p>
+                
+                <div class="form-group"><label>Email</label><input type="email" id="authEmail" placeholder="you@example.com"></div>
+                <div class="form-group"><label>Пароль</label><input type="password" id="authPass" placeholder="••••••••"></div>
+                
+                <div id="regFields" style="display:none;">
+                    <div class="form-group"><label>Имя</label><input type="text" id="regName" placeholder="Ваше имя"></div>
+                    <div class="form-group"><label>Телефон</label><input type="tel" id="regPhone" placeholder="+7 ___ ___-__-__"></div>
+                </div>
+                
+                <button class="btn btn-primary" id="authBtn" onclick="doLogin()">Войти</button>
+                <button class="btn btn-outline" onclick="toggleReg()" id="regToggle" style="margin-top:10px;">Создать аккаунт</button>
+                <a href="#" onclick="showForgotPassword()" style="display:block;text-align:center;font-size:11px;color:var(--gray-500);margin-top:12px;text-decoration:none;">Забыли пароль?</a>
+            </div>
+        `;
+        
+        initTelegramWidget();
+        return;
+    }
+    
+    // 🔹 Если пользователь АВТОРИЗОВАН — показываем данные + историю заказов
+    container.innerHTML = `
+        <div class="section-header">👤 Профиль</div>
+        
+        <div class="card" style="text-align:center;">
+            <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;margin:0 auto 12px;">
+                ${(currentUser.name || 'U')[0].toUpperCase()}
+            </div>
+            <p style="font-weight:700;font-size:18px;font-family:var(--font-display);">${currentUser.name || 'Пользователь'}</p>
+            <p style="color:var(--gray-500);font-size:13px;margin-top:4px;">${currentUser.email || ''}</p>
+            ${currentUser.phone ? `<p style="color:var(--gray-500);font-size:13px;">📞 ${currentUser.phone}</p>` : ''}
+            ${currentUser.tg ? `<p style="color:var(--gray-500);font-size:13px;">✈️ ${currentUser.tg}</p>` : ''}
+        </div>
+
+        <button id="edit-profile-btn" style="width:100%; margin-top:12px; padding:14px; border:1px solid #e5e7eb; border-radius:12px; background:#fff; font-size:15px; font-weight:500; cursor:pointer; color:#374151;">✏️ Редактировать профиль</button>        <button class="btn btn-outline" onclick="logout()" style="margin-top:12px;">🚪 Выйти</button>
+        <button class="btn btn-danger" onclick="deleteAccount()" style="margin-top:10px;">🗑 Удалить профиль</button>
+        
+        <div class="section-header" style="margin-top:24px;">📋 История заказов</div>
+        <div id="profileOrders">
+            <div class="card" style="text-align:center;color:var(--gray-500);padding:30px;">⏳ Загрузка заказов...</div>
+        </div>
+    `;
+    
+    loadProfileOrders();
+}
+
+// ===== 15.2. ИНИЦИАЛИЗАЦИЯ WIDGET TELEGRAM =====
+function initTelegramWidget() {
+    const tgContainer = document.getElementById('tgWidgetContainer');
+    if (!tgContainer) return;
+    
+    tgContainer.innerHTML = '';
+    
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.setAttribute('data-telegram-login', 'Someprintbot');
+    script.setAttribute('data-size', 'medium');
+    script.setAttribute('data-radius', '10');
+    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+    script.setAttribute('data-request-access', 'write');
+    
+    script.onerror = () => {
+        tgContainer.innerHTML = '<p style="font-size:11px;color:var(--gray-500);">Виджет Telegram не загрузился</p>';
+    };
+    
+    tgContainer.appendChild(script);
+}
+
+// ===== 15.3. ПЕРЕКЛЮЧЕНИЕ: ВХОД / РЕГИСТРАЦИЯ =====
+let isRegMode = false;
+function toggleReg() {
+    isRegMode = !isRegMode;
+    const regFields = document.getElementById('regFields');
+    const authBtn = document.getElementById('authBtn');
+    const regToggle = document.getElementById('regToggle');
+    
+    if (regFields) regFields.style.display = isRegMode ? 'block' : 'none';
+    if (authBtn) authBtn.innerText = isRegMode ? 'Зарегистрироваться' : 'Войти';
+    if (regToggle) regToggle.innerText = isRegMode ? 'Уже есть аккаунт' : 'Создать аккаунт';
+    if (authBtn) authBtn.onclick = isRegMode ? doRegister : doLogin;
+}
+
+// ===== 15.4. ВХОД ПО EMAIL/PASSWORD =====
+async function doLogin() {
+    const email = document.getElementById('authEmail')?.value.trim();
+    const pass = document.getElementById('authPass')?.value.trim();
+    
+    if (!email || !pass) {
+        alert('Заполните email и пароль');
+        return;
+    }
+    
+    const btn = document.getElementById('authBtn');
+    const originalText = btn?.innerText || 'Войти';
+    if (btn) { btn.innerText = '⏳ Вход...'; btn.disabled = true; }
+    
+    try {
+        const res = await fetch(API + '/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass })
+        });
+        const data = await res.json();
+        
+        if (data.success && data.user) {
+            currentUser = { 
+                id: data.user.id || data.user._id, 
+                email: data.user.email, 
+                name: data.user.name, 
+                phone: data.user.phone,
+                tg: data.user.tg
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('✅ Вход выполнен!');
+            loadProfile();
+            subscribePush();
+            updateChatBadge();
+        } else {
+            alert(data.error || 'Неверный email или пароль');
+        }
+    } catch (e) {
+        console.error('❌ Ошибка входа:', e);
+        alert('Ошибка соединения с сервером');
+    } finally {
+        if (btn) { btn.innerText = originalText; btn.disabled = false; }
+    }
+}
+
+// ===== 15.5. РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ =====
+async function doRegister() {
+    const email = document.getElementById('authEmail')?.value.trim();
+    const pass = document.getElementById('authPass')?.value.trim();
+    const name = document.getElementById('regName')?.value.trim() || '';
+    const phone = document.getElementById('regPhone')?.value.trim() || '';
+    
+    if (!email || !pass) {
+        alert('Заполните email и пароль');
+        return;
+    }
+    
+    const btn = document.getElementById('authBtn');
+    const originalText = btn?.innerText || 'Зарегистрироваться';
+    if (btn) { btn.innerText = '⏳ Регистрация...'; btn.disabled = true; }
+    
+    try {
+        const res = await fetch(API + '/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass, name, phone })
+        });
+        const data = await res.json();
+        
+        if (data.success && data.user) {
+            currentUser = { 
+                id: data.user.id || data.user._id, 
+                email: data.user.email, 
+                name: data.user.name, 
+                phone: data.user.phone 
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('✅ Регистрация успешна!');
+            loadProfile();
+            subscribePush();
+            updateChatBadge();
+        } else {
+            alert(data.error || 'Ошибка регистрации');
+        }
+    } catch (e) {
+        console.error('❌ Ошибка регистрации:', e);
+        alert('Ошибка соединения с сервером');
+    } finally {
+        if (btn) { btn.innerText = originalText; btn.disabled = false; }
+    }
+}
+
+// ===== 15.6. ВЫХОД ИЗ АККАУНТА =====
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    loadProfile();
+    updateChatBadge();
+}
+
+// ===== 15.7. УДАЛЕНИЕ АККАУНТА =====
+async function deleteAccount() {
+    if (!confirm('⚠️ Точно удалить профиль?\nВсе данные и заказы будут потеряны безвозвратно.')) return;
+    
+    if (!currentUser?.id) {
+        alert('Пользователь не авторизован');
+        return;
+    }
+    
+    try {
+        await fetch(API + '/delete-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser.id })
+        });
+    } catch (e) {
+        console.error('Ошибка удаления:', e);
+    }
+    logout();
+}
+
+// ===== 15.8. ЗАГРУЗКА ИСТОРИИ ЗАКАЗОВ =====
+async function loadProfileOrders() {
+    const container = document.getElementById('profileOrders');
+    if (!container) return;
+    
+    if (!currentUser?.id) {
+        container.innerHTML = '<div class="profile-empty">Войдите в систему, чтобы видеть заказы</div>';
+        return;
+    }
+    
+    container.innerHTML = '<div class="card" style="text-align:center;color:var(--gray-500);padding:30px;">⏳ Загрузка...</div>';
+    
+    try {
+        const res = await fetch(API + '/orders/' + currentUser.id, {
+            headers: { 'x-user-id': currentUser.id }
+        });
+        
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
+        const orders = await res.json();
+        
+        const statusNames = { 
+            new: 'Новый', 
+            processing: 'В обработке', 
+            printing: 'В печати', 
+            ready: 'Готов', 
+            shipped: 'Отправлен', 
+            done: 'Доставлен' 
+        };
+        
+        // 🔹 Если заказов нет
+        if (!Array.isArray(orders) || orders.length === 0) {
+            container.innerHTML = `
+                <div class="profile-empty">
+                    <div style="font-size:36px;margin-bottom:8px;">📦</div>
+                    <p style="color:var(--gray-500);">У вас пока нет заказов</p>
+                    <button class="btn btn-primary" onclick="switchTab('tab-order')" style="margin-top:12px;max-width:180px;">Сделать заказ</button>
+                </div>`;
+            return;
+        }
+        
+        // 🔹 Рендерим список заказов
+        container.innerHTML = orders.map(o => {
+            const orderId = o._id || o.id || '—';
+            const status = o.status || 'new';
+            const material = o.material || '—';
+            const size = o.type === 'cards' ? '90×50' : `${o.width||'?'}×${o.height||'?'} мм`;
+            const qty = o.qty || 1;
+            const total = o.total ? Math.round(o.total).toLocaleString() : '0';
+            
+            return `
+                <div class="card" style="margin-bottom:8px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+                        <strong style="font-size:15px;font-family:var(--font-display);">Заказ #${orderId}</strong>
+                        <span class="status-badge status-${status}">${statusNames[status] || 'Новый'}</span>
+                    </div>
+                    <div style="margin-top:6px;font-size:13px;color:var(--gray-500);">
+                        ${material} — ${size} × ${qty} шт
+                    </div>
+                    <div style="margin-top:4px;font-weight:700;font-size:16px;color:var(--primary);">
+                        ${total} ₽
+                    </div>
+                </div>`;
+        }).join('');
+        
+    } catch (e) {
+        console.error('❌ Ошибка загрузки заказов:', e);
+        container.innerHTML = `
+            <div class="profile-error">
+                <strong>⚠️ Не удалось загрузить заказы</strong><br>
+                <span style="font-size:12px;color:var(--gray-500);">${e.message || 'Неизвестная ошибка'}</span><br>
+                <button class="btn btn-outline" onclick="loadProfileOrders()" style="margin-top:10px;">🔄 Повторить</button>
+            </div>`;
+    }
+}
+
+// ===== 15.9. ОБРАБОТКА ВХОДА ЧЕРЕЗ TELEGRAM =====
+function onTelegramAuth(user) {
+    fetch(API + '/telegram-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success && data.user) {
+            currentUser = { 
+                id: data.user.id || data.user._id, 
+                email: data.user.email || '', 
+                name: data.user.name, 
+                phone: data.user.phone || '',
+                tg: data.user.username ? '@' + data.user.username : ''
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('✅ Вход через Telegram выполнен!');
+            loadProfile();
+            subscribePush();
+            updateChatBadge();
+        } else {
+            alert(data.error || 'Ошибка входа через Telegram');
+        }
+    })
+    .catch(e => {
+        console.error('❌ Ошибка Telegram auth:', e);
+        alert('Ошибка соединения');
+    });
+}
+
+// ===== 15.10. ВОССТАНОВЛЕНИЕ ПАРОЛЯ: ШАГ 1 (ЗАПРОС КОДА) =====
+function showForgotPassword() {
+    const container = document.getElementById('profileContent');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <button class="back-btn" onclick="loadProfile()">← Назад</button>
+        <div class="section-header">🔑 Восстановление пароля</div>
+        <div class="card" id="forgotForm">
+            <p style="color:var(--gray-500);font-size:13px;margin-bottom:16px;">Введите email, на который зарегистрирован аккаунт</p>
+            <div class="form-group"><label>Email</label><input type="email" id="forgotEmail" placeholder="you@example.com"></div>
+            <button class="btn btn-primary" onclick="sendResetCode()" id="resetBtn">Отправить код</button>
+        </div>
+    `;
+}
+
+// ===== 15.11. ВОССТАНОВЛЕНИЕ ПАРОЛЯ: ШАГ 2 (ОТПРАВКА КОДА) =====
+async function sendResetCode() {
+    const email = document.getElementById('forgotEmail')?.value.trim();
+    const btn = document.getElementById('resetBtn');
+    
+    if (!email) { alert('Введите email'); return; }
+    if (btn) { btn.innerText = '⏳ Отправка...'; btn.disabled = true; }
+    
+    try {
+        const res = await fetch(API + '/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            document.getElementById('forgotForm').innerHTML = `
+                <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;">✅ Код отправлен</h3>
+                <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">Проверьте почту <strong>${email}</strong></p>
+                <div class="form-group"><label>Код из письма</label><input type="text" id="resetCode" placeholder="123456"></div>
+                <div class="form-group"><label>Новый пароль</label><input type="password" id="newPass" placeholder="••••••••"></div>
+                <button class="btn btn-primary" onclick="resetPassword()">Сменить пароль</button>
+            `;
+        } else {
+            alert(data.error || 'Ошибка');
+        }
+    } catch (e) {
+        console.error('Ошибка отправки кода:', e);
+        alert('Ошибка соединения');
+    } finally {
+        if (btn) { btn.innerText = 'Отправить код'; btn.disabled = false; }
+    }
+}
+
+// ===== 15.12. ВОССТАНОВЛЕНИЕ ПАРОЛЯ: ШАГ 3 (СМЕНА ПАРОЛЯ) =====
+async function resetPassword() {
+    const email = document.getElementById('forgotEmail')?.value.trim();
+    const code = document.getElementById('resetCode')?.value.trim();
+    const pass = document.getElementById('newPass')?.value.trim();
+    
+    if (!code || !pass) { alert('Заполните код и новый пароль'); return; }
+    
+    try {
+        const res = await fetch(API + '/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, code, newPassword: pass })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            alert('✅ Пароль изменён! Теперь войдите.');
+            loadProfile();
+        } else {
+            alert(data.error || 'Ошибка смены пароля');
+        }
+    } catch (e) {
+        console.error('Ошибка сброса пароля:', e);
+        alert('Ошибка соединения');
+    }
+}
+
+
+// ==============================================
+// 16. BADGE УВЕДОМЛЕНИЙ В ЧАТЕ
+// ==============================================
+
+// ===== 16.1. ОБНОВЛЕНИЕ СЧЁТЧИКА НЕПРОЧИТАННЫХ =====
+async function updateChatBadge() {
+    if (!currentUser?.id) {
+        document.querySelectorAll('.badge').forEach(b => b.remove());
+        return;
+    }
+    try {
+        const res = await fetch(API + '/chat/' + currentUser.id);
+        const msgs = await res.json();
+        const adminMsgs = msgs.filter(m => m.from === 'admin').length;
+        const navItem = document.querySelector('[data-tab="tab-chat"]');
+        let badge = navItem?.querySelector('.badge');
+        
+        if (adminMsgs > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'badge';
+                navItem?.appendChild(badge);
+            }
+            badge.textContent = adminMsgs > 99 ? '99+' : adminMsgs;
+        } else if (badge) {
+            badge.remove();
+        }
+    } catch(e) {}
+}
+
+// 🔹 Авто-обновление бейджа каждые 5 секунд
+setInterval(updateChatBadge, 5000);
+
+// ==========================================
+// MODALS
+// ==========================================
+function openModal(t) {
+    const texts = {
+        policy: `<h2>Политика конфиденциальности</h2>
+<p>Настоящая Политика определяет порядок обработки и защиты персональных данных пользователей сайта.</p>
+
+<h3>1. Какие данные мы собираем</h3>
+<p>При регистрации и оформлении заказа мы можем запрашивать: имя, адрес электронной почты, номер телефона, адрес доставки, Telegram. Эти данные необходимы для выполнения заказа и связи с вами.</p>
+
+<h3>2. Как мы используем данные</h3>
+<p>Собранные данные используются исключительно для: оформления и выполнения заказов, связи с клиентом по вопросам заказа, отправки уведомлений о статусе заказа, улучшения качества обслуживания.</p>
+
+<h3>3. Защита данных</h3>
+<p>Мы принимаем разумные меры для защиты персональных данных от несанкционированного доступа, изменения, раскрытия или уничтожения. Данные хранятся в зашифрованном виде на защищённых серверах.</p>
+
+<h3>4. Передача третьим лицам</h3>
+<p>Мы не продаём, не обмениваем и не передаём персональные данные третьим лицам без согласия пользователя, за исключением случаев, необходимых для выполнения заказа (например, передача адреса курьерской службе).</p>
+
+<h3>5. Срок хранения</h3>
+<p>Данные хранятся до момента удаления аккаунта пользователем или по запросу. Вы можете удалить свой аккаунт в любое время в личном кабинете. Все данные будут безвозвратно удалены.</p>
+
+<h3>6. Cookies</h3>
+<p>Сайт использует файлы cookie для обеспечения работы личного кабинета и сохранения сессии. Вы можете отключить cookie в настройках браузера.</p>
+
+<h3>7. Контакты</h3>
+<p>По всем вопросам, связанным с обработкой персональных данных, обращайтесь: ideamule@gmail.com или напишите в чат поддержки на сайте.</p>`,
+        
+        terms: `<h2>Пользовательское соглашение</h2>
+<p>Настоящее Соглашение регулирует отношения между сервисом и пользователем. Используя сайт, вы принимаете условия Соглашения.</p>
+
+<h3>1. Предмет соглашения</h3>
+<p>Сервис предоставляет возможность рассчитать стоимость и оформить заказ на широкоформатную печать: баннеры, самоклейка, плакаты, визитки.</p>
+
+<h3>2. Оформление заказа</h3>
+<p>Заказ оформляется заполнением формы на сайте. После оформления с вами связывается менеджер для подтверждения деталей и выставления счёта. Минимальная сумма заказа — 1000 рублей.</p>
+
+<h3>3. Сроки изготовления</h3>
+<p>Баннеры, самоклейка, плакаты — 1-3 рабочих дня с момента подтверждения заказа и оплаты. Визитки — 1 рабочая неделя. В отдельных случаях срок может быть увеличен.</p>
+
+<h3>4. Оплата</h3>
+<p>Оплата производится по выставленному счёту. Цены на сайте являются ознакомительными и могут незначительно отличаться от итоговой стоимости, рассчитанной менеджером.</p>
+
+<h3>5. Доставка</h3>
+<p>Бесплатная адресная доставка по Краснодару. Указывайте корректный адрес и контактный телефон.</p>
+
+<h3>6. Возврат и обмен</h3>
+<p>Возврат денежных средств возможен только при наличии производственного брака. Претензии по качеству принимаются в течение 3 дней с момента получения заказа.</p>
+
+<h3>7. Ответственность сторон</h3>
+<p>Сервис не несёт ответственности за ошибки в макете, предоставленном пользователем. Пользователь несёт ответственность за достоверность предоставленных данных.</p>
+
+<h3>8. Изменение условий</h3>
+<p>Сервис оставляет за собой право изменять условия настоящего Соглашения в одностороннем порядке. Изменения вступают в силу с момента публикации на сайте.</p>`,
+        
+        design: `<h2>Требования к макетам</h2>
+<p>Для качественной печати необходимо соблюдать следующие требования к макетам:</p>
+
+<h3>📐 Формат файла</h3>
+<p>Принимаем: PDF, PNG, JPG, AI, CDR, EPS. Рекомендуемый формат — PDF.</p>
+
+<h3>📏 Размер макета</h3>
+<p>Макет должен быть выполнен в масштабе 1:1 (в натуральную величину). Не уменьшайте и не масштабируйте изображение.</p>
+
+<h3>🎨 Цветовая модель</h3>
+<p>Все макеты должны быть в цветовой модели CMYK. При использовании RGB цвета при печати могут отличаться от ожидаемых.</p>
+
+<h3>📸 Разрешение</h3>
+<p>Для широкоформатной печати (баннеры) — не менее 150 dpi. Для полиграфии (листовки, визитки) — не менее 300 dpi.</p>
+
+<h3>🔤 Шрифты</h3>
+<p>Все шрифты должны быть переведены в кривые (outlines). Это гарантирует корректное отображение текста.</p>
+
+<h3>⬆️ Вылеты</h3>
+<p>Для полиграфии необходимо добавить вылеты по 2 мм с каждой стороны под обрез.</p>
+
+<h3>⚠️ Проверка макета</h3>
+<p>Перед отправкой проверьте макет на ошибки и опечатки. Мы не проверяем содержимое макетов.</p>`,
+        
+        install: `<h2>📲 Установка приложения</h2>
+<p>Это PWA-приложение. Установите его для быстрого доступа и получения уведомлений.</p>
+
+<h3>Как установить:</h3>
+<p><strong>Android (Chrome):</strong> откройте сайт → нажмите ⋮ (три точки) → «На экран Домой» или «Установить приложение».</p>
+<p><strong>iPhone (Safari):</strong> нажмите кнопку «Поделиться» (квадрат со стрелкой) → «На экран Домой».</p>
+
+<h3>🔔 Уведомления:</h3>
+<p>Разрешите уведомления при первом входе. Они нужны для оповещений о статусе заказа и новых сообщениях от поддержки.</p>
+
+<h3>⚙️ Настройки телефона (Android):</h3>
+<p>Зайдите в Настройки → Приложения → выберите приложение → Уведомления:</p>
+<ul>
+<li>✅ Разрешить всплывающие уведомления</li>
+<li>✅ Включить вибрацию</li>
+<li>❌ Отключить «Останавливать в неактивный период»</li>
+</ul>
+<p>Это гарантирует, что вы не пропустите важные уведомления.</p>`
+    };
+    document.getElementById('modalContent').innerHTML = texts[t] + '<button class="btn btn-primary" onclick="closeModal()" style="margin-top:16px;">Закрыть</button>';
+    document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.remove('show');
+}
+
+// ==============================================
+// 17. ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ (INIT)
+// ==============================================
+
+// ===== 17.1. ЗАПУСК: ОТРИСОВКА ПЕРВОГО ШАГА ЗАКАЗА + SERVICE WORKER =====
+renderOrderStep();
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+}
+
+<!-- ============================================== -->
+<!-- 18. УТИЛИТЫ: ОРИЕНТАЦИЯ, PWA, ЧАТ, ПРОФИЛЬ     -->
+<!-- ============================================== -->
+    </script>
+    <script>
+// ===== 18.1. ПРОВЕРКА ОРИЕНТАЦИИ (БЛОКИРОВКА ГОРИЗОНТАЛИ) =====
+function checkOrientation() {
+  const lock = document.getElementById('landscape-lock');
+  if (!lock) return;
+  
+  // Показываем блокировку ТОЛЬКО на мобильных/планшетах (< 768px) в горизонтальном режиме
+  const isMobile = window.innerWidth < 768;
+  const isLandscape = window.innerWidth > window.innerHeight;
+  
+  if (isMobile && isLandscape) {
+    lock.style.display = 'flex';
+  } else {
+    lock.style.display = 'none';
+  }
+}
+window.addEventListener('resize', checkOrientation);
+window.addEventListener('orientationchange', checkOrientation);
+checkOrientation();
+
+// ===== 18.2. PWA БАННЕР (ПОЯВЛЯЕТСЯ ЧЕРЕЗ 2.5 СЕК, ЗАКРЫВАЕТСЯ ПО ✕) =====
+(function() {
+  const banner = document.getElementById('pwa-banner');
+  if (banner && window.innerWidth < 768 && !sessionStorage.getItem('pwa-shown')) {
+    sessionStorage.setItem('pwa-shown', '1');
+    setTimeout(() => banner.style.display = 'block', 2500);
+  }
+  document.querySelector('.pwa-close')?.addEventListener('click', () => {
+    banner.style.display = 'none';
+    localStorage.setItem('pwa-dismissed', Date.now());
+  });
+})();
+
+// ===== 18.3. ЭМОДЗИ (ОТКРЫВАЕТСЯ ВМЕСТО КЛАВИАТУРЫ, ЗАКРЫВАЕТСЯ ПОСЛЕ ВЫБОРА) =====
+(function() {
+  const input = document.querySelector('input[placeholder*="Сообщение"], input[placeholder*="message"], .chat-input input, #messageInput');
+  const picker = document.querySelector('.emoji-picker, #emojiPicker, [class*="emoji"][class*="pick"]');
+  const btn = document.querySelector('.emoji-btn, #emojiToggle, button[class*="emoji"], [onclick*="emoji"]');
+  
+  if (btn && picker && input) {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isHidden = picker.style.display === 'none' || !picker.style.display;
+      if (isHidden) { input.blur(); setTimeout(() => picker.classList.add('show'), 80); }
+      else { picker.classList.remove('show'); input.focus(); }
+    });
+    picker.addEventListener('click', (e) => {
+      const el = e.target.closest('span, button, div');
+      if (el && el.textContent.trim() && el.textContent.trim().length <= 2) {
+        const char = el.textContent.trim();
+        const pos = input.selectionStart;
+        input.value = input.value.substring(0, pos) + char + input.value.substring(pos);
+        input.focus();
+        picker.classList.remove('show');
+      }
+    });
+    input.addEventListener('focus', () => picker.classList.remove('show'));
+  }
+})();
+
+// ===== 18.4. ИНДИКАТОР «ПЕЧАТАЕТ» (3 ТОЧКИ) =====
+window.showTyping = function() {
+  let el = document.getElementById('typing-dots');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'typing-dots';
+    el.className = 'typing-indicator';
+    el.innerHTML = '<div class="typing-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+    document.querySelector('.chat-messages, #chatMessages, .messages')?.appendChild(el);
+  }
+  el.style.display = 'flex';
+  setTimeout(() => el.style.display = 'none', 4000);
+};
+
+// ===== 18.5. РЕДАКТИРОВАНИЕ ПРОФИЛЯ (через делегирование событий) =====
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'edit-profile-btn' || e.target.closest('#edit-profile-btn')) {
+    const rawUser = localStorage.getItem('currentUser');
+    const u = rawUser ? JSON.parse(rawUser) : {};
+    const uid = u.id || localStorage.getItem('userId');
+    if (!uid) { alert('Пожалуйста, войдите в аккаунт.'); return; }
+
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
+    modal.innerHTML = `
+      <div style="background:#fff;padding:24px;border-radius:16px;width:100%;max-width:340px;box-shadow:0 10px 30px rgba(0,0,0,0.15);">
+        <h3 style="margin:0 0 16px;text-align:center;font-size:18px;">✏️ Изменить данные</h3>
+        <input id="ep-name" placeholder="Имя" value="${u.name||''}" style="width:100%;padding:12px;margin-bottom:12px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+        <input id="ep-phone" placeholder="Телефон" value="${u.phone||''}" style="width:100%;padding:12px;margin-bottom:16px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+        <div style="display:flex;gap:10px;">
+          <button id="ep-save" style="flex:1;padding:12px;border:none;border-radius:8px;background:#0056b3;color:#fff;font-weight:600;cursor:pointer;">💾 Сохранить</button>
+          <button id="ep-cancel" style="flex:1;padding:12px;border:none;border-radius:8px;background:#eee;cursor:pointer;">Отмена</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    document.getElementById('ep-cancel').onclick = () => modal.remove();
+    
+    document.getElementById('ep-save').onclick = async () => {
+      const name = document.getElementById('ep-name').value.trim();
+      const phone = document.getElementById('ep-phone').value.trim();
+      const res = await fetch('/api/profile', { 
+        method:'PUT', 
+        headers:{ 'Content-Type':'application/json', 'x-user-id': uid }, 
+        body: JSON.stringify({name, phone}) 
+      });
+      const d = await res.json();
+      if (d.success) {
+        if (name) u.name = name; if (phone) u.phone = phone;
+        localStorage.setItem('currentUser', JSON.stringify(u));
+        modal.remove();
+        const nameEl = document.querySelector('.profile-name, .user-name, #userName');
+        if (nameEl) nameEl.textContent = u.name || 'Клиент';
+        alert('Профиль обновлён');
+      } else {
+        alert(d.error || 'Ошибка сохранения');
+      }
+    };
+  }
+});
+
+// ===== ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ НАД ВКЛАДКОЙ ЧАТ =====
+function showChatNotification() {
+  // Удаляем старое уведомление, если есть
+  const old = document.getElementById('chat-toast');
+  if (old) old.remove();
+  
+  const toast = document.createElement('div');
+  toast.id = 'chat-toast';
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #0066FF, #00E5FF);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    box-shadow: 0 8px 24px rgba(0,102,255,0.4);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: toastSlide 0.3s ease, toastFade 0.3s ease 3.5s forwards;
+    cursor: pointer;
+  `;
+  toast.innerHTML = `🔔 Новое сообщение <span style="font-size:16px">→</span>`;
+  toast.onclick = () => {
+    switchTab('tab-chat');
+    toast.remove();
+  };
+  document.body.appendChild(toast);
+  
+  // Авто-удаление через 4 сек
+  setTimeout(() => toast.remove(), 4000);
+}
+
+// Анимации для тоста
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes toastSlide { from { opacity:0; transform:translate(-50%, 20px); } to { opacity:1; transform:translate(-50%, 0); } }
+  @keyframes toastFade { to { opacity:0; transform:translate(-50%, -10px); } }
+`;
+document.head.appendChild(style);
+        
+</script>
+</body>
+</html>
