@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ NUDE & NEON | Студия Эстетического Маникюра</title>
+    <!-- Подключаем Tailwind CSS через CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts: Элегантный антиква и чистый геометрический сан-сериф -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0b090a; /* Очень глубокий, почти черный графит */
+        }
+        .serif-font {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Эффект матового стекла (Glassmorphism) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(244, 63, 94, 0.3); /* Нежно-розовый/неоновый акцент */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        /* Мягкое неоновое размытие на фоне */
+        .neon-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(130px);
+            pointer-events: none;
+            opacity: 0.15;
+        }
+    </style>
+</head>
+<body class="text-zinc-300 antialiased overflow-x-hidden">
+
+    <!-- НАВИГАЦИЯ (ГЛАССМОРФИЗМ) -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-4 bg-black/40 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="#" class="serif-font text-xl tracking-wider text-white font-semibold">NUDE <span class="italic text-rose-400">&</span> NEON</a>
+            
+            <div class="hidden md:flex space-x-8 text-[11px] uppercase tracking-[0.2em] font-medium">
+                <a href="#about" class="hover:text-rose-400 transition-colors">Концепция</a>
+                <a href="#services" class="hover:text-rose-400 transition-colors">Услуги</a>
+                <a href="#masters" class="hover:text-rose-400 transition-colors">Мастера</a>
+                <a href="#booking" class="hover:text-rose-400 transition-colors">Контакты</a>
+            </div>
+            
+            <a href="#booking" class="hidden md:inline-block bg-white text-black hover:bg-rose-400 hover:text-white px-5 py-2 text-[10px] font-semibold tracking-widest uppercase transition-all duration-300 rounded-full">
+                Онлайн-запись
+            </a>
+        </div>
+    </nav>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <section class="relative min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden">
+        <!-- Неоновые светящиеся сферы на фоне -->
+        <div class="neon-glow top-1/4 left-1/4 w-[350px] h-[350px] bg-rose-500"></div>
+        <div class="neon-glow bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-600"></div>
+
+        <div class="max-w-4xl mx-auto text-center z-10 space-y-8">
+            <span class="text-[10px] font-semibold tracking-[0.4em] uppercase text-rose-400 bg-rose-400/10 px-4 py-1.5 rounded-full border border-rose-400/20">
+                Эстетика • Качество • Безопасность
+            </span>
+            <h1 class="serif-font text-4xl sm:text-6xl md:text-7xl text-white tracking-wide leading-tight font-light">
+                Форма, цвет и <br><span class="italic text-rose-300">ничего лишнего</span>
+            </h1>
+            <p class="text-zinc-400 max-w-md mx-auto text-xs sm:text-sm font-light leading-relaxed tracking-wide">
+                Переосмысление привычного ухода за ногтями. Создаем безупречный чистый маникюр и трендовые дизайны в атмосфере полного расслабления.
+            </p>
+            <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#services" class="w-full sm:w-auto bg-gradient-to-r from-rose-500 to-purple-600 hover:opacity-90 text-white font-medium px-8 py-3.5 text-[11px] tracking-widest uppercase transition-all duration-300 rounded-full text-center shadow-lg shadow-rose-500/20">
+                    Наши услуги
+                </a>
+                <a href="#booking" class="w-full sm:w-auto glass-card px-8 py-3.5 text-[11px] tracking-widest uppercase transition-all duration-300 rounded-full text-center text-white">
+                    Выбрать время
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- О СТУДИИ (КОНЦЕПТ) -->
+    <section id="about" class="py-24 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center border-t border-white/5">
+        <div class="space-y-6">
+            <span class="text-[10px] font-semibold tracking-[0.3em] uppercase text-rose-400">01 // О пространстве</span>
+            <h2 class="serif-font text-3xl md:text-5xl text-white tracking-wide font-light">Больше, чем просто <span class="italic">покрытие</span></h2>
+            <p class="text-zinc-400 font-light text-xs sm:text-sm leading-relaxed">
+                Мы создали место, куда приходят не просто «сделать ногти», а выдохнуть посреди суетливого дня. Никаких громких телевизоров или дешевых разговоров. Только приятный лаунж, свежесваренный кофе (или бокал игристого) и безупречный сервис.
+            </p>
+            <p class="text-zinc-400 font-light text-xs sm:text-sm leading-relaxed">
+                Все инструменты проходят 3 этапа стерилизации в медицинском сухожаре ГП-10, а крафт-пакет вскрывается строго при вас.
+            </p>
+        </div>
+        <!-- Стеклянная карточка-заглушка для визуала -->
+        <div class="glass-card h-[400px] rounded-3xl flex items-center justify-center relative overflow-hidden p-6 text-center">
+            <span class="text-zinc-500 text-xs tracking-widest uppercase">
+                [ Эстетичное макро-видео или фото идеального блика покрытия ]
+            </span>
+        </div>
+    </section>
+
+    <!-- ЦЕНЫ И УСЛУГИ -->
+    <section id="services" class="py-24 bg-[#080708] px-6 border-y border-white/5 relative">
+        <div class="max-w-5xl mx-auto">
+            <div class="space-y-4 mb-16 text-center">
+                <span class="text-[10px] font-semibold tracking-[0.3em] uppercase text-rose-400">02 // Меню услуг</span>
+                <h2 class="serif-font text-3xl md:text-5xl text-white tracking-wide font-light">Услуги студии</h2>
+            </div>
+
+            <!-- Список услуг в виде минималистичных стеклянных строк -->
+            <div class="space-y-4">
+                <!-- Услуга 1 -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h4 class="text-sm font-medium text-white tracking-wide uppercase">Комплекс: Снятие + Маникюр + Покрытие</h4>
+                        <p class="text-[11px] text-zinc-500 mt-1">Аппаратный или комбинированный маникюр, выравнивание базы, идеальное покрытие под кутикулу.</p>
+                    </div>
+                    <div class="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+                        <span class="text-sm font-semibold text-rose-300 whitespace-nowrap">2 300 ₽</span>
+                        <span class="text-[10px] text-zinc-600 border border-white/10 px-3 py-1 rounded-full">1.5 — 2 ч</span>
+                    </div>
+                </div>
+
+                <!-- Услуга 2 -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h4 class="text-sm font-medium text-white tracking-wide uppercase">Японский маникюр P.Shine</h4>
+                        <p class="text-[11px] text-zinc-500 mt-1">Глубокое восстановление и глянцевое запечатывание ногтей натуральной пастой на основе пчелиного воска.</p>
+                    </div>
+                    <div class="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+                        <span class="text-sm font-semibold text-rose-300 whitespace-nowrap">2 100 ₽</span>
+                        <span class="text-[10px] text-zinc-600 border border-white/10 px-3 py-1 rounded-full">1 ч</span>
+                    </div>
+                </div>
+
+                <!-- Услуга 3 -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h4 class="text-sm font-medium text-white tracking-wide uppercase">Smart-Педикюр с покрытием</h4>
+                        <p class="text-[11px] text-zinc-500 mt-1">Обработка стоп умными дисками (избавление от трещин и шелушений) + эстетика пальчиков.</p>
+                    </div>
+                    <div class="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+                        <span class="text-sm font-semibold text-rose-300 whitespace-nowrap">3 200 ₽</span>
+                        <span class="text-[10px] text-zinc-600 border border-white/10 px-3 py-1 rounded-full">2 ч</span>
+                    </div>
+                </div>
+
+                <!-- Услуга 4 -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h4 class="text-sm font-medium text-white tracking-wide uppercase">Трендовый дизайн (1 ногтик / все)</h4>
+                        <p class="text-[11px] text-zinc-500 mt-1">Френч, стемпинг, градиент, корейский объемный дизайн, текстуры или кастомный арт.</p>
+                    </div>
+                    <div class="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+                        <span class="text-sm font-semibold text-rose-300 whitespace-nowrap">от 100 / 800 ₽</span>
+                        <span class="text-[10px] text-zinc-600 border border-white/10 px-3 py-1 rounded-full">+15-30 мин</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- КОНТАКТЫ & ФУТЕР -->
+    <footer id="booking" class="bg-black/40 border-t border-white/5 py-16 px-6 relative overflow-hidden">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-xs tracking-wide">
+            
+            <div class="space-y-4">
+                <h3 class="serif-font text-xl text-white font-semibold">NUDE <span class="italic text-rose-400">&</span> NEON</h3>
+                <p class="text-zinc-500 font-light leading-relaxed">
+                    Пространство безопасного и безупречного маникюра. Твой личный ритуал заботы и красоты.
+                </p>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-semibold text-white uppercase tracking-widest text-[10px]">Где мы находимся</h4>
+                <p class="text-zinc-400 font-light">Краснодар, Центр, ул. Красная, 68</p>
+                <p class="text-zinc-500 font-light">Ежедневно: 10:00 — 21:00</p>
+            </div>
+            
+            <div class="space-y-4">
+                <h4 class="font-semibold text-white uppercase tracking-widest text-[10px]">Связаться напрямую</h4>
+                <p class="text-rose-400 font-semibold text-sm">+7 (918) 123-45-67</p>
+                <div class="flex space-x-6 pt-1 uppercase text-[10px] font-semibold">
+                    <a href="#" class="text-zinc-400 hover:text-rose-400 transition-colors">Telegram</a>
+                    <a href="#" class="text-zinc-400 hover:text-rose-400 transition-colors">WhatsApp</a>
+                </div>
+            </div>
+
+        </div>
+        <div class="max-w-6xl mx-auto text-center text-[10px] text-zinc-600 mt-16 pt-8 border-t border-white/5">
+            © 2026 NUDE & NEON. Все права защищены. Твои руки в надежных руках.
+        </div>
+    </footer>
+
+</body>
+</html>

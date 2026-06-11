@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✂️ СТРУКТУРА | Мастерская Стрижек & Образа</title>
+    <!-- Подключаем Tailwind CSS через CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts: Ультрамодный Syne и технологичный Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0d0e10; /* Угольно-черный */
+        }
+        .accent-font {
+            font-family: 'Syne', sans-serif;
+        }
+        /* Тонкие брутальные рамки (Industrial Grid) */
+        .grid-border {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .card-shave {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-shave:hover {
+            background-color: #141619;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+<body class="text-zinc-400 antialiased overflow-x-hidden">
+
+    <!-- НАВИГАЦИЯ -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-4 bg(#0d0e10)/90 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="#" class="accent-font text-xl tracking-tighter text-white uppercase">СТРУКТУРА</a>
+            
+            <div class="hidden md:flex space-x-10 text-[11px] font-bold tracking-widest uppercase">
+                <a href="#about" class="hover:text-white transition-colors">О нас</a>
+                <a href="#menu" class="hover:text-white transition-colors">Прайс</a>
+                <a href="#team" class="hover:text-white transition-colors">Команда</a>
+                <a href="#footer" class="hover:text-white transition-colors">Контакты</a>
+            </div>
+            
+            <a href="#footer" class="hidden md:inline-block bg-zinc-100 text-black hover:bg-black hover:text-white border border-transparent hover:border-white/20 px-6 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300">
+                Занять кресло
+            </a>
+        </div>
+    </nav>
+
+    <!-- ГЛАВНЫЙ ЭКРАН (HERO) -->
+    <section class="relative min-h-screen flex items-center justify-center pt-24 px-6">
+        <!-- Легкий индустриальный шум / сетка на фоне -->
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f2124_1px,transparent_1px),linear-gradient(to_bottom,#1f2124_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20"></div>
+
+        <div class="max-w-5xl mx-auto text-center z-10 space-y-8">
+            <span class="text-[9px] font-bold tracking-[0.4em] uppercase text-zinc-500 border border-zinc-800 px-4 py-1.5 rounded-none bg-zinc-900/40">
+                Краснодар • Без лишних слов • Только форма
+            </span>
+            <h1 class="accent-font text-5xl sm:text-7xl md:text-9xl text-white uppercase tracking-tighter leading-none">
+                Стрижем <br><span class="text-zinc-600">как надо.</span>
+            </h1>
+            <p class="text-zinc-500 max-w-md mx-auto text-xs sm:text-sm font-light leading-relaxed tracking-wide">
+                Городская парикмахерская для тех, кто ценит свое время и безупречную геометрию стрижки. Правильные формы, чистые фейды и плотный ровный срез.
+            </p>
+            <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#menu" class="w-full sm:w-auto bg-white text-black font-bold px-8 py-4 text-[11px] tracking-widest uppercase transition-all duration-300 text-center hover:bg-zinc-200">
+                    Посмотреть прайс
+                </a>
+                <a href="#footer" class="w-full sm:w-auto border border-zinc-800 hover:border-zinc-700 bg-zinc-900/20 px-8 py-4 text-[11px] tracking-widest uppercase transition-all duration-300 text-center text-zinc-300">
+                    Контакты
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- О СТУДИИ -->
+    <section id="about" class="py-24 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center border-t border-white/5">
+        <div class="space-y-6">
+            <span class="text-[10px] font-bold tracking-[0.3em] uppercase text-white/40">// НАШ ПОДХОД</span>
+            <h2 class="accent-font text-3xl md:text-5xl text-white uppercase tracking-tight">Никаких шаблонов и <br>«как обычно»</h2>
+            <p class="text-zinc-500 font-light text-xs sm:text-sm leading-relaxed">
+                Мы не копируем картинки из журналов. Каждый мастер подбирает форму стрижки, отталкиваясь от твоей анатомии лица, структуры волос и формы черепа. Стрижка должна легко укладываться дома за две минуты — это наш главный стандарт.
+            </p>
+            <p class="text-zinc-500 font-light text-xs sm:text-sm leading-relaxed">
+                Работаем быстро, аккуратно и используем только проверенный мужской стайлинг, который не склеивает волосы и держит форму весь день.
+            </p>
+        </div>
+        <!-- Индустриальный визуал -->
+        <div class="grid-border h-[400px] bg-[#111215] flex items-center justify-center relative group overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-transparent to-black/40"></div>
+            <span class="text-zinc-700 text-xs tracking-widest uppercase font-bold group-hover:text-white/50 transition-colors">
+                [ Эстетичное ч/б фото стрижки крупным планом ]
+            </span>
+        </div>
+    </section>
+
+    <!-- МЕНЮ УСЛУГ (ЧИСТАЯ СЕТКА) -->
+    <section id="menu" class="py-24 bg-[#0a0b0d] px-6 border-y border-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="space-y-4 mb-16 text-center md:text-left">
+                <span class="text-[10px] font-bold tracking-[0.3em] uppercase text-white/40">// МЕНЮ И ЦЕНЫ</span>
+                <h2 class="accent-font text-3xl md:text-5xl text-white uppercase tracking-tight">Услуги мастерской</h2>
+            </div>
+
+            <!-- Таблица / сетка цен -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 overflow-hidden grid-border">
+                
+                <div class="card-shave p-8 bg-[#0d0e10] space-y-3">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="font-bold text-white text-sm uppercase tracking-wider">Мужская стрижка</h4>
+                        <span class="text-sm font-bold text-white">1 800 ₽</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">Мытье головы, консультация, стрижка ножницами и машинкой, индивидуальный стайлинг.</p>
+                </div>
+
+                <div class="card-shave p-8 bg-[#0d0e10] space-y-3">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="font-bold text-white text-sm uppercase tracking-wider">Стрижка бороды & Усы</h4>
+                        <span class="text-sm font-bold text-white">1 200 ₽</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">Моделирование формы, проработка контуров триммером и бритвой Шаветт, уход с маслом.</p>
+                </div>
+
+                <div class="card-shave p-8 bg-[#0d0e10] space-y-3">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="font-bold text-white text-sm uppercase tracking-wider">Комплекс (Стрижка + Борода)</h4>
+                        <span class="text-sm font-bold text-white">2 600 ₽</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">Полное обновление твоего образа. Выгодно, концептуально и монолитно.</p>
+                </div>
+
+                <div class="card-shave p-8 bg-[#0d0e10] space-y-3">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="font-bold text-white text-sm uppercase tracking-wider">Стрижка под машинку</h4>
+                        <span class="text-sm font-bold text-white">1 000 ₽</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">Один или два реза насадками, создание идеального дымчатого перехода (Fade) на затылке.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- КОМАНДА -->
+    <section id="team" class="py-24 max-w-6xl mx-auto px-6">
+        <div class="space-y-4 mb-16 text-center">
+            <span class="text-[10px] font-bold tracking-[0.3em] uppercase text-white/40">// КОМАНДА</span>
+            <h2 class="accent-font text-3xl md:text-5xl text-white uppercase tracking-tight">Твои мастера</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            
+            <div class="grid-border p-5 bg-[#111215]/40 space-y-4">
+                <div class="h-64 bg-[#0d0e10] flex items-center justify-center text-zinc-700 text-xs uppercase tracking-widest font-bold">[ ФОТО: КИРИЛЛ ]</div>
+                <div class="flex justify-between items-baseline">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider">Кирилл Назаров</h4>
+                    <span class="text-[10px] text-zinc-500 font-bold">Top Barber</span>
+                </div>
+                <p class="text-[11px] text-zinc-600 leading-relaxed">Эксперт по сложной классике, удлиненным стрижкам и королевскому бритью.</p>
+            </div>
+
+            <div class="grid-border p-5 bg-[#111215]/40 space-y-4">
+                <div class="h-64 bg-[#0d0e10] flex items-center justify-center text-zinc-700 text-xs uppercase tracking-widest font-bold">[ ФОТО: МАКС ]</div>
+                <div class="flex justify-between items-baseline">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider">Макс Блэйк</h4>
+                    <span class="text-[10px] text-zinc-500 font-bold">Senior Barber</span>
+                </div>
+                <p class="text-[11px] text-zinc-600 leading-relaxed">Мастер текстурных кропов, дерзких коротких фейдов и уличного стиля.</p>
+            </div>
+
+            <div class="grid-border p-5 bg-[#111215]/40 space-y-4">
+                <div class="h-64 bg-[#0d0e10] flex items-center justify-center text-zinc-700 text-xs uppercase tracking-widest font-bold">[ ФОТО: ДАРЬЯ ]</div>
+                <div class="flex justify-between items-baseline">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider">Дарья Коваль</h4>
+                    <span class="text-[10px] text-zinc-500 font-bold">Stylist</span>
+                </div>
+                <p class="text-[11px] text-zinc-600 leading-relaxed">Филигранно работает с геометрией длинных волос, окрашиванием и камуфляжем седины.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- КОНТАКТЫ & ФУТЕР -->
+    <footer id="footer" class="bg-[#07080a] border-t border-white/5 py-16 px-6">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-xs tracking-wide">
+            
+            <div class="space-y-4">
+                <h3 class="accent-font text-lg text-white uppercase tracking-tighter">СТРУКТУРА</h3>
+                <p class="text-zinc-600 font-light leading-relaxed">
+                    Управляем формой и создаем честные стрижки без лишней мишуры. Твой стиль — наша структура.
+                </p>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-bold text-white uppercase tracking-widest text-[9px] text-zinc-500">// ЛОКАЦИЯ</h4>
+                <p class="text-zinc-400 font-light">ул. Северная, д. 324, Краснодар</p>
+                <p class="text-zinc-500 font-light">ВТ — ВС: 12:00 — 22:00 (ПН — выходной)</p>
+            </div>
+            
+            <div class="space-y-4">
+                <h4 class="font-bold text-white uppercase tracking-widest text-[9px] text-zinc-500">// СВЯЗЬ</h4>
+                <p class="text-white font-bold text-sm tracking-wider">+7 (861) 999-88-77</p>
+                <div class="flex space-x-6 pt-1 uppercase text-[10px] font-bold tracking-widest">
+                    <a href="#" class="text-zinc-500 hover:text-white transition-colors">Telegram</a>
+                    <a href="#" class="text-zinc-500 hover:text-white transition-colors">VK</a>
+                </div>
+            </div>
+
+        </div>
+        <div class="max-w-6xl mx-auto text-center text-[9px] font-bold text-zinc-800 tracking-widest uppercase mt-16 pt-8 border-t border-white/5">
+            © 2026 Мастерская «СТРУКТУРА». Чистая геометрия твоего стиля.
+        </div>
+    </footer>
+
+</body>
+</html>

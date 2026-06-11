@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 ЭФИР | Салон Естественной Красоты</title>
+    <!-- Подключаем Tailwind CSS через CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts: Римский Cinzel и чистый скандинавский Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fcfbfa; /* Мягкий молочно-белый фон */
+        }
+        .eco-title {
+            font-family: 'Cinzel', serif;
+        }
+        /* Легкие органические тени и скругления */
+        .eco-card {
+            background: #ffffff;
+            border: 1px solid #f0ede9;
+            transition: all 0.4s ease;
+        }
+        .eco-card:hover {
+            border-color: #cbd5e1;
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="text-stone-600 antialiased overflow-x-hidden">
+
+    <!-- НАВИГАЦИЯ -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-8 py-5 bg-[#fcfbfa]/80 backdrop-blur-md border-b border-stone-200/40">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="#" class="eco-title text-xl tracking-[0.2em] text-stone-800 font-medium">ЭФИР</a>
+            
+            <div class="hidden md:flex space-x-10 text-[11px] uppercase tracking-[0.2em] font-medium text-stone-500">
+                <a href="#concept" class="hover:text-stone-900 transition-colors">Концепция</a>
+                <a href="#rituals" class="hover:text-stone-900 transition-colors">Ритуалы</a>
+                <a href="#gallery" class="hover:text-stone-900 transition-colors">Пространство</a>
+                <a href="#visit" class="hover:text-stone-900 transition-colors">Контакты</a>
+            </div>
+            
+            <a href="#visit" class="hidden md:inline-block bg-stone-900 hover:bg-stone-800 text-white px-6 py-2.5 text-[10px] uppercase tracking-widest transition-colors">
+                Записаться
+            </a>
+        </div>
+    </nav>
+
+    <!-- ГЛАВНЫЙ ЭКРАН (HERO) -->
+    <section class="min-h-screen flex items-center justify-center pt-24 px-6 relative bg-[#f7f5f0]">
+        <!-- Декоративный органический элемент на фоне -->
+        <div class="absolute bottom-0 right-0 w-1/3 h-2/3 bg-[#f0ede9] rounded-tl-full opacity-60 pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto text-center z-10 space-y-8 py-12">
+            <span class="text-[10px] font-semibold tracking-[0.3em] uppercase text-stone-400">
+                Краснодар • Чистая косметика • Осознанный уход
+            </span>
+            <h1 class="eco-title text-4xl sm:text-6xl md:text-7xl text-stone-900 tracking-wider leading-tight font-normal">
+                Воздух, легкость <br>и твоя природа
+            </h1>
+            <p class="text-stone-500 max-w-md mx-auto text-xs sm:text-sm font-light leading-relaxed tracking-wide">
+                Отказываемся от агрессивных химикатов и кричащего дизайна. Возвращаем заботу к ее истокам: натуральные компоненты, тишина и восстановление вашего ресурса.
+            </p>
+            <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#rituals" class="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white px-8 py-4 text-[10px] tracking-widest uppercase transition-colors text-center">
+                    Выбрать ритуал
+                </a>
+                <a href="#concept" class="w-full sm:w-auto border border-stone-300 hover:border-stone-400 bg-transparent px-8 py-4 text-[10px] tracking-widest uppercase transition-colors text-center text-stone-700">
+                    О концепции
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- КОНЦЕПЦИЯ (ЭКО-ФОКУС) -->
+    <section id="concept" class="py-24 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <!-- Текстовый блок слева -->
+        <div class="space-y-6 order-2 md:order-1">
+            <span class="text-[10px] font-semibold tracking-[0.3em] uppercase text-stone-400">// НАШИ ЦЕННОСТИ</span>
+            <h2 class="eco-title text-3xl md:text-4xl text-stone-900 tracking-wide font-normal">Чистая эстетика без компромиссов</h2>
+            <p class="text-stone-500 font-light text-xs sm:text-sm leading-relaxed">
+                Мы создали «ЭФИР» как противовес шумному городу. В наших ритуалах используются только cruelty-free и веганские бренды органической косметики. Мы верим, что истинная красота идет изнутри и не требует токсичных составов.
+            </p>
+            
+            <!-- Мини-фичи -->
+            <div class="space-y-4 pt-4">
+                <div class="flex items-start gap-3">
+                    <span class="text-stone-400 mt-0.5">✓</span>
+                    <div>
+                        <h4 class="text-xs font-semibold text-stone-800 uppercase tracking-wider">Эко-сертификация</h4>
+                        <p class="text-[11px] text-stone-500 mt-0.5">Все используемые масла, шампуни и уходы имеют международные сертификаты эко-безопасности.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="text-stone-400 mt-0.5">✓</span>
+                    <div>
+                        <h4 class="text-xs font-semibold text-stone-800 uppercase tracking-wider">Ароматерапия на сеансах</h4>
+                        <p class="text-[11px] text-stone-500 mt-0.5">Каждая процедура сопровождается подбором натурального эфирного масла под ваше настроение.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Визуальный блок справа с мягким оливковым фоном -->
+        <div class="h-[400px] bg-[#e9ece6] rounded-[2rem] flex items-center justify-center p-6 text-center order-1 md:order-2">
+            <span class="eco-title text-stone-500/60 text-xs tracking-widest uppercase">
+                [ Светлое, чистое фото с зелеными листьями и текстурой крема ]
+            </span>
+        </div>
+    </section>
+
+    <!-- РИТУАЛЫ И УСЛУГИ (СВЕТЛЫЕ КАРТОЧКИ) -->
+    <section id="rituals" class="py-24 bg-[#f5f3ee] px-6 border-y border-stone-200/60">
+        <div class="max-w-6xl mx-auto">
+            <div class="space-y-3 mb-16 text-center">
+                <span class="text-[10px] font-semibold tracking-[0.3em] uppercase text-stone-400">// НАШЕ МЕНЮ</span>
+                <h2 class="eco-title text-3xl md:text-4xl text-stone-900 tracking-wide font-normal">Уходовые ритуалы</h2>
+            </div>
+
+            <!-- Трехколоночная сетка -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Карточка 1 -->
+                <div class="eco-card p-8 rounded-2xl space-y-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">01 / Волосы</div>
+                        <h3 class="eco-title text-lg text-stone-900 font-normal">Органический детокс-уход</h3>
+                        <p class="text-[11px] text-stone-500 leading-relaxed">Глубокое очищение кожи головы глиняными масками, массаж с маслом розмарина и увлажнение растительными протеинами.</p>
+                    </div>
+                    <div class="flex justify-between items-baseline pt-4 border-t border-stone-100">
+                        <span class="text-xs font-semibold text-stone-800">45 минут</span>
+                        <span class="text-sm font-bold text-stone-900">2 800 ₽</span>
+                    </div>
+                </div>
+
+                <!-- Карточка 2 -->
+                <div class="eco-card p-8 rounded-2xl space-y-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">02 / Лицо</div>
+                        <h3 class="eco-title text-lg text-stone-900 font-normal">Скульптурный спа-массаж</h3>
+                        <p class="text-[11px] text-stone-500 leading-relaxed">Проработка мимических мышц лица на основе сыворотки сквалана. Возвращает тонус, убирает отеки и дарит сияние.</p>
+                    </div>
+                    <div class="flex justify-between items-baseline pt-4 border-t border-stone-100">
+                        <span class="text-xs font-semibold text-stone-800">60 минут</span>
+                        <span class="text-sm font-bold text-stone-900">3 500 ₽</span>
+                    </div>
+                </div>
+
+                <!-- Карточка 3 -->
+                <div class="eco-card p-8 rounded-2xl space-y-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">03 / Тело</div>
+                        <h3 class="eco-title text-lg text-stone-900 font-normal">Ритуал «Глубокий покой»</h3>
+                        <p class="text-[11px] text-stone-500 leading-relaxed">Расслабляющий аромамассаж всего тела теплыми маслами лаванды и сандала под живой звук поющих чаш.</p>
+                    </div>
+                    <div class="flex justify-between items-baseline pt-4 border-t border-stone-100">
+                        <span class="text-xs font-semibold text-stone-800">90 минут</span>
+                        <span class="text-sm font-bold text-stone-900">4 800 ₽</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- КОНТАКТЫ И ФУТЕР -->
+    <footer id="visit" class="bg-[#ffffff] py-16 px-6">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-xs tracking-wide">
+            
+            <div class="space-y-4">
+                <h3 class="eco-title text-lg text-stone-900 tracking-widest font-normal">ЭФИР</h3>
+                <p class="text-stone-400 font-light leading-relaxed">
+                    Пространство бережного отношения к вашей естественной красоте. Мы верим природе.
+                </p>
+            </div>
+            
+            <div class="space-y-2">
+                <h4 class="font-bold text-stone-800 uppercase tracking-widest text-[9px]">// ЛОКАЦИЯ</h4>
+                <p class="text-stone-500 font-light">ул. Гимназическая, д. 40, Краснодар</p>
+                <p class="text-stone-400 font-light">Вход через внутренний зеленый дворик</p>
+            </div>
+            
+            <div class="space-y-4">
+                <h4 class="font-bold text-stone-800 uppercase tracking-widest text-[9px]">// ЗАПИСЬ И СВЯЗЬ</h4>
+                <p class="text-stone-900 font-bold text-sm tracking-wide">+7 (918) 000-11-22</p>
+                <div class="flex space-x-6 pt-1 uppercase text-[10px] font-bold text-stone-400 tracking-widest">
+                    <a href="#" class="hover:text-stone-900 transition-colors">Telegram</a>
+                    <a href="#" class="hover:text-stone-900 transition-colors">WhatsApp</a>
+                </div>
+            </div>
+
+        </div>
+        <div class="max-w-6xl mx-auto text-center text-[10px] text-stone-400 tracking-widest uppercase mt-16 pt-8 border-t border-stone-100">
+            © 2026 Пространство «ЭФИР». Забота, подаренная природой.
+        </div>
+    </footer>
+
+</body>
+</html>

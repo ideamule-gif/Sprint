@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ ЧЕРНИЛА | Студия Художественной Татуировки</title>
+    <!-- Подключаем Tailwind CSS через CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts: Готический акцентный и брутальный моноширинный шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #0a0a0a; /* Глубокий черный */
+        }
+        .gothic-font {
+            font-family: 'Uncial Antiqua', serif;
+        }
+        /* Тонкие стильные рамки в стиле киберпанк / индастриал */
+        .tattoo-border {
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .tattoo-card {
+            background: #0f0f0f;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .tattoo-card:hover {
+            border-color: rgba(217, 119, 6, 0.4); /* Янтарный акцент при ховере */
+            background: #141414;
+        }
+        /* Стилизация полосы прокрутки */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #222;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d97706;
+        }
+    </style>
+</head>
+<body class="text-zinc-400 antialiased overflow-x-hidden">
+
+    <!-- НАВИГАЦИЯ -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-4 bg(#0a0a0a)/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="#" class="gothic-font text-2xl tracking-widest text-zinc-100 hover:text-amber-600 transition-colors">ЧЕРНИЛА</a>
+            
+            <!-- Меню -->
+            <div class="hidden md:flex space-x-10 text-xs font-medium tracking-widest uppercase">
+                <a href="#about" class="hover:text-zinc-100 transition-colors">О студии</a>
+                <a href="#styles" class="hover:text-zinc-100 transition-colors">Стили</a>
+                <a href="#team" class="hover:text-zinc-100 transition-colors">Мастера</a>
+                <a href="#book" class="hover:text-zinc-100 transition-colors">Контакты</a>
+            </div>
+            
+            <a href="#book" class="hidden md:inline-block border border-amber-600 text-amber-500 hover:bg-amber-600 hover:text-black px-5 py-2 text-xs font-bold tracking-widest uppercase transition-all duration-300">
+                Запись на сеанс
+            </a>
+        </div>
+    </nav>
+
+    <!-- ГЛАВНЫЙ ЭКРАН (HERO) -->
+    <section class="relative min-h-screen flex items-center justify-center pt-24 px-6 overflow-hidden">
+        <!-- Текстурный задний фон -->
+        <div class="absolute inset-0 bg-[radial-gradient(#161616_1px,transparent_1px)] [background-size:16px_16px] opacity-30"></div>
+        <div class="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-amber-900/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto text-center z-10 space-y-8">
+            <span class="text-[10px] font-bold tracking-[0.3em] uppercase text-amber-500/80 bg-amber-500/5 px-4 py-1.5 border border-amber-500/20">
+                Краснодар • Стерильно • Навсегда
+            </span>
+            <h1 class="gothic-font text-5xl sm:text-7xl md:text-8xl text-zinc-100 tracking-wide leading-tight">
+                Твоя история <br>на <span class="text-amber-600">твоей коже</span>
+            </h1>
+            <p class="text-zinc-500 max-w-lg mx-auto text-xs sm:text-sm font-light leading-relaxed tracking-wide">
+                Профессиональная тату-студия без конвейера. Разрабатываем уникальные мрачные, графичные и минималистичные эскизы, которые подчеркивают твою индивидуальность.
+            </p>
+            <div class="pt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#styles" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-black font-bold px-8 py-4 text-xs tracking-widest uppercase transition-all duration-300 shadow-lg shadow-amber-600/10 text-center">
+                    Смотреть работы
+                </a>
+                <a href="#book" class="w-full sm:w-auto border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 px-8 py-4 text-xs tracking-widest uppercase transition-all duration-300 text-center text-zinc-300">
+                    Консультация
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- О СТУДИИ -->
+    <section id="about" class="py-24 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center border-t border-white/5">
+        <div class="space-y-6">
+            <span class="text-[10px] font-bold tracking-[0.3em] uppercase text-amber-600">01 // Безопасность</span>
+            <h2 class="gothic-font text-3xl md:text-5xl text-zinc-100 tracking-wide">Анатомия и <br>чистота процесса</h2>
+            <p class="text-zinc-500 font-light text-xs sm:text-sm leading-relaxed">
+                Мы фанатично относимся к безопасности. Используем только одноразовые расходные материалы премиум-класса, японские и американские пигменты, а стерилизация оборудования проходит по медицинским стандартам.
+            </p>
+            <p class="text-zinc-500 font-light text-xs sm:text-sm leading-relaxed">
+                Каждая татуировка адаптируется под анатомические формы тела, чтобы рисунок идеально смотрелся в движении и не деформировался со временем.
+            </p>
+            
+            <div class="grid grid-cols-2 gap-4 pt-6">
+                <div class="tattoo-border p-5 bg-[#0d0d0d]">
+                    <div class="text-xs font-bold text-zinc-200 tracking-wider">100% Стерильность</div>
+                    <div class="text-[11px] text-zinc-600 mt-2">Полный цикл дезинфекции и одноразовые иглы, вскрытие при вас.</div>
+                </div>
+                <div class="tattoo-border p-5 bg-[#0d0d0d]">
+                    <div class="text-xs font-bold text-zinc-200 tracking-wider">Кастомные эскизы</div>
+                    <div class="text-[11px] text-zinc-600 mt-2">Никаких картинок из интернета. Создаем проект с нуля под ваши идеи.</div>
+                </div>
+            </div>
+        </div>
+        <!-- Заглушка под брутальное фото -->
+        <div class="tattoo-border h-[450px] bg-[#0d0d0d] flex items-center justify-center relative group overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+            <span class="text-zinc-700 text-xs tracking-widest uppercase group-hover:text-amber-600/60 transition-colors z-10">
+                [ Эстетичное фото процесса нанесения тату ]
+            </span>
+        </div>
+    </section>
+
+    <!-- СТИЛИ / НАПРАВЛЕНИЯ -->
+    <section id="styles" class="py-24 bg-[#080808] px-6 border-y border-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="space-y-4 mb-16 text-center md:text-left">
+                <span class="text-[10px] font-bold tracking-[0.3em] uppercase text-amber-600">02 // Направления</span>
+                <h2 class="gothic-font text-3xl md:text-5xl text-zinc-100 tracking-wide">В каких стилях мы бьем</h2>
+            </div>
+
+            <!-- Сетка направлений -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <!-- Стыль 1 -->
+                <div class="tattoo-border tattoo-card p-6 space-y-4 group">
+                    <div class="w-full h-64 bg-zinc-950 flex items-center justify-center text-[10px] text-zinc-700 group-hover:bg-zinc-900 transition-colors">
+                        [ Фото: Графика / Дотворк ]
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-zinc-200 text-sm tracking-wider uppercase group-hover:text-amber-500 transition-colors">Графика & Дотворк</h4>
+                        <p class="text-[11px] text-zinc-500 leading-relaxed">Глубокие тени из точек, чистые кастомные линии, высокая детализация деталей.</p>
+                    </div>
+                </div>
+
+                <!-- Стыль 2 -->
+                <div class="tattoo-border tattoo-card p-6 space-y-4 group">
+                    <div class="w-full h-64 bg-zinc-950 flex items-center justify-center text-[10px] text-zinc-700 group-hover:bg-zinc-900 transition-colors">
+                        [ Фото: Минимализм / Лайнворк ]
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-zinc-200 text-sm tracking-wider uppercase group-hover:text-amber-500 transition-colors">Минимализм & Лайнворк</h4>
+                        <p class="text-[11px] text-zinc-500 leading-relaxed">Тонкие, изящные контурные работы, аккуратная геометрия, ничего лишнего.</p>
+                    </div>
+                </div>
+
+                <!-- Стыль 3 -->
+                <div class="tattoo-border tattoo-card p-6 space-y-4 group">
+                    <div class="w-full h-64 bg-zinc-950 flex items-center justify-center text-[10px] text-zinc-700 group-hover:bg-zinc-900 transition-colors">
+                        [ Фото: Олдскул / Традишнл ]
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-zinc-200 text-sm tracking-wider uppercase group-hover:text-amber-500 transition-colors">Традиционная татуировка</h4>
+                        <p class="text-[11px] text-zinc-500 leading-relaxed">Толстые контура, каноничные яркие или плотные черные покрасы, бессмертная классика.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- МАСТЕРА -->
+    <section id="team" class="py-24 max-w-6xl mx-auto px-6">
+        <div class="space-y-4 mb-16 text-center">
+            <span class="text-[10px] font-bold tracking-[0.3em] uppercase text-amber-600">03 // Команда</span>
+            <h2 class="gothic-font text-3xl md:text-5xl text-zinc-100 tracking-wide">Резиденты студии</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+            <div class="space-y-4 text-center sm:text-left">
+                <div class="tattoo-border h-80 bg-[#0d0d0d] flex items-center justify-center text-zinc-700 text-xs uppercase tracking-widest">[ Фото мастера Алекс ]</div>
+                <div class="flex justify-between items-baseline">
+                    <h4 class="font-bold text-zinc-200 text-sm uppercase tracking-wider">Алекс Грей</h4>
+                    <span class="text-[10px] text-amber-500 font-medium">Стаж 7 лет</span>
+                </div>
+                <p class="text-[11px] text-zinc-500 leading-relaxed">Специализируется на масштабных мрачных проектах, блэкворке и плотном темном реализме.</p>
+            </div>
+
+            <div class="space-y-4 text-center sm:text-left">
+                <div class="tattoo-border h-80 bg-[#0d0d0d] flex items-center justify-center text-zinc-700 text-xs uppercase tracking-widest">[ Фото мастера Лиса ]</div>
+                <div class="flex justify-between items-baseline">
+                    <h4 class="font-bold text-zinc-200 text-sm uppercase tracking-wider">Лиса Вуд</h4>
+                    <span class="text-[10px] text-amber-500 font-medium">Стаж 4 года</span>
+                </div>
+                <p class="text-[11px] text-zinc-500 leading-relaxed">Королева тонких линий, ботанической иллюстрации, микрореализма и воздушной графики.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- КОНТАКТЫ & ЗАПИСЬ -->
+    <footer id="book" class="bg-[#050505] border-t border-white/5 py-16 px-6">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-xs tracking-wide">
+            
+            <div class="space-y-4">
+                <h3 class="gothic-font text-xl text-amber-500 tracking-wider">ЧЕРНИЛА</h3>
+                <p class="text-zinc-600 font-light leading-relaxed">
+                    Оставляем осознанные следы на теле. Качественно, стерильно и на всю жизнь.
+                </p>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-bold text-zinc-200 uppercase tracking-widest text-[10px]">Где мы находимся</h4>
+                <p class="text-zinc-500 font-light">ул. Красная, д. 104, Краснодар</p>
+                <p class="text-zinc-500 font-light">Каждый день по записи: 11:00 — 20:00</p>
+            </div>
+            
+            <div class="space-y-4">
+                <h4 class="font-bold text-zinc-200 uppercase tracking-widest text-[10px]">Запись на бесплатную консультацию</h4>
+                <p class="text-zinc-500 font-light">Обсудим идею, прикинем место, анатомию и посчитаем точную стоимость сеанса.</p>
+                <p class="text-amber-500 font-bold text-sm">+7 (999) 777-66-55</p>
+                <div class="flex space-x-6 pt-1 uppercase text-[10px] font-bold">
+                    <a href="#" class="text-zinc-400 hover:text-amber-500 transition-colors">Telegram</a>
+                    <a href="#" class="text-zinc-400 hover:text-amber-500 transition-colors">VKontakte</a>
+                </div>
+            </div>
+
+        </div>
+        <div class="max-w-6xl mx-auto text-center text-[10px] text-zinc-700 mt-16 pt-8 border-t border-white/5">
+            © 2026 Студия художественной татуировки «ЧЕРНИЛА». Навсегда под кожей.
+        </div>
+    </footer>
+
+</body>
+</html>

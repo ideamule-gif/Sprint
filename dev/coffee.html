@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☕ Культура | Кофейня & Ростерия</title>
+    <!-- Подключаем Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts: Стильные шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0f0d0c;
+        }
+        .heading-font {
+            font-family: 'Comfortaa', cursive;
+        }
+        /* Эффект размытия стекла */
+        .glass-card {
+            background: rgba(25, 22, 20, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .glass-nav {
+            background: rgba(15, 13, 12, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+    </style>
+</head>
+<body class="text-stone-200 antialiased overflow-x-hidden">
+
+    <!-- НАВИГАЦИЯ -->
+    <nav class="glass-nav fixed top-0 left-0 w-full z-50 px-6 py-4 transition-all duration-300">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="#" class="heading-font text-2xl font-bold tracking-wider text-amber-500">КУЛЬТУРА</a>
+            
+            <!-- Меню для десктопа -->
+            <div class="hidden md:flex space-x-8 text-sm font-medium tracking-wide">
+                <a href="#about" class="hover:text-amber-400 transition-colors">О нас</a>
+                <a href="#menu" class="hover:text-amber-400 transition-colors">Меню</a>
+                <a href="#atmosphere" class="hover:text-amber-400 transition-colors">Атмосфера</a>
+                <a href="#contacts" class="hover:text-amber-400 transition-colors">Контакты</a>
+            </div>
+            
+            <a href="#menu" class="hidden md:inline-block border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-stone-950 px-5 py-2 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300">
+                Заказать кофе
+            </a>
+        </div>
+    </nav>
+
+    <!-- ГЛАВНЫЙ ЭКРАН (HERO) -->
+    <section class="relative min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden">
+        <!-- Фоновый абстрактный градиент для создания глубины -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-900/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-stone-800/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto text-center z-10 space-y-8 animate-fade-in">
+            <span class="text-xs font-semibold tracking-widest uppercase text-amber-500/80 bg-amber-500/5 px-4 py-1.5 rounded-full border border-amber-500/10">
+                Свежая обжарка каждый день
+            </span>
+            <h1 class="heading-font text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-stone-100 leading-tight">
+                Кофе как <br><span class="text-amber-500">чистое искусство</span>
+            </h1>
+            <p class="text-stone-400 max-w-xl mx-auto text-base sm:text-lg font-light leading-relaxed">
+                Минималистичное пространство в центре города, где правильное зерно встречается с безупречным исполнением. Ничего лишнего. Только вкус.
+            </p>
+            <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#menu" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg shadow-amber-500/10 text-center">
+                    Смотреть меню
+                </a>
+                <a href="#about" class="w-full sm:w-auto border border-stone-800 hover:border-stone-700 bg-stone-900/40 hover:bg-stone-900/80 px-8 py-4 rounded-xl transition-all duration-300 text-center">
+                    Наша философия
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <hr class="border-stone-900 max-w-6xl mx-auto">
+
+    <!-- О НАС -->
+    <section id="about" class="py-24 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6">
+            <h2 class="heading-font text-3xl md:text-4xl font-bold text-stone-100">Зерно с характером</h2>
+            <p class="text-stone-400 font-light leading-relaxed">
+                Мы не просто варим кофе, мы контролируем весь путь: от выбора лота на плантациях Эфиопии и Колумбии до профиля обжарки на нашем ростере. 
+            </p>
+            <p class="text-stone-400 font-light leading-relaxed">
+                В нашей карте — как классический плотный эспрессо, так и яркий альтернативный фильтр-кофе с фруктовой кислотностью для ценителей.
+            </p>
+            <div class="grid grid-cols-2 gap-6 pt-4">
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="text-3xl font-bold text-amber-500 heading-font">100%</div>
+                    <div class="text-xs text-stone-400 uppercase tracking-wider mt-1">Спешелти Арабика</div>
+                </div>
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="text-3xl font-bold text-amber-500 heading-font">0%</div>
+                    <div class="text-xs text-stone-400 uppercase tracking-wider mt-1">Компромиссов в качестве</div>
+                </div>
+            </div>
+        </div>
+        <!-- Плейсхолдер под красивое фото интерьера или процесса -->
+        <div class="glass-card h-[400px] rounded-3xl overflow-hidden flex items-center justify-center relative group">
+            <div class="absolute inset-0 bg-radial from-amber-900/10 to-transparent"></div>
+            <span class="text-stone-500 text-sm tracking-widest uppercase group-hover:text-amber-500/70 transition-colors">
+                [ Место для фото эстетичного интерьера ]
+            </span>
+        </div>
+    </section>
+
+    <!-- МЕНЮ -->
+    <section id="menu" class="py-24 bg-[#0a0908] px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center space-y-4 mb-16">
+                <h2 class="heading-font text-3xl md:text-4xl font-bold text-stone-100">Карта напитков</h2>
+                <p class="text-stone-400 font-light text-sm">Меню обновляется в зависимости от свежих поступлений зерна</p>
+            </div>
+
+            <!-- Вкладки категорий -->
+            <div class="flex justify-center space-x-2 mb-12 bg-stone-900/50 p-1 rounded-xl max-w-sm mx-auto border border-stone-800/40">
+                <button onclick="switchMenu('coffee')" id="btn-coffee" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 bg-amber-500 text-stone-950">
+                    Кофе
+                </button>
+                <button onclick="switchMenu('desserts')" id="btn-desserts" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 text-stone-400 hover:text-stone-200">
+                    Десерты
+                </button>
+            </div>
+
+            <!-- Список КАТЕГОРИЯ: КОФЕ -->
+            <div id="menu-coffee" class="space-y-6 transition-all duration-300">
+                <div class="glass-card p-6 rounded-2xl flex justify-between items-center hover:border-amber-500/20 transition-all duration-300">
+                    <div>
+                        <h4 class="font-medium text-stone-200">Эспрессо</h4>
+                        <p class="text-xs text-stone-500 mt-1">Классический, яркий, сбалансированный</p>
+                    </div>
+                    <span class="heading-font font-bold text-amber-500">180 ₽</span>
+                </div>
+                <div class="glass-card p-6 rounded-2xl flex justify-between items-center hover:border-amber-500/20 transition-all duration-300">
+                    <div>
+                        <h4 class="font-medium text-stone-200">Капучино</h4>
+                        <p class="text-xs text-stone-500 mt-1">С шелковистой глянцевой молочной пеной (250 мл)</p>
+                    </div>
+                    <span class="heading-font font-bold text-amber-500">250 ₽</span>
+                </div>
+                <div class="glass-card p-6 rounded-2xl flex justify-between items-center hover:border-amber-500/20 transition-all duration-300">
+                    <div>
+                        <h4 class="font-medium text-stone-200">Фильтр-кофе</h4>
+                        <p class="text-xs text-stone-500 mt-1">Для тех, кто ценит чистый вкус лота и дескрипторы</p>
+                    </div>
+                    <span class="heading-font font-bold text-amber-500">220 ₽</span>
+                </div>
+                <div class="glass-card p-6 rounded-2xl flex justify-between items-center hover:border-amber-500/20 transition-all duration-300">
+                    <div>
+                        <h4 class="font-medium text-stone-200">Флэт Уайт</h4>
+                        <p class="text-xs text-stone-500 mt-1">Двойной шот эспрессо для кофейных гиков</p>
+                    </div>
+                    <span class="heading-font font-bold text-amber-500">280 ₽</span>
+                </div>
+            </div>
+
+            <!-- Список КАТЕГОРИЯ: ДЕСЕРТЫ (Изначально скрыт) -->
+            <div id="menu-desserts" class="space-y-6 hidden transition-all duration-300">
+                <div class="glass-card p-6 rounded-2xl flex justify-between items-center">
+                    <div>
+                        <h4 class="font-medium text-stone-200">Миндальный круассан</h4>
+                        <p class="text-xs text-stone-500 mt-1">Классика нашей собственной выпечки</p>
+                    </div>
+                    <span class="heading-font font-bold text-amber-500">290 ₽</span>
+                </div>
+                <div class="glass-card p-6 rounded-2xl flex justify-between items-center">
+                    <div>
+                        <h4 class="font-medium text-stone-200">Банановый кекс</h4>
+                        <p class="text-xs text-stone-500 mt-1">Плотный, влажный, без рафинированного сахара</p>
+                    </div>
+                    <span class="heading-font font-bold text-amber-500">210 ₽</span>
+                </div>
+                <div class="glass-card p-6 rounded-2xl flex justify-between items-center">
+                    <div>
+                        <h4 class="font-medium text-stone-200">Чизкейк Сан-Себастьян</h4>
+                        <p class="text-xs text-stone-500 mt-1">Нежный, с обожженной карамельной корочкой</p>
+                    </div>
+                    <span class="heading-font font-bold text-amber-500">350 ₽</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- АТМОСФЕРА (ГАЛЕРЕЯ) -->
+    <section id="atmosphere" class="py-24 px-6 max-w-6xl mx-auto">
+        <div class="text-center space-y-4 mb-16">
+            <h2 class="heading-font text-3xl md:text-4xl font-bold text-stone-100">Пространство фокуса</h2>
+            <p class="text-stone-400 font-light max-w-md mx-auto text-sm">У нас комфортно как побыть наедине со своими мыслями или поработать за ноутбуком, так и встретиться с близкими.</p>
+        </div>
+        
+        <!-- Сетка картинок -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div class="glass-card h-64 rounded-2xl flex items-center justify-center text-stone-600 text-xs uppercase tracking-wider">[ Зона у окна ]</div>
+            <div class="glass-card h-64 rounded-2xl flex items-center justify-center text-stone-600 text-xs uppercase tracking-wider">[ Наш ростер ]</div>
+            <div class="glass-card h-64 rounded-2xl flex items-center justify-center text-stone-600 text-xs uppercase tracking-wider">[ Рабочая зона ]</div>
+        </div>
+    </section>
+
+    <!-- КОНТАКТЫ & ИНФО -->
+    <footer id="contacts" class="bg-[#070605] border-t border-stone-900 py-16 px-6">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-sm">
+            
+            <div class="space-y-4">
+                <h3 class="heading-font text-xl font-bold text-amber-500">КУЛЬТУРА</h3>
+                <p class="text-stone-500 font-light leading-relaxed">
+                    Свежий взгляд на кофейную индустрию. Ждем вас в гости за правильным настроением на весь день.
+                </p>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-semibold text-stone-200 uppercase tracking-wider text-xs">Локация & Часы</h4>
+                <p class="text-stone-400 font-light">ул. Мира, д. 42, Краснодар</p>
+                <p class="text-stone-400 font-light">Будни: 08:00 — 22:00</p>
+                <p class="text-stone-400 font-light">Выходные: 09:00 — 23:00</p>
+            </div>
+            
+            <div class="space-y-4">
+                <h4 class="font-semibold text-stone-200 uppercase tracking-wider text-xs">Будь на связи</h4>
+                <p class="text-stone-400 font-light">hello@culturecoffee.ru</p>
+                <div class="flex space-x-4 pt-2">
+                    <a href="#" class="text-amber-500/70 hover:text-amber-400 transition-colors">Telegram</a>
+                    <a href="#" class="text-amber-500/70 hover:text-amber-400 transition-colors">Instagram</a>
+                </div>
+            </div>
+
+        </div>
+        <div class="max-w-6xl mx-auto text-center text-xs text-stone-600 mt-16 pt-8 border-t border-stone-950">
+            © 2026 Кофейня «Культура». Все права защищены.
+        </div>
+    </footer>
+
+    <!-- Простейший JS для переключения вкладок меню -->
+    <script>
+        function switchMenu(category) {
+            const coffeeMenu = document.getElementById('menu-coffee');
+            const dessertsMenu = document.getElementById('menu-desserts');
+            const btnCoffee = document.getElementById('btn-coffee');
+            const btnDesserts = document.getElementById('btn-desserts');
+
+            if (category === 'coffee') {
+                coffeeMenu.classList.remove('hidden');
+                dessertsMenu.classList.add('hidden');
+                
+                btnCoffee.className = "flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 bg-amber-500 text-stone-950";
+                btnDesserts.className = "flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 text-stone-400 hover:text-stone-200";
+            } else {
+                coffeeMenu.classList.add('hidden');
+                dessertsMenu.classList.remove('hidden');
+                
+                btnDesserts.className = "flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 bg-amber-500 text-stone-950";
+                btnCoffee.className = "flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 text-stone-400 hover:text-stone-200";
+            }
+        }
+    </script>
+</body>
+</html>
